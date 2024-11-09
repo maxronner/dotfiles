@@ -175,6 +175,18 @@ alias 2cb="xclip -selection clipboard"
 # -- misc aliases ---
 alias update-all="sudo apt update -y ; sudo apt dist-upgrade -y ; sudo apt autoremove -y ; sudo apt autoclean -y ; flatpak update -y"
 
+# Search command line history
+alias h="history | grep "
+
+# cd into the old directory
+alias bd='cd "$OLDPWD"'
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+alias nala="sudo nala"
 
 # Extracts any archive(s) (if unp isn't installed)
 extract() {
