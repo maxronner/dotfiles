@@ -148,7 +148,8 @@ _fzf_comprun() {
 }
 
 # --- eza ---
-alias ll="eza --long --all"
+alias ls="eza --long --no-permissions --no-user --no-time --no-filesize --icons=always"
+alias ll="eza --long --all --icons=always"
 
 # --- thefuck ---
 eval $(thefuck --alias)
