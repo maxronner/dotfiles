@@ -43,6 +43,34 @@ sudo apt update
 sudo apt install -y nala
 sudo nala install -y tmux fzf bat tldr thefuck eza xclip
 
+# --- Delta (git diff) ---
+
+# -- Fetch the latest release tag from GitHub --
+latest_version=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+
+# -- Normalize the format to remove 'v' prefix if present --
+latest_version=${latest_version#v}
+
+# -- Get the currently installed version, removing any unwanted output formatting --
+installed_version=$(delta --version 2>/dev/null | awk '{print $2}')
+
+# -- Check if the latest version is already installed --
+if [ "$installed_version" == "$latest_version" ]; then
+    echo "Delta is already up to date (version $installed_version)."
+    exit 0
+fi
+
+# -- Construct the download URL for the .deb file (assuming amd64) --
+deb_url="https://github.com/dandavison/delta/releases/download/v${latest_version}/git-delta_${latest_version}_amd64.deb"
+
+# -- Download the .deb file --
+wget "$deb_url" -O git-delta_latest_amd64.deb
+
+# -- Install the .deb file --
+sudo dpkg -i git-delta_latest_amd64.deb
+
+# -- Clean up the .deb file after installation --
+rm git-delta_latest_amd64.deb
 
 # ---- Program specific setup ----
 
