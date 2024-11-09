@@ -18,8 +18,10 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+export HISTFILESIZE=10000
+export HISTSIZE=500
+export HISTTIMEFORMAT="%F %T  " # add timestamp to history
+
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -63,7 +65,7 @@ if [ "$color_prompt" = yes ]; then
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w'
 fi
-PS1="$PS1\$(git branch 2>/dev/null | grep -e '^\*' | sed -e 's/^\* //' | sed 's/^/(git@/' | sed 's/$/)/')\[\033[01;37m\]\$ "
+PS1="$PS1:\033[01;36m\]\$(git branch 2>/dev/null | grep -e '^\*' | sed -e 's/^\* //' | sed 's/^/(git@/' | sed 's/$/)/')\[\033[01;37m\]\$ "
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
@@ -117,10 +119,6 @@ if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 # Show auto-completion list automatically, without double tab
 if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
-# Expand the history size
-export HISTFILESIZE=10000
-export HISTSIZE=500
-export HISTTIMEFORMAT="%F %T  " # add timestamp to history
 
 # --- Bat ---
 export PATH="$HOME/.local/bin:$PATH"
