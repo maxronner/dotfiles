@@ -97,3 +97,5 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # -- Update tldr cache --
 tldr --update
+
+echo "Install completed. Don't forget to install a nerd-font for icon support!"
