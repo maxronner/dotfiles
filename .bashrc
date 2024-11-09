@@ -65,7 +65,7 @@ if [ "$color_prompt" = yes ]; then
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w'
 fi
-PS1="$PS1:\033[01;36m\]\$(git branch 2>/dev/null | grep -e '^\*' | sed -e 's/^\* //' | sed 's/^/(git@/' | sed 's/$/)/')\[\033[01;37m\]\$ "
+PS1="$PS1:\033[01;36m\]\$(git branch 2>/dev/null | grep -e '^\*' | sed -e 's/^\* //' | sed 's/^/(/' | sed 's/$/)/')\[\033[01;37m\]\$ "
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
