@@ -1,3 +1,5 @@
+iatest=$(expr index "$-" i)
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -107,6 +109,13 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Ignore case on auto-completion
+# Note: bind used instead of sticking these in .inputrc
+if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
+
+# Show auto-completion list automatically, without double tab
+if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
 # --- Bat ---
 export PATH="$HOME/.local/bin:$PATH"
