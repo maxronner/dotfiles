@@ -120,7 +120,7 @@ if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 # Expand the history size
 export HISTFILESIZE=10000
 export HISTSIZE=500
-export HISTTIMEFORMAT="%F %T " # add timestamp to history
+export HISTTIMEFORMAT="%F %T  " # add timestamp to history
 
 # --- Bat ---
 export PATH="$HOME/.local/bin:$PATH"
