@@ -173,6 +173,7 @@ alias 2cb="xclip -selection clipboard"
 
 # -- misc aliases ---
 alias update-all="sudo apt update -y ; sudo apt dist-upgrade -y ; sudo apt autoremove -y ; sudo apt autoclean -y ; flatpak update -y"
+alias update-all="sudo nala upgrade -y ; sudo nala autoremove -y ; flatpak update -y"
 
 # Search command line history
 alias h="history | grep "
