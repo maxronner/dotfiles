@@ -32,6 +32,12 @@ for file in "$dotfiles_dir"/*; do
         continue
     fi
 
+    # Skip .git
+    if [ "$filename" == ".git" ]; then
+        echo "Skipping .git"
+        continue
+    fi
+
     # Check if a symlink already exists and remove it if present
     if [ -L ~/"$filename" ]; then
         echo "Removing existing symlink: ~/$filename"
