@@ -4,30 +4,56 @@
 
 # --- Create symlinks ---
 
-# -- Define the dotfiles and their source directory --
-dotfiles=(.gitconfig .tmux.conf .bashrc)
+# Define the source directory for dotfiles
 dotfiles_dir=~/dotfiles
 
-# -- Create symlinks for each file --
-for file in "${dotfiles[@]}"; do
-    # - Check if a symlink already exists and remove it if present -
-    if [ -L ~/"$file" ]; then
-        echo "Removing existing symlink for $file"
-        rm ~/"$file"
+# Ensure dotfiles_dir exists
+if [ ! -d "$dotfiles_dir" ]; then
+    echo "Error: $dotfiles_dir directory not found!"
+    exit 1
+fi
+
+# Enable dotglob to include hidden files (files starting with a dot)
+shopt -s dotglob
+
+echo "Found dotfiles directory: $dotfiles_dir"
+
+# Iterate over all files in the dotfiles directory, including hidden files
+for file in "$dotfiles_dir"/*; do
+    # Extract the filename from the full path
+    filename=$(basename "$file")
+
+    # Debug: Show the file being processed
+    echo "Processing file: $filename"
+
+    # Skip the script file itself (install.sh)
+    if [ "$filename" == "install.sh" ]; then
+        echo "Skipping install.sh"
+        continue
     fi
 
-    # - Check if a regular file or directory exists and back it up if present -
-    if [ -e ~/"$file" ]; then
-        echo "Backing up existing $file to $file.bak"
-        mv ~/"$file" ~/"$file.bak"
+    # Check if a symlink already exists and remove it if present
+    if [ -L ~/"$filename" ]; then
+        echo "Removing existing symlink: ~/$filename"
+        rm ~/"$filename"
     fi
 
-    # - Create the symlink -
-    ln -s "$dotfiles_dir/$file" ~/"$file"
-    echo "Created symlink for $file"
+    # Check if a regular file or directory exists and back it up if present
+    if [ -e ~/"$filename" ] && [ ! -e ~/"$filename.bak" ]; then
+        echo "Backing up existing file: ~/$filename to ~/$filename.bak"
+        mv ~/"$filename" ~/"$filename.bak"
+    fi
+
+    # Create the symlink with the full path
+    echo "Creating symlink: ln -s $file ~/$filename"
+    ln -s "$file" ~/"$filename"
+    echo "Created symlink for $filename -> $file"
 done
 
-echo "All specified symlinks created successfully!"
+# Disable dotglob to revert back to the default behavior
+shopt -u dotglob
+
+source ~/.bashrc
 
 # ---- Setup keychain ----
 
@@ -61,7 +87,7 @@ if [ "$installed_version" == "$latest_version" ]; then
 fi
 
 # -- Construct the download URL for the .deb file (assuming amd64) --
-deb_url="https://github.com/dandavison/delta/releases/download/v${latest_version}/git-delta_${latest_version}_amd64.deb"
+deb_url="https://github.com/dandavison/delta/releases/download/${latest_version}/git-delta_${latest_version}_amd64.deb"
 
 # -- Download the .deb file --
 wget "$deb_url" -O git-delta_latest_amd64.deb
