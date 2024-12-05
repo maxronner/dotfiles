@@ -1,133 +1,152 @@
-#!/usr/bin/env bash
-
-# ---- Dotfiles ----
-
-# --- Create symlinks ---
+#!/bin/bash
 
 # Define the source directory for dotfiles
-dotfiles_dir=~/dotfiles
+dotfiles_dir=$(realpath "$(dirname "$0")")
 
-# Ensure dotfiles_dir exists
-if [ ! -d "$dotfiles_dir" ]; then
-    echo "Error: $dotfiles_dir directory not found!"
-    exit 1
-fi
+# Function to ensure dotfiles directory exists
+check_dotfiles_dir() {
+    if [ ! -d "$dotfiles_dir" ]; then
+        echo "Error: $dotfiles_dir directory not found!"
+        exit 1
+    fi
+}
 
-# Enable dotglob to include hidden files (files starting with a dot)
-shopt -s dotglob
+# Function to create symlinks for dotfiles
+create_symlinks() {
+    # Enable dotglob to include hidden files (files starting with a dot)
+    shopt -s dotglob
 
-echo "Found dotfiles directory: $dotfiles_dir"
+    echo "Found dotfiles directory: $dotfiles_dir"
 
-# Iterate over all files in the dotfiles directory, including hidden files
-for file in "$dotfiles_dir"/*; do
-    # Extract the filename from the full path
-    filename=$(basename "$file")
+    # Iterate over all files in the dotfiles directory, including hidden files
+    for file in "$dotfiles_dir"/*; do
+        filename=$(basename "$file")  # Extract the filename from the full path
 
-    # Debug: Show the file being processed
-    echo "Processing file: $filename"
+        echo "Processing file: $filename"
 
-    # Skip the script file itself (install.sh)
-    if [ "$filename" == "install.sh" ]; then
-        echo "Skipping install.sh"
-        continue
+        # Skip install.sh and .git files
+        if [ "$filename" == "install.sh" ]; then
+            echo "Skipping install.sh"
+            continue
+        fi
+        if [ "$filename" == ".git" ]; then
+            echo "Skipping .git"
+            continue
+        fi
+
+        # Remove existing symlink if present
+        if [ -L ~/"$filename" ]; then
+            echo "Removing existing symlink: ~/$filename"
+            rm ~/"$filename"
+        fi
+
+        # Backup existing file if not already backed up
+        if [ -e ~/"$filename" ] && [ ! -e ~/"$filename.bak" ]; then
+            echo "Backing up existing file: ~/$filename to ~/$filename.bak"
+            mv ~/"$filename" ~/"$filename.bak"
+        fi
+
+        # Create the symlink
+        echo "Creating symlink: ln -s $file ~/$filename"
+        ln -s "$file" ~/"$filename"
+        echo "Created symlink for $filename -> $file"
+    done
+
+    # Disable dotglob to revert back to the default behavior
+    shopt -u dotglob
+
+    # Reload bashrc to apply changes
+    source ~/.bashrc
+}
+
+# Function to setup eza repository key and add source list
+setup_eza_repository() {
+    # Check if keyring file already exists
+    if [ -f /etc/apt/keyrings/gierens.gpg ]; then
+        echo "Keyring already exists, skipping keyring setup."
+    else
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "Keyring downloaded and saved as /etc/apt/keyrings/gierens.gpg"
     fi
 
-    # Skip .git
-    if [ "$filename" == ".git" ]; then
-        echo "Skipping .git"
-        continue
+    # Check if sources list entry already exists
+    if grep -q "deb \[signed-by=/etc/apt/keyrings/gierens.gpg\] http://deb.gierens.de stable main" /etc/apt/sources.list.d/gierens.list; then
+        echo "Eza repository already added to sources.list, skipping."
+    else
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        echo "Eza repository added to /etc/apt/sources.list.d/gierens.list"
     fi
 
-    # Check if a symlink already exists and remove it if present
-    if [ -L ~/"$filename" ]; then
-        echo "Removing existing symlink: ~/$filename"
-        rm ~/"$filename"
+    # Set correct permissions for the keyring and sources list file
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+}
+
+
+install_tools() {
+    sudo apt update
+    sudo apt install -y nala
+    sudo nala install -y tmux fzf bat tldr thefuck eza xclip
+}
+
+install_delta() {
+    # Fetch the latest release tag from GitHub
+    latest_version=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+
+    # Remove 'v' prefix from version if present
+    latest_version=${latest_version#v}
+
+    # Get the currently installed version
+    installed_version=$(delta --version 2>/dev/null | awk '{print $2}')
+
+    # Check if the latest version is already installed
+    if [ "$installed_version" == "$latest_version" ]; then
+        echo "Delta is already up to date (version $installed_version)."
+        exit 0
     fi
 
-    # Check if a regular file or directory exists and back it up if present
-    if [ -e ~/"$filename" ] && [ ! -e ~/"$filename.bak" ]; then
-        echo "Backing up existing file: ~/$filename to ~/$filename.bak"
-        mv ~/"$filename" ~/"$filename.bak"
+    # Construct the download URL for the .deb file (amd64)
+    deb_url="https://github.com/dandavison/delta/releases/download/${latest_version}/git-delta_${latest_version}_amd64.deb"
+
+    # Download and install the latest version of delta
+    wget "$deb_url" -O git-delta_latest_amd64.deb
+    sudo dpkg -i git-delta_latest_amd64.deb
+
+    # Clean up the .deb file after installation
+    rm git-delta_latest_amd64.deb
+}
+
+setup_bat() {
+    mkdir -p ~/.local/bin
+
+    # Remove existing symlink for bat if present
+    if [ -L ~/.local/bin/bat ]; then
+        rm ~/.local/bin/bat
+        echo "Removed existing symlink for bat."
     fi
 
-    # Create the symlink with the full path
-    echo "Creating symlink: ln -s $file ~/$filename"
-    ln -s "$file" ~/"$filename"
-    echo "Created symlink for $filename -> $file"
-done
+    # Create symlink for bat to ~/.local/bin
+    ln -s /usr/bin/batcat ~/.local/bin/bat
+    echo "Created symlink for bat."
+}
 
-# Disable dotglob to revert back to the default behavior
-shopt -u dotglob
+setup_tmux() {
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+}
 
-source ~/.bashrc
+setup_tldr() {
+    tldr --update
+}
 
-# ---- Setup keychain ----
-
-# --- eza ---
-sudo mkdir -p /etc/apt/keyrings
-wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-
-
-# ---- Install tools ----
-sudo apt update
-sudo apt install -y nala
-sudo nala install -y tmux fzf bat tldr thefuck eza xclip
-
-# --- Delta (git diff) ---
-
-# -- Fetch the latest release tag from GitHub --
-latest_version=$(curl -s https://api.github.com/repos/dandavison/delta/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-
-# -- Normalize the format to remove 'v' prefix if present --
-latest_version=${latest_version#v}
-
-# -- Get the currently installed version, removing any unwanted output formatting --
-installed_version=$(delta --version 2>/dev/null | awk '{print $2}')
-
-# -- Check if the latest version is already installed --
-if [ "$installed_version" == "$latest_version" ]; then
-    echo "Delta is already up to date (version $installed_version)."
-    exit 0
-fi
-
-# -- Construct the download URL for the .deb file (assuming amd64) --
-deb_url="https://github.com/dandavison/delta/releases/download/${latest_version}/git-delta_${latest_version}_amd64.deb"
-
-# -- Download the .deb file --
-wget "$deb_url" -O git-delta_latest_amd64.deb
-
-# -- Install the .deb file --
-sudo dpkg -i git-delta_latest_amd64.deb
-
-# -- Clean up the .deb file after installation --
-rm git-delta_latest_amd64.deb
-
-# ---- Program specific setup ----
-
-# --- bat ---
-
-# -- Create the ~/.local/bin directory if it doesn't already exist --
-mkdir -p ~/.local/bin
-
-# -- Remove the existing symlink (if any) before creating a new one --
-if [ -L ~/.local/bin/bat ]; then
-    rm ~/.local/bin/bat
-    echo "Removed existing symlink for bat."
-fi
-
-# -- Create a symlink for bat to ~/.local/bin pointing to /usr/bin/batcat --
-ln -s /usr/bin/batcat ~/.local/bin/bat
-echo "Created symlink for bat."
-
-# --- tmux ---
-
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# --- tldr ---
-
-# -- Update tldr cache --
-tldr --update
+# ---- Main Execution ----
+# Call functions
+check_dotfiles_dir
+create_symlinks
+setup_eza_repository
+install_tools
+install_delta
+setup_bat
+setup_tmux
+setup_tldr
 
 echo "Install completed. Don't forget to install a nerd-font for icon support!"
