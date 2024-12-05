@@ -188,6 +188,8 @@ alias .....='cd ../../../..'
 
 alias nala="sudo nala"
 
+alias reboot="systemctl reboot"
+
 # Extracts any archive(s) (if unp isn't installed)
 extract() {
 	for archive in "$@"; do
