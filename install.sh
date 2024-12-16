@@ -11,53 +11,68 @@ check_dotfiles_dir() {
     fi
 }
 
-# Function to create symlinks for dotfiles
+# Function to create symlinks for dotfiles, recreating directory structures if needed
 create_symlinks() {
     # Enable dotglob to include hidden files (files starting with a dot)
     shopt -s dotglob
 
     echo "Found dotfiles directory: $dotfiles_dir"
 
-    # Iterate over all files in the dotfiles directory, including hidden files
-    for file in "$dotfiles_dir"/*; do
-        filename=$(basename "$file")  # Extract the filename from the full path
-
-        echo "Processing file: $filename"
-
-        # Skip install.sh and .git files
-        if [ "$filename" == "install.sh" ]; then
-            echo "Skipping install.sh"
+    # Iterate over all files and directories in the dotfiles directory, including hidden files
+    # We use find to handle nested directories as well
+    find "$dotfiles_dir" -type f | while read -r item; do
+        # Skip any files within the .git directory
+        if [[ "$item" =~ /.git/ ]]; then
+            echo "Skipping Git directory file: $item"
             continue
         fi
-        if [ "$filename" == ".git" ]; then
-            echo "Skipping .git"
+
+        # Preserve relative path for nested structures
+        relative_path="${item#$dotfiles_dir/}"
+        target="$HOME/$relative_path"
+
+        echo "Processing: $relative_path"
+
+        # Skip specific items (install.sh, .git, etc.)
+        if [ "$relative_path" == "install.sh" ] || [ "$relative_path" == ".git" ]; then
+            echo "Skipping $relative_path"
             continue
         fi
 
         # Remove existing symlink if present
-        if [ -L ~/"$filename" ]; then
-            echo "Removing existing symlink: ~/$filename"
-            rm ~/"$filename"
+        if [ -L "$target" ]; then
+            echo "Removing existing symlink: $target"
+            rm "$target"
         fi
 
         # Backup existing file if not already backed up
-        if [ -e ~/"$filename" ] && [ ! -e ~/"$filename.bak" ]; then
-            echo "Backing up existing file: ~/$filename to ~/$filename.bak"
-            mv ~/"$filename" ~/"$filename.bak"
+        if [ -e "$target" ] && [ ! -e "$target.bak" ]; then
+            echo "Backing up existing file: $target to $target.bak"
+            mv "$target" "$target.bak"
         fi
 
-        # Create the symlink
-        echo "Creating symlink: ln -s $file ~/$filename"
-        ln -s "$file" ~/"$filename"
-        echo "Created symlink for $filename -> $file"
+        # Create parent directories if they do not exist
+        if [ ! -d "$(dirname "$target")" ]; then
+            echo "Creating parent directories for $target"
+            mkdir -p "$(dirname "$target")"
+        fi
+
+        # Create the symlink for the file
+        echo "Creating symlink: ln -s $item $target"
+        ln -s "$item" "$target"
+        echo "Created symlink for $relative_path -> $item"
     done
 
     # Disable dotglob to revert back to the default behavior
     shopt -u dotglob
 
     # Reload bashrc to apply changes
-    source ~/.bashrc
+    if [ -f ~/.bashrc ]; then
+        echo "Reloading .bashrc"
+        source ~/.bashrc
+    fi
 }
+
 
 # Function to setup eza repository key and add source list
 setup_eza_repository() {
