@@ -18,13 +18,17 @@ create_symlinks() {
 
     echo "Found dotfiles directory: $dotfiles_dir"
 
+    echoed_git=0
     # Iterate over all files and directories in the dotfiles directory, including hidden files
     # We use find to handle nested directories as well
     find "$dotfiles_dir" -type f | while read -r item; do
         # Skip any files within the .git directory
         if [[ "$item" =~ /.git/ ]]; then
-            echo "Skipping Git directory file: $item"
-            continue
+            if [ "$echoed_git" -eq 0 ]; then
+		echo "Skipping Git directory"
+		echoed_git=1
+	    fi
+	    continue
         fi
 
         # Preserve relative path for nested structures
