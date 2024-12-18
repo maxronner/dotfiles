@@ -217,3 +217,32 @@ bar {
 }
 
 include /etc/sway/config.d/*
+
+input "type:keyboard" {
+	xkb_layout "se,us"
+}
+
+input "type:pointer" {
+	accel_profile "flat"
+	pointer_accel 0
+}
+
+output DP-1 {
+	mode 2560x1440@143.998Hz
+}
+
+output HDMI-A-1 {
+	mode 1920x1080@75.001HZ
+	transform 270
+}
+
+exec_always swaybg --color "#262626"
+exec_always gammastep -m wayland
+
+exec swayidle -w \
+	before-sleep 'playerctl pause; swaylock' \
+	timeout 900 'swaylock -f -c "383838"' \
+	timeout 905 'swaymsg "output * power off"' \
+	resume 'swaymsg "output * power on"'
+
+exec $term -e tmux new

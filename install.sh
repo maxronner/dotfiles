@@ -105,7 +105,7 @@ setup_eza_repository() {
 install_tools() {
     sudo apt update
     sudo apt install -y nala
-    sudo nala install -y tmux fzf bat tldr thefuck eza xclip
+    sudo nala install -y tmux fzf bat tldr thefuck eza xclip sway
 }
 
 install_delta() {

@@ -128,7 +128,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # --- fzf ---
 
 # --- key bindings and fuzzy completion ---
-source /usr/share/doc/fzf/examples/key-bindings.bash
+source /usr/share/fzf/key-bindings.bash
 
 # --- theme ---
 fg="#CBE0F0"
@@ -215,3 +215,11 @@ extract() {
 	done
 }
 
+# Start sway automatically if no other X session is running and sway is installed
+if [[ -z $DISPLAY ]] && [[ $(tty) == /dev/tty1 ]]; then
+  if command -v sway >/dev/null 2>&1; then
+    exec sway --unsupported-gpu
+  else
+    echo "Sway is not installed. Please install it to use this feature."
+  fi
+fi
