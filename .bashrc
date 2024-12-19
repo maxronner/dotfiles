@@ -188,7 +188,9 @@ alias .....='cd ../../../..'
 
 alias nala="sudo nala"
 
+alias vim-help="curl cheat.sh/vim"
 alias reboot="systemctl reboot"
+alias pacman="sudo pacman"
 
 # Extracts any archive(s) (if unp isn't installed)
 extract() {

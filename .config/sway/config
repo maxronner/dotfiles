@@ -29,7 +29,7 @@ include /etc/sway/config-vars.d/*
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 #
-exec_always swaybg --color 000000 --image ~/.config/sway/default_bg.jpg --mode fit 
+exec_always swaybg --color 000000 --image ~/.config/sway/default_bg.jpg --mode fit
 exec gammastep -m wayland
 
 output DP-1 {
@@ -39,7 +39,7 @@ output DP-1 {
 }
 
 output HDMI-A-1 {
-	mode 1920x1080@75.001HZ
+	mode 1920x1080@75.001Hz
 	transform 270
 	pos 0 2200
 }
@@ -59,10 +59,10 @@ output HDMI-A-1 {
 #
 exec swayidle -w \
 	timeout 600 'swaylock -f -c 383838' \
-	timeout 605 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+	timeout 605 'swaymsg "output * dpms off"' \
+	resume 'swaymsg "output * dpms on"' \
 	timeout 900 'systemctl suspend' \
-	before-sleep 'playerctl pause; swaylock -f -c 383838' \
-	resume 'swaymsg "output * power on"'
+	before-sleep 'playerctl pause; swaylock -f -c 383838'
 
 ### Input configuration
 #
@@ -83,13 +83,19 @@ input "type:pointer" {
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+Return exec $term
+    bindsym $mod+t exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    # Start firefox
+    bindsym $mod+Shift+o exec firefox
+
+    # Start desktop cheatsheet
+    bindsym $mod+Shift+y exec ~/Documents/desktop_cheatsheet.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -223,7 +229,7 @@ bindsym $mod+r mode "resize"
     bindsym XF86AudioLowerVolume exec ~/.config/sway/set_volume.sh "-"
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
     bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
-    
+
     # Media navigation
     bindsym XF86AudioPlay exec playerctl play-pause
     bindsym XF86AudioNext exec playerctl next
@@ -259,6 +265,7 @@ include /etc/sway/config.d/*
 #
 #exec $term -e tmux new
 exec $term ~/.config/sway/tmux_autostart.sh
+exec swaymsg 'workspace 2; exec ~/.config/sway/desktop_cheatsheet.sh'
 exec firefox
 
 #client.focused "#5c120a" "#5c120a" "#ffffff" "#5c120a"
