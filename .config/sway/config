@@ -238,22 +238,25 @@ input "type:pointer" {
 #
 output DP-1 {
 	mode 2560x1440@143.998Hz
+	pos 1080 2560
+	adaptive_sync on
 }
 
 output HDMI-A-1 {
 	mode 1920x1080@75.001HZ
 	transform 270
+	pos 0 2200
 }
 
 #
 # Executes
 #
-exec_always swaybg --color "#000000" --image ~/.config/sway/default_bg.jpg --mode fit 
+exec_always swaybg --color 000000 --image ~/.config/sway/default_bg.jpg --mode fit 
 exec gammastep -m wayland
 
 exec swayidle -w \
 	before-sleep 'playerctl pause; swaylock' \
-	timeout 600 'swaylock -f -c "383838"' \
+	timeout 600 'swaylock -f -c 383838' \
 	timeout 605 'swaymsg "output * power off"' \
 	timeout 900 'systemctl suspend' \
 	resume 'swaymsg "output * power on"'
