@@ -13,7 +13,7 @@ if [ $? != 0 ];  then
 
     # Split the pane vertically
     tmux split-window -v
-    tmux send-keys -t $SESSION "cat ~/.config/sway/config" C-m
+    tmux send-keys -t $SESSION "grep bindsym ~/.config/sway/config | sed 's/^[[:space:]]*bindsym //' | column -tl 2" C-m
 
     tmux split-window -h
     tmux send-keys -t $SESSION "curl cheat.sh/tmux" C-m
