@@ -160,38 +160,6 @@ _fzf_comprun() {
   esac
 }
 
-# --- eza ---
-alias ls="eza --long --no-permissions --no-user --no-time --no-filesize --icons=always"
-alias ll="eza --long --all --icons=always"
-
-# --- thefuck ---
-eval $(thefuck --alias)
-eval $(thefuck --alias fk)
-
-# --- xclip ---
-alias 2cb="xclip -selection clipboard"
-
-# -- misc aliases ---
-alias update-all="sudo apt update -y ; sudo apt dist-upgrade -y ; sudo apt autoremove -y ; sudo apt autoclean -y ; flatpak update -y"
-alias update-all="sudo nala upgrade -y ; sudo nala autoremove -y ; flatpak update -y"
-
-# Search command line history
-alias h="history | grep "
-
-# cd into the old directory
-alias bd='cd "$OLDPWD"'
-
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
-alias nala="sudo nala"
-
-alias vim-help="curl cheat.sh/vim"
-alias reboot="systemctl reboot"
-alias pacman="sudo pacman"
-
 # Extracts any archive(s) (if unp isn't installed)
 extract() {
 	for archive in "$@"; do
