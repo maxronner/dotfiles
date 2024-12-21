@@ -1,7 +1,3 @@
-# Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
 # Read `man 5 sway` for a complete reference.
 
 ### Variables
@@ -96,6 +92,9 @@ input "type:pointer" {
 
     # Start desktop cheatsheet
     bindsym $mod+Shift+y exec ~/Documents/desktop_cheatsheet.sh
+
+    # Take screenshot of current window
+    bindsym $mod+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -265,7 +264,7 @@ include /etc/sway/config.d/*
 #
 #exec $term -e tmux new
 exec $term ~/.config/sway/tmux_autostart.sh
-exec swaymsg 'workspace 2; exec ~/.config/sway/desktop_cheatsheet.sh'
 exec firefox
-
+#exec swaymsg 'workspace 2 ; exec $term ~/.config/sway/desktop_cheatsheet.sh'
 #client.focused "#5c120a" "#5c120a" "#ffffff" "#5c120a"
+exec pactl load-module module-alsa-sink device=hw:0,7
