@@ -96,6 +96,7 @@ input "type:pointer" {
     # Take screenshot of current window
     bindsym $mod+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
 
+    bindsym $mod+p exec pavucontrol
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
