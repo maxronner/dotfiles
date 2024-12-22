@@ -18,7 +18,11 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $lock swaylock -f -c 383838
 include /etc/sway/config-vars.d/*
 
-set $cl_high #3689a0
+### Appearance
+#
+#
+#
+set $cl_high #3d6b89
 set $cl_indi #d9d8d8
 set $cl_back #231f20
 set $cl_fore #d9d8d8
@@ -32,6 +36,13 @@ client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
 
 font pango:Hack Nerd Font Mono 10
 
+# Add gaps in between all application windows:
+gaps inner 8
+gaps outer 3
+
+# Configure the default border:
+default_border pixel 2
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
@@ -40,9 +51,8 @@ font pango:Hack Nerd Font Mono 10
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 #
 exec gammastep -m wayland
-exec_always swaybg --output DP-1 --color 000000 --image ~/.config/sway/1.wallpaper --mode fill
-exec_always swaybg --output HDMI-A-1 --color 000000 --image ~/.config/sway/2.wallpaper --mode fill
-#client.focused "5c120a" "5c120a" "ffffff" "5c120a"
+exec_always swaybg --output DP-1 --color 000000 --image ~/.config/sway/1.wallpaper --mode fill \
+--output HDMI-A-1 --color 000000 --image ~/.config/sway/2.wallpaper --mode fill
 
 output DP-1 {
 	mode 2560x1440@143.998Hz
@@ -103,8 +113,8 @@ input "type:pointer" {
     bindsym $mod+Shift+y exec ~/Documents/desktop_cheatsheet.sh
 
     # Take screenshot of current window
-    bindsym $mod+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
-
+    bindsym $mod+Shift+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
+    bindsym $mod+Print exec swaymsg -t get_tree | jq -r '.. | select(.nodes? and any(.nodes[]; .focused == true)) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
     bindsym $mod+p exec pavucontrol
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -268,7 +278,7 @@ bindsym $mod+Shift+e mode "$mode_system"
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     position top
-    mode hide
+    #mode hide
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
@@ -287,6 +297,7 @@ include /etc/sway/config.d/*
 #
 exec $term ~/.config/sway/tmux_autostart.sh
 exec firefox
+exec swaymsg 'assign [class="discord"] workspace 2' && flatpak run com.discordapp.Discord
 
 #exec swaymsg 'workspace 2 ; exec $term ~/.config/sway/desktop_cheatsheet.sh'
 
