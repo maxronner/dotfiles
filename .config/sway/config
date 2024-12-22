@@ -15,8 +15,22 @@ set $term foot
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
-
+set $lock swaylock -f -c 383838
 include /etc/sway/config-vars.d/*
+
+set $cl_high #3689a0
+set $cl_indi #d9d8d8
+set $cl_back #231f20
+set $cl_fore #d9d8d8
+set $cl_urge #ee2e24
+
+# Colors                border   bg       text     indi     childborder
+client.focused          $cl_high $cl_high $cl_fore $cl_indi $cl_high
+client.focused_inactive $cl_back $cl_back $cl_fore $cl_back $cl_back
+client.unfocused        $cl_back $cl_back $cl_fore $cl_back $cl_back
+client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
+
+font pango:Hack Nerd Font Mono 10
 
 ### Output configuration
 #
@@ -28,6 +42,7 @@ include /etc/sway/config-vars.d/*
 exec gammastep -m wayland
 exec_always swaybg --output DP-1 --color 000000 --image ~/.config/sway/1.wallpaper --mode fill
 exec_always swaybg --output HDMI-A-1 --color 000000 --image ~/.config/sway/2.wallpaper --mode fill
+#client.focused "5c120a" "5c120a" "ffffff" "5c120a"
 
 output DP-1 {
 	mode 2560x1440@143.998Hz
@@ -43,16 +58,7 @@ output HDMI-A-1 {
 
 ### Idle configuration
 #
-# Example configuration:
 #
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
-#
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
 #
 exec swayidle -w \
 	timeout 600 'swaylock -f -c 383838' \
@@ -91,6 +97,8 @@ input "type:pointer" {
     # Start firefox
     bindsym $mod+Shift+o exec firefox
 
+    bindsym $mod+Shift+w exec $lock
+
     # Start desktop cheatsheet
     bindsym $mod+Shift+y exec ~/Documents/desktop_cheatsheet.sh
 
@@ -108,8 +116,6 @@ input "type:pointer" {
     # Reload the configuration file
     bindsym $mod+Shift+c reload
 
-    # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 #
 # Moving around:
 #
@@ -222,6 +228,21 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
+
+set $mode_system System: (l) lock, (e) logout, (s) suspend, (r) reboot, (S) shutdown, (R) UEFI
+mode "$mode_system" {
+    bindsym l exec $lock, mode "default"
+    bindsym e exit
+    bindsym s exec --no-startup-id systemctl suspend, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
+    bindsym Shift+r exec --no-startup-id systemctl reboot --firmware-setup, mode "default"
+
+    # return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Shift+e mode "$mode_system"
 #
 # Media:
 #
@@ -247,11 +268,11 @@ bindsym $mod+r mode "resize"
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     position top
+    mode hide
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
     status_command while date +'%Y-%m-%d %H:%M:%S'; do sleep 1; done
-
     colors {
         statusline #ffffff
         background #323232
@@ -264,9 +285,10 @@ include /etc/sway/config.d/*
 #
 # Autostart programs:
 #
-#exec $term -e tmux new
 exec $term ~/.config/sway/tmux_autostart.sh
 exec firefox
+
 #exec swaymsg 'workspace 2 ; exec $term ~/.config/sway/desktop_cheatsheet.sh'
-#client.focused "#5c120a" "#5c120a" "#ffffff" "#5c120a"
+
+# DP monitor not showing up without this
 exec pactl load-module module-alsa-sink device=hw:0,7
