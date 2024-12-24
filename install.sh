@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the source directory for dotfiles
-dotfiles_dir=$(realpath "$(dirname "$0")")
+dotfiles_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Function to ensure dotfiles directory exists
 check_dotfiles_dir() {
@@ -21,16 +21,7 @@ create_symlinks() {
     echoed_git=0
     # Iterate over all files and directories in the dotfiles directory, including hidden files
     # We use find to handle nested directories as well
-    find "$dotfiles_dir" -type f | while read -r item; do
-        # Skip any files within the .git directory
-        if [[ "$item" =~ /.git/ ]]; then
-            if [ "$echoed_git" -eq 0 ]; then
-		echo "Skipping Git directory"
-		echoed_git=1
-	    fi
-	    continue
-        fi
-
+    find "$dotfiles_dir" -type f -not -path '*/.git/*' | while read -r item; do
         # Preserve relative path for nested structures
         relative_path="${item#$dotfiles_dir/}"
         target="$HOME/$relative_path"
@@ -41,12 +32,6 @@ create_symlinks() {
         if [ "$relative_path" == "install.sh" ] || [ "$relative_path" == ".git" ]; then
             echo "Skipping $relative_path"
             continue
-        fi
-
-        # Remove existing symlink if present
-        if [ -L "$target" ]; then
-            echo "Removing existing symlink: $target"
-            rm "$target"
         fi
 
         # Backup existing file if not already backed up
@@ -63,7 +48,7 @@ create_symlinks() {
 
         # Create the symlink for the file
         echo "Creating symlink: ln -s $item $target"
-        ln -s "$item" "$target"
+        ln -sf "$item" "$target"
         echo "Created symlink for $relative_path -> $item"
     done
 
