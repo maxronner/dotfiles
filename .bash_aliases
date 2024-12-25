@@ -34,3 +34,7 @@ alias reboot="systemctl reboot"
 # --- PulseAudio
 alias pa-dp="pactl set-default-sink alsa_output.hw_1_7"
 alias pa-hp="pactl set-default-sink alsa_output.pci-0000_0d_00.4.analog-stereo"
+
+alias gs="git status"
+alias gc="git commit"
+alias gd="git diff"

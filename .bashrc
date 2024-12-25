@@ -102,9 +102,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -124,64 +121,9 @@ if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 # --- Bat ---
 export PATH="$HOME/.local/bin:$PATH"
 
+# --- tmux ---
+export PATH="$HOME/.local/bin/scripts/:$PATH"
 
 # --- fzf ---
-
-# --- key bindings and fuzzy completion ---
-source /usr/share/fzf/key-bindings.bash
-
-# --- theme ---
-fg="#CBE0F0"
-bg="#011628"
-bg_highlight="#143652"
-purple="#B388FF"
-blue="#06BCE4"
-cyan="#2CF9ED"
-
-export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
-
-show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
-
-export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
-
-# Advanced customization of fzf options via _fzf_comprun function
-# - The first argument to the function is the name of the command.
-# - You should make sure to pass the rest of the arguments to fzf.
-_fzf_comprun() {
-  local command=$1
-  shift
-
-  case "$command" in
-    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
-    export|unset) fzf --preview "eval 'echo \${}'"         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                   "$@" ;;
-    *)            fzf --preview "$show_file_or_dir_preview" "$@" ;;
-  esac
-}
-
-# Extracts any archive(s) (if unp isn't installed)
-extract() {
-	for archive in "$@"; do
-		if [ -f "$archive" ]; then
-			case $archive in
-			*.tar.bz2) tar xvjf $archive ;;
-			*.tar.gz) tar xvzf $archive ;;
-			*.bz2) bunzip2 $archive ;;
-			*.rar) rar x $archive ;;
-			*.gz) gunzip $archive ;;
-			*.tar) tar xvf $archive ;;
-			*.tbz2) tar xvjf $archive ;;
-			*.tgz) tar xvzf $archive ;;
-			*.zip) unzip $archive ;;
-			*.Z) uncompress $archive ;;
-			*.7z) 7z x $archive ;;
-            *.tar.xz) tar xvJf "$archive" ;;
-			*) echo "don't know how to extract '$archive'..." ;;
-			esac
-		else
-			echo "'$archive' is not a valid file!"
-		fi
-	done
-}
+source ~/.config/fzf/config
 
