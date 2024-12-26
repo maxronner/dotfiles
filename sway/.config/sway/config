@@ -110,7 +110,7 @@ input "type:pointer" {
     bindsym $mod+Shift+w exec $lock
 
     # Start desktop cheatsheet
-    bindsym $mod+Shift+y exec ~/Documents/desktop_cheatsheet.sh
+    bindsym $mod+Shift+y exec steam
 
     # Take screenshot of current window
     bindsym $mod+Shift+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
