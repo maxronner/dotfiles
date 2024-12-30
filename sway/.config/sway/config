@@ -297,7 +297,6 @@ include /etc/sway/config.d/*
 #
 exec $term ~/.config/sway/tmux_autostart.sh
 exec firefox
-exec swaymsg 'assign [class="discord"] workspace 2' && flatpak run com.discordapp.Discord
 
 #exec swaymsg 'workspace 2 ; exec $term ~/.config/sway/desktop_cheatsheet.sh'
 

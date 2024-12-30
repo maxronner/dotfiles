@@ -29,7 +29,7 @@ fe() {
     IFS=$'\n' files=($(fzf-tmux --query="$1" --multi --select-1 --exit-0))
     [[ -n "$files" ]] && ${EDITOR:-nvim} "${files[@]}"
 }
-bind '"\C-t": "fe\n"'
+#bind '"\C-t": "fe\n"'
 
 # Find emoji
 femo() {

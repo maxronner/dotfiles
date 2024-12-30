@@ -123,6 +123,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # --- tmux ---
 export PATH="$HOME/.local/bin/scripts/:$PATH"
+bind '"\C-f": "tmux-sessionizer\n"'
 
 # --- fzf ---
 source ~/.config/fzf/config
