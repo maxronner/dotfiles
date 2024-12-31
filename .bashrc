@@ -117,12 +117,7 @@ if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 # Show auto-completion list automatically, without double tab
 if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
-
-# --- Bat ---
-export PATH="$HOME/.local/bin:$PATH"
-
 # --- tmux ---
-export PATH="$HOME/.local/bin/scripts/:$PATH"
 bind '"\C-f": "tmux-sessionizer\n"'
 
 # --- fzf ---
