@@ -1,5 +1,5 @@
 [core]
-	sshCommand = ssh -i ~/.ssh/id_rsa -F /dev/null
+	sshCommand = ssh -i ~/.ssh/id_ed25519 -F /dev/null
 
 [user]
 	email = max@ronner.dev
