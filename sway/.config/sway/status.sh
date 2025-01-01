@@ -14,11 +14,32 @@ linux_version=$(uname -r | cut -d '-' -f1)
 
 # Returns the battery status: "Full", "Discharging", or "Charging".
 battery_status=$(cat /sys/class/power_supply/BAT0/status)
-
 battery_level=$(cat /sys/class/power_supply/BAT0/capacity)
+
+ram_usage=$(free -h | awk 'NR==2' | awk '{print $3}')
+
+if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
+    up=$"🌐"
+else
+    up=$"🚫"
+fi
+
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '/Volume:/ {print $5}' | tr -d '%')
+muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+
+# Determine the speaker icon based on the volume level
+if [ "$volume" -eq 0 ] || [ "$muted" == "yes" ] ; then
+    audio="🔇"  # Muted
+elif [ "$volume" -le 33 ]; then
+    audio="🔈"  # Low volume
+elif [ "$volume" -le 66 ]; then
+    audio="🔉"  # Medium volume
+else
+    audio="🔊"  # High volume
+fi
+audio="$audio $volume%"
 
 # Emojis and characters for the status bar
 # 💎 💻 💡 🔌 ⚡ 📁 \|
-echo $uptime_formatted \| 🐧 $linux_version \| 🔋 $battery_status ${battery_level}% \| $date_formatted
-
+echo $up \| $uptime_formatted \| 🐧 $linux_version \| $ram_usage \| $audio \| 🔋 $battery_status ${battery_level}% \| $date_formatted
 
