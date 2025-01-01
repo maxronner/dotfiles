@@ -34,7 +34,7 @@ fe() {
 # Find emoji
 femo() {
     emojis=$(cat ~/.local/share/emoji.txt)
-    selected_emoji=$(echo "$emojis" | fzf )
+    selected_emoji=$(echo "$emojis" | fzf | awk '{print $1}' )
     echo $selected_emoji
 }
 

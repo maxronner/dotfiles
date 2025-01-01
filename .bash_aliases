@@ -1,7 +1,7 @@
 # --- eza ---
 if command -v eza &>/dev/null; then
     alias ls="eza --long --no-permissions --no-user --no-time --no-filesize --icons=always"
-    alias ll="eza --long --all --icons=always"
+    alias ll="eza --long --all --git --group --icons=always"
 fi
 
 # --- thefuck ---
