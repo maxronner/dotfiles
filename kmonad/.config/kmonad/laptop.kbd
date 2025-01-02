@@ -1,6 +1,6 @@
 (defcfg
   input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
-  output (uinput-sink "My KMonad output")
+  output (uinput-sink "KMonad qwerty")
   fallthrough true
 )
 
@@ -9,26 +9,57 @@
   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
   caps a    s    d    f    g    h    j    k    l    ;    '    ret
-  lsft z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           spc            ralt rmet cmp  rctl
+  lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt  rctl
 )
 
 (defalias
-    atn (tap-hold 200 a lmet)
-    stn (tap-hold 200 s lalt)
-    dtn (tap-hold 200 d lsft)
-    ftn (tap-hold 200 f lctl)
-    jtn (tap-hold 200 j rctl)
-    ktn (tap-hold 200 k rsft)
-    ltn (tap-hold 200 l ralt)
-    ;tn (tap-hold 200 ; rmet)
+    qatn (tap-hold 200 a lmet)
+    qstn (tap-hold 200 s lalt)
+    qdtn (tap-hold 200 d lsft)
+    qftn (tap-hold 200 f lctl)
+    qjtn (tap-hold 200 j rctl)
+    qktn (tap-hold 200 k rsft)
+    qltn (tap-hold 200 l ralt)
+    q;tn (tap-hold 200 ; rmet)
+    syms (layer-toggle symbols)
+    clmk (layer-switch colemakdh)
+    qwrt (layer-switch qwerty)
 )
 
 (deflayer qwerty
   caps f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab  q    w    e    r    t    y    u    i    o    p    [  ]    \
-  esc  @atn @stn @dtn @ftn g    h    @jtn @ktn @ltn @;tn  '    ret
-  lsft z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           spc            ralt rmet cmp  rctl
+  esc  @qatn @qstn @qdtn @qftn g    h    @qjtn @qktn @qltn @q;tn  '    ret
+  lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            @syms @clmk
+)
+
+(defalias
+    crtn (tap-hold 200 r lalt)
+    cstn (tap-hold 200 s lsft)
+    cttn (tap-hold 200 t lctl)
+    cntn (tap-hold 200 n rctl)
+    cetn (tap-hold 200 e rsft)
+    citn (tap-hold 200 i ralt)
+    cotn (tap-hold 200 o rmet)
+)
+
+(deflayer colemakdh
+  caps f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    f    p    b    j    l    u    y    ;    [  ]    \
+  esc  @qatn @crtn @cstn @cttn  g    m    @cntn @cetn @citn @cotn  '    ret
+  lsft z    x    c    d    v    .    k    h    ,    .    /    rsft
+  lctl lmet lalt           spc            @syms @qwrt
+)
+
+(deflayer symbols
+  _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _ _ _ _ _ _ _ _
+  _ _ _ _ _ _
 )
