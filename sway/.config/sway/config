@@ -66,13 +66,14 @@ output HDMI-A-1 {
 	transform 270
 	pos 0 2200
 }
+workspace 10 output HDMI-A-1
 
 ### Idle configuration
 #
 #
 #
 exec swayidle -w \
-	timeout 600 'swaylock -f -c 383838' \
+	timeout 600 '$lock' \
 	timeout 605 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
 	timeout 900 'systemctl suspend' \
@@ -112,18 +113,13 @@ input "type:touchpad" {
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    # Start firefox
-    bindsym $mod+Shift+o exec firefox
-
+    bindsym $mod+Shift+f exec firefox
+    bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
 
-    # Start desktop cheatsheet
-    bindsym $mod+Shift+y exec steam
-
-    # Take screenshot of current window
     bindsym $mod+Shift+Print exec swaymsg -t get_tree | jq -r '.. | select(.focused?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
     bindsym $mod+Print exec swaymsg -t get_tree | jq -r '.. | select(.nodes? and any(.nodes[]; .focused == true)) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - ~/Pictures/Screenshots/screenshot_$(date +"%Y-%m-%d_%H-%M-%S").png
-    bindsym $mod+p exec pavucontrol
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
@@ -303,10 +299,10 @@ include /etc/sway/config.d/*
 #
 # Autostart programs:
 #
-exec $term ~/.config/sway/tmux_autostart.sh
-exec firefox
+exec $term tmux
 
-#exec swaymsg 'workspace 2 ; exec $term ~/.config/sway/desktop_cheatsheet.sh'
+assign [app_id="firefox"] workspace 2
+exec firefox
 
 # DP monitor not showing up without this
 exec pactl load-module module-alsa-sink device=hw:0,7
