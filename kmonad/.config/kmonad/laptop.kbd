@@ -33,7 +33,7 @@
   tab  q    w    e    r    t    y    u    i    o    p    [  ]    \
   esc  @qatn @qstn @qdtn @qftn g    h    @qjtn @qktn @qltn @q;tn  '    ret
   lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           spc            @syms @clmk
+  lctl lmet lalt           spc            ralt @clmk
 )
 
 (defalias
@@ -52,7 +52,7 @@
   tab  q    w    f    p    b    j    l    u    y    ;    [  ]    \
   esc  @qatn @crtn @cstn @cttn  g    m    @cntn @cetn @citn @cotn  '    ret
   lsft z    x    c    d    v    .    k    h    ,    .    /    rsft
-  lctl lmet bspc           spc            @syms @qwrt
+  lctl lmet bspc           spc            ralt @qwrt
 )
 
 (deflayer symbols
