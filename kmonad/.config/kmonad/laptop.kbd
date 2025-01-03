@@ -52,7 +52,7 @@
   tab  q    w    f    p    b    j    l    u    y    ;    [  ]    \
   esc  @qatn @crtn @cstn @cttn  g    m    @cntn @cetn @citn @cotn  '    ret
   lsft z    x    c    d    v    .    k    h    ,    .    /    rsft
-  lctl lmet lalt           spc            @syms @qwrt
+  lctl lmet bspc           spc            @syms @qwrt
 )
 
 (deflayer symbols
