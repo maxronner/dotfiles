@@ -1,10 +1,7 @@
 # {{format-date now 'long'}}
 
----
-
 ## Goal of the Day
 
----
 
 ## Gratitudes
 
@@ -12,6 +9,5 @@
 2.
 3.
 
----
-
 ## Thoughts
+
