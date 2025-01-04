@@ -4,6 +4,10 @@ if command -v eza &>/dev/null; then
     alias ll="eza --long --all --git --group --icons=always"
 fi
 
+if command -v nvim &>/dev/null; then
+    alias vim="nvim"
+fi
+
 # --- thefuck ---
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
