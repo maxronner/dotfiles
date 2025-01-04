@@ -16,7 +16,7 @@ set $term foot
 # on the original workspace that the command was run on.
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
-    -i $XDG_CONFIG_HOME/sway/lock.wallpaper
+    -i $HOME/.config/sway/lock.wallpaper
 include /etc/sway/config-vars.d/*
 
 ### Appearance
