@@ -122,4 +122,5 @@ bind '"\C-f": "tmux-sessionizer\n"'
 
 # --- fzf ---
 source ~/.config/fzf/config
-
+export ZK_NOTEBOOK_DIR="/home/max/Sync/Markdown"
+export XDG_CONFIG_HOME="$HOME/.config"
