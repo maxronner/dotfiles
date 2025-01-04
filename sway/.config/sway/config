@@ -15,7 +15,8 @@ set $term foot
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
-set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine
+set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
+    -i $XDG_CONFIG_HOME/sway/lock.wallpaper
 include /etc/sway/config-vars.d/*
 
 ### Appearance
@@ -77,7 +78,7 @@ exec swayidle -w \
 	timeout 605 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
 	timeout 900 'systemctl suspend' \
-	before-sleep 'playerctl pause; swaylock -f -c 383838'
+	before-sleep 'playerctl pause; $lock'
 
 ### Input configuration
 #
