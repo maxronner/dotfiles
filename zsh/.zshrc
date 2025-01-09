@@ -81,10 +81,11 @@ if [[ -n $SSH_CONNECTION ]]; then
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
-bindkey -s '^f' tmux-sessionizer
+bindkey -s '^f' 'tmux-sessionizer\r'
 source ~/.config/fzf/config
 
 export ZK_NOTEBOOK_DIR="/home/max/Sync/Markdown"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 source $ZSH_CUSTOM/aliases.zsh
+
