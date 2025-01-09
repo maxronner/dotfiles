@@ -33,7 +33,7 @@
   tab  q    w    e    r    t    y    u    i    o    p    [  ]    \
   esc  @qatn @qstn @qdtn @qftn g    h    @qjtn @qktn @qltn @q;tn  '    ret
   lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           spc            bspc @clmk
+  lctl lmet lalt           spc            ralt @clmk
 )
 
 (defalias

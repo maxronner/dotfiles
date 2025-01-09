@@ -84,6 +84,7 @@ if [[ -n $SSH_CONNECTION ]]; then
 bindkey -s '^f' 'tmux-sessionizer\r'
 source ~/.config/fzf/config
 
+export GTK_THEME=Adwaita:dark
 export ZK_NOTEBOOK_DIR="/home/max/Sync/Markdown"
 export XDG_CONFIG_HOME="$HOME/.config"
 
