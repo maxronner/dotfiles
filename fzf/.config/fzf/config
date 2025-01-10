@@ -4,6 +4,7 @@ if [[ "$SHELL" == *"bash"* ]]; then
     source /usr/share/fzf/key-bindings.bash
 elif [[ "$SHELL" == *"zsh"* ]]; then
     source /usr/share/fzf/key-bindings.zsh
+    source /usr/share/fzf/completion.zsh
 fi
 
 export FZF_DEFAULT_OPTS="
@@ -43,6 +44,7 @@ femo() {
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
 _fzf_comprun() {
+  echo "Command: $command" >&2  # Debug output
   local command=$1
   shift
 
