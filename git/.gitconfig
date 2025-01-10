@@ -30,5 +30,6 @@
 
 [pull]
     rebase = true
+
 [advice]
     addEmptyPathspec = false
