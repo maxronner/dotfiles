@@ -66,27 +66,22 @@ HIST_STAMPS="mm/dd/yyyy"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 source $ZSH/oh-my-zsh.sh
-eval "$(starship init zsh)"
 
 # User configuration
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
-
-if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
- else
-   export EDITOR='nvim'
- fi
+if [ -f ~/personal/.env/env ]; then
+    source ~/personal/.env/env
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
+if [ -f ~/personal/.env/aliases ]; then
+    source ~/personal/.env/aliases
+fi
+
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+
 bindkey -s '^f' 'tmux-sessionizer\r'
-source ~/.config/fzf/config
-
-export GTK_THEME=Adwaita:dark
-export ZK_NOTEBOOK_DIR="/home/max/Sync/Markdown"
-export XDG_CONFIG_HOME="$HOME/.config"
-
-source $ZSH_CUSTOM/aliases.zsh
-

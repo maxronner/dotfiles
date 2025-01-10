@@ -1,3 +1,14 @@
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
 if command -v eza &>/dev/null; then
     alias tree="eza --tree --level=3"
     alias ll="eza --long --all --git --group --icons=always"
@@ -12,23 +23,16 @@ fi
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
 
-alias 2cb="xclip -selection clipboard"
-
-# -- Debian specific ---
-alias update-all="sudo apt update -y ; sudo apt dist-upgrade -y ; sudo apt autoremove -y ; sudo apt autoclean -y ; flatpak update -y"
-alias update-all="sudo nala upgrade -y ; sudo nala autoremove -y ; flatpak update -y"
-alias nala="sudo nala"
-
+# --- system ---
 alias h="history | grep "
 alias bd='cd "$OLDPWD"'
+alias reboot="systemctl reboot"
 
-# cd backwards
+# --- cd backwards ---
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
-
-alias reboot="systemctl reboot"
 
 # --- Git ---
 alias gs="git status"
