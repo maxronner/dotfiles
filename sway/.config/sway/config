@@ -50,7 +50,7 @@ default_border pixel 2
 #
 exec gammastep -m wayland
 exec_always swaybg --output DP-1 --color 000000 --image ~/.config/sway/1.wallpaper --mode fill \
---output HDMI-A-1 --color 000000 --image ~/.config/sway/2.wallpaper --mode fill \
+--output HDMI-A-1 --color 000000 \
 --output eDP-1 --color 000000 --image ~/.config/sway/laptop.wallpaper --mode fill
 
 output DP-1 {
@@ -111,7 +111,8 @@ input "type:touchpad" {
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    bindsym $mod+Shift+f exec firefox
+    bindsym $mod+u exec firefox
+    bindsym $mod+m exec flatpak run so.libdb.dissent
     bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
 
