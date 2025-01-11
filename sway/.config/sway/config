@@ -17,6 +17,7 @@ set $term foot
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
     -i $HOME/.config/sway/lock.wallpaper
+set $browser zen-browser
 include /etc/sway/config-vars.d/*
 
 ### Appearance
@@ -111,7 +112,7 @@ input "type:touchpad" {
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    bindsym $mod+u exec firefox
+    bindsym $mod+u exec $browser
     bindsym $mod+m exec flatpak run so.libdb.dissent
     bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
@@ -301,8 +302,8 @@ include /etc/sway/config.d/*
 #
 exec $term tmux
 
-assign [app_id="firefox"] workspace 2
-exec firefox
+assign [app_id="zen"] workspace 2
+exec $browser
 
 # DP monitor not showing up without this
 exec pactl load-module module-alsa-sink device=hw:0,7
