@@ -14,7 +14,10 @@ set $term foot
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+#set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $font "pango:Hack Nerd Font Mono"
+set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "#817ca3" --tb "#232136" --fb "#2a283e" \
+    --nb "#44415a" --ab "#44415a" --hb "#56526e"
 set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
     -i $HOME/.config/sway/lock.wallpaper
 set $browser zen-browser
@@ -37,8 +40,7 @@ include /etc/sway/config-vars.d/*
 #client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
 
 include $HOME/.local/share/themes/rose-pine/sway/rose-pine
-font pango:Hack Nerd Font Mono 10
-
+font $font 10
 # Configure the default border:
 default_border pixel 2
 
