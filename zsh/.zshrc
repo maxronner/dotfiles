@@ -82,6 +82,6 @@ if [ -f ~/personal/.env/aliases ]; then
 fi
 
 eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
+eval "$(zoxide init --cmd cd zsh)"
 
 bindkey -s '^f' 'tmux-sessionizer\r'
