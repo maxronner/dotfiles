@@ -315,3 +315,4 @@ include /etc/sway/config.d/*
 #
 exec $term
 exec $browser
+exec_always autotiling
