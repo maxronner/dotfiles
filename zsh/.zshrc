@@ -70,15 +70,15 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 export MANPATH="/usr/local/man:$MANPATH"
 export LANG=en_US.UTF-8
-if [ -f ~/personal/.env/env ]; then
-    source ~/personal/.env/env
+if [ -f ~/.config/shell-env/exports.sh ]; then
+    source ~/.config/shell-env/exports.sh
 fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
-if [ -f ~/personal/.env/aliases ]; then
-    source ~/personal/.env/aliases
+if [ -f ~/.config/shell-env/aliases.sh ]; then
+    source ~/.config/shell-env/aliases.sh
 fi
 
 eval "$(starship init zsh)"
