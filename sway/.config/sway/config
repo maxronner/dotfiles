@@ -50,7 +50,10 @@ default_border pixel 2
 
 for_window [app_id="org.pulseaudio.pavucontrol"] floating enable
 for_window [class="Godot"] floating enable
+assign [class="steam"] workspace 4
 assign [app_id="zen"] workspace 2
+assign [app_id="vesktop"] workspace 3
+assign [class="Spotify"] workspace 3
 
 ### Output configuration
 #
