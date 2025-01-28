@@ -91,7 +91,7 @@ create_user:
 		echo "User $(USERNAME) created."; \
 	fi
 	@echo "Setting up sudo"
-	@if [ -z grep /etc/sudoers "%sudo ALL=(ALL:ALL) ALL" ]; then \
+	@if ! grep "%sudo ALL=(ALL:ALL) ALL" /etc/sudoers; then \
 	    echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers; \
 	fi
 
@@ -134,6 +134,7 @@ install_aur:
 		[ -d /tmp/yay ] && rm -rf /tmp/yay; \
 		su - $(USERNAME) -c "git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -s --noconfirm"; \
 		pacman -U --noconfirm --needed $(find /tmp/yay -name "*.pkg.tar.zst" | head -n 1); \
+		rm -rf /tmp/yay; \
 	fi
 	@echo "Downloading AUR packages..."
 	su - $(USERNAME) -c "$(AUR_HELPER) $(AUR_PKGS)"
