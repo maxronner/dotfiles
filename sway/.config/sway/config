@@ -77,9 +77,6 @@ output HDMI-A-1 {
 }
 workspace 10 output HDMI-A-1
 
-# DP monitor not showing up without this
-exec pactl load-module module-alsa-sink device=hw:0,7
-
 ### Idle configuration
 #
 #
