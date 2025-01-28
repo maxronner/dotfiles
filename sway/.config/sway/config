@@ -60,22 +60,8 @@ assign [app_id="zen"] workspace 2
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 #
 exec gammastep -m wayland
-exec_always swaybg --output DP-1 --color 000000 --image ~/.config/sway/1.wallpaper --mode fill \
---output HDMI-A-1 --color 000000 \
---output eDP-1 --color 000000 --image ~/.config/sway/laptop.wallpaper --mode fill
 
-output DP-1 {
-	mode 2560x1440@143.998Hz
-	pos 1080 2560
-	adaptive_sync on
-}
-
-output HDMI-A-1 {
-	mode 1920x1080@75.001Hz
-	transform 270
-	pos 0 2200
-}
-workspace 10 output HDMI-A-1
+include $HOME/.config/sway/device.config
 
 ### Idle configuration
 #
