@@ -75,10 +75,19 @@ AUR_PKGS := \
 	rose-pine-cursor \
 	zen-browser-bin
 
+DEPS := \
+	install_cli \
+	install_desktop \
+	create_user \
+	install_aur \
+	install_optional \
+	stow_dotfiles \
+	clean
+
 .PHONY: all install_cli install_desktop install_aur stow_dotfiles create_user clean
 
 # Default target
-all: install_cli install_desktop create_user install_aur stow_dotfiles clean
+all: $(DEPS)
 	@echo "All packages installed and dotfiles symlinked successfully!"
 
 create_user:
@@ -91,7 +100,7 @@ create_user:
 		echo "User $(USERNAME) created."; \
 	fi
 	@echo "Setting up sudo"
-	@if ! grep "%sudo ALL=(ALL:ALL) ALL" /etc/sudoers; then \
+	@if ! grep "%sudo ALL=(ALL:ALL) ALL" /etc/sudoers > /dev/null 2>&1; then \
 	    echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers; \
 	fi
 
@@ -138,6 +147,20 @@ install_aur:
 	fi
 	@echo "Downloading AUR packages..."
 	su - $(USERNAME) -c "$(AUR_HELPER) $(AUR_PKGS)"
+
+install_optional:
+ifeq ($(strip $(env)),)
+	@echo "env is not set, nothing to do."
+else
+	stow -d $(HOME)/dotfiles -t $(HOME) --no-folding $(env)
+endif
+ifeq ($(env), workstation)
+	@echo "Building Tabby for workstation..."
+	# TODO: build tabby
+endif
+ifeq ($(env), laptop)
+	@echo "Nothing to do for laptop."
+endif
 
 stow_dotfiles:
 	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
