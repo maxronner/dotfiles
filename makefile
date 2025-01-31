@@ -152,7 +152,7 @@ install_optional:
 ifeq ($(strip $(env)),)
 	@echo "env is not set, nothing to do."
 else
-	stow -d $(HOME)/dotfiles/devices -t $(HOME) --no-folding $(env)
+	su - $(USERNAME) -c "stow -d $(HOME)/dotfiles/devices -t $(HOME) --no-folding $(env)"
 endif
 ifeq ($(env), workstation)
 	@echo "Building Tabby for workstation..."
@@ -166,7 +166,7 @@ stow_dotfiles:
 	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
 	@for dir in $(STOW_DIR)/*; do \
 		if [ -d $$dir ]; then \
-			stow -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
+			su - $(USERNAME) -c "stow -d $(STOW_DIR) -t $(HOME) $$(basename $$dir)"; \
 		fi \
 	done
 
