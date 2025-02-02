@@ -8,8 +8,8 @@ walk=$(curl -s \
   https://home.ronner.dev/api/states/sensor.walking_dog \ |
 jq '. | .state' | \
 sed 's/"//g')
-if [[ $? -eq 0 ]]; then
-    output="🐶 $walk"
+if [[ -n $walk ]]; then
+    output="🐶 $walk |"
 fi
 
 if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
@@ -17,7 +17,7 @@ if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
 else
     up=$"🚫"
 fi
-output="$output | $up"
+output="$output $up"
 
 # Produces "21 days", for example
 uptime_formatted=$(uptime | cut -d ',' -f1  | cut -d ' ' -f4,5)
