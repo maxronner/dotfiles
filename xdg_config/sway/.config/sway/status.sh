@@ -59,7 +59,7 @@ fi
 # The abbreviated weekday (e.g., "Sat"), followed by the ISO-formatted date
 # like 2018-10-06 and the time (e.g., 14:01)
 date_formatted=$(date "+%a %F %H:%M")
-output="$output | 🕑 $date_formatted"
+output="$output | $date_formatted"
 
 # Emojis and characters for the status bar
 # 💎 💻 💡 🔌 ⚡ 📁 \|
