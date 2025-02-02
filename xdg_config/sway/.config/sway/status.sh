@@ -2,12 +2,14 @@
 # You should see changes to the status bar after saving this script.
 # If not, do "killall swaybar" and $mod+Shift+c to reload the configuration.
 
-walk=$(curl -s \
-  -H "Authorization: Bearer $HA_TOKEN" \
-  -H "Content-Type: application/json" \
-  https://home.ronner.dev/api/states/sensor.walking_dog \ |
-jq '. | .state' | \
-sed 's/"//g')
+if [[ -n $HA_TOKEN ]]; then
+    walk=$(curl -s \
+      -H "Authorization: Bearer $HA_TOKEN" \
+      -H "Content-Type: application/json" \
+      https://home.ronner.dev/api/states/sensor.walking_dog \ |
+    jq '. | .state' | \
+    sed 's/"//g')
+fi
 if [[ -n $walk ]]; then
     output="🐶 $walk |"
 fi
