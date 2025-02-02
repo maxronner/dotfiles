@@ -2,23 +2,33 @@
 # You should see changes to the status bar after saving this script.
 # If not, do "killall swaybar" and $mod+Shift+c to reload the configuration.
 
+walk=$(curl -s \
+  -H "Authorization: Bearer $HA_TOKEN" \
+  -H "Content-Type: application/json" \
+  https://home.ronner.dev/api/states/sensor.walking_dog \ |
+jq '. | .state' | \
+sed 's/"//g')
+if [[ $? -eq 0 ]]; then
+    output="🐶 $walk"
+fi
+
 if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
     up=$"🌐 $(ip -brief address | awk 'NR==2 { print $3 }')"
 else
     up=$"🚫"
 fi
-output="$up"
+output="$output | $up"
 
 # Produces "21 days", for example
 uptime_formatted=$(uptime | cut -d ',' -f1  | cut -d ' ' -f4,5)
-output="$output | $uptime_formatted"
+output="$output | ⬆️ $uptime_formatted"
 
 # Get the Linux version but remove the "-1-ARCH" part
-linux_version="🐧 $(uname -r | cut -d '-' -f1)"
-output="$output | $linux_version"
+linux_version=$(uname -r | cut -d '-' -f1)
+output="$output | 🐧 $linux_version"
 
 ram_usage=$(free -h | awk 'NR==2' | awk '{print $3}')
-output="$output | $ram_usage"
+output="$output | 📝 $ram_usage"
 
 volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '/Volume:/ {print $5}' | tr -d '%')
 muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
@@ -36,25 +46,15 @@ output="$output | $audio $volume%"
 
 if [[ -s /sys/class/power_supply/BAT0/status ]] ; then
     # Returns the battery status: "Full", "Discharging", or "Charging".
-    battery_status="🔋 $(cat /sys/class/power_supply/BAT0/status)"
+    battery_status=$(cat /sys/class/power_supply/BAT0/status)
     battery_level="$(cat /sys/class/power_supply/BAT0/capacity)%"
-    output="$output | $battery_status $battery_level"
+    output="$output | 🔋 $battery_status $battery_level"
 fi
 
 # The abbreviated weekday (e.g., "Sat"), followed by the ISO-formatted date
 # like 2018-10-06 and the time (e.g., 14:01)
 date_formatted=$(date "+%a %F %H:%M")
-output="$output | $date_formatted"
-
-walk=$(curl -s \
-  -H "Authorization: Bearer $HA_TOKEN" \
-  -H "Content-Type: application/json" \
-  https://home.ronner.dev/api/states/sensor.walking_dog \ |
-jq '. | .state' | \
-sed 's/"//g')
-if [[ $? -eq 0 ]]; then
-    output="🐶 $walk | $output"
-fi
+output="$output | 🕑 $date_formatted"
 
 # Emojis and characters for the status bar
 # 💎 💻 💡 🔌 ⚡ 📁 \|
