@@ -3,7 +3,7 @@
 # If not, do "killall swaybar" and $mod+Shift+c to reload the configuration.
 
 if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
-    up=$"🌐"
+    up=$"🌐 $(ip -brief address | awk 'NR==2 { print $3 }')"
 else
     up=$"🚫"
 fi
@@ -52,7 +52,9 @@ walk=$(curl -s \
   https://home.ronner.dev/api/states/sensor.walking_dog \ |
 jq '. | .state' | \
 sed 's/"//g')
-output="🐶 $walk | $output"
+if [[ $? -eq 0 ]]; then
+    output="🐶 $walk | $output"
+fi
 
 # Emojis and characters for the status bar
 # 💎 💻 💡 🔌 ⚡ 📁 \|
