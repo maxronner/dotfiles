@@ -46,6 +46,14 @@ fi
 date_formatted=$(date "+%a %F %H:%M")
 output="$output | $date_formatted"
 
+walk=$(curl -s \
+  -H "Authorization: Bearer $HA_TOKEN" \
+  -H "Content-Type: application/json" \
+  https://home.ronner.dev/api/states/sensor.walking_dog \ |
+jq '. | .state' | \
+sed 's/"//g')
+output="🐶 $walk | $output"
+
 # Emojis and characters for the status bar
 # 💎 💻 💡 🔌 ⚡ 📁 \|
 echo $output
