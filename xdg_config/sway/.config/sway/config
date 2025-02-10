@@ -301,5 +301,5 @@ include /etc/sway/config.d/*
 #
 exec $term
 exec $browser
-exec_always autotiling
-exec_always battery-watcher
+exec autotiling
+exec battery-watcher
