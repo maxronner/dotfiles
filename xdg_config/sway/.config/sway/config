@@ -260,8 +260,8 @@ bindsym $mod+Shift+e mode "$mode_system"
 # Media:
 #
     # Volume
-    bindsym XF86AudioRaiseVolume exec ~/.config/sway/set_volume.sh "+"
-    bindsym XF86AudioLowerVolume exec ~/.config/sway/set_volume.sh "-"
+    bindsym XF86AudioRaiseVolume exec modify-volume "+"
+    bindsym XF86AudioLowerVolume exec modify-volume "-"
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
     bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
@@ -302,3 +302,4 @@ include /etc/sway/config.d/*
 exec $term
 exec $browser
 exec_always autotiling
+exec_always battery-watcher

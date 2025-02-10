@@ -22,8 +22,11 @@ CLI_PKGS := \
 	git \
 	git-delta \
 	go \
+	inotify-tools \
 	iwd \
 	jq \
+	libnotify \
+	mako \
 	man-db \
 	nano \
 	neomutt \

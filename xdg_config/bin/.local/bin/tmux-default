@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SESSION_NAME="initial"
+SESSION_NAME="default"
 
 # Check if tmux session already exists
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then

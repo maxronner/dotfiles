@@ -14,7 +14,7 @@ if [[ -n $walk ]]; then
     output="🐶 $walk |"
 fi
 
-if [ "$(ip -brief address | sed -n '2p' | awk '{print $2}')" == "UP" ]; then
+if [ "$(ip -brief address | awk 'NR==2 {print $2}')" == "UP" ]; then
     up=$"🌐 $(ip -brief address | awk 'NR==2 { print $3 }')"
 else
     up=$"🚫"
