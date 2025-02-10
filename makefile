@@ -26,7 +26,6 @@ CLI_PKGS := \
 	iwd \
 	jq \
 	libnotify \
-	mako \
 	man-db \
 	nano \
 	neomutt \
@@ -63,6 +62,7 @@ DESKTOP_PKGS := \
 	flatpak \
 	foot \
 	gnome-themes-extra \
+	mako \
 	pavucontrol \
 	sway \
 	swaybg \
