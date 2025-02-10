@@ -49,13 +49,16 @@ output="$output | $audio $volume%"
 if [[ -s /sys/class/power_supply/BAT0/status ]] ; then
     # Returns the battery status: "Full", "Discharging", or "Charging".
     battery_status=$(cat /sys/class/power_supply/BAT0/status)
-    battery_level="$(cat /sys/class/power_supply/BAT0/capacity)%"
+    battery_level=$(cat /sys/class/power_supply/BAT0/capacity)
     if [ $battery_status == "Charging" ] ; then
         icon="⚡"
     else
-        icon="🔋"
+        if [ $battery_level -lt 25 ] ; then
+            icon="⚠️"
+        fi
+        icon="$icon🔋"
     fi
-    output="$output | $icon $battery_status $battery_level"
+    output="$output | $icon $battery_status $battery_level%"
 fi
 
 # The abbreviated weekday (e.g., "Sat"), followed by the ISO-formatted date
