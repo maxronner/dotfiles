@@ -19,6 +19,7 @@ vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
 
 vim.keymap.set("i", "<C-c>", "<Esc>")
 vim.keymap.set("i", "{", "{ }<Left><Left>")
+vim.keymap.set("i", "(", "()<Left>")
 
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
@@ -45,7 +46,6 @@ vim.keymap.set(
     "<leader>ee",
     "oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
 )
-
 
 vim.keymap.set(
     "n",
