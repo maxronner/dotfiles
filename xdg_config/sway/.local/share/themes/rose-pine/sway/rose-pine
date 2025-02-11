@@ -15,13 +15,16 @@ set $highlightlow   #2a283e
 set $highlightmed   #44415a
 set $highlighthigh  #56526e
 
+set $hll $highlightlow
+set $hlh $highlighthigh
 set $indicator      #817ca3
 
 # Teming border and Windows --------------
 # target                 title     bg    text   indicator  border
-client.focused           $rose     $base $text  $indicator $highlighthigh
+client.focused           $hlh      $base $text  $indicator $highlighthigh
 client.focused_inactive  $text     $base $text  $subtle    $surface
-client.unfocused         $text     $base $text  $overlay   $overlay
+client.focused_tab_title $hll      $base $text
+client.unfocused         $hll      $base $text  $overlay   $overlay
 client.urgent            $text     $base $text  $love      $love
 client.placeholder       $base     $base $text  $overlay   $overlay
 client.background        $base
