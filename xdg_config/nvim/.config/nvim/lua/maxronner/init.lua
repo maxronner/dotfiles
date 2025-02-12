@@ -13,6 +13,14 @@ autocmd({ "BufWritePre" }, {
     command = [[%s/\s\+$//e]],
 })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = maxronnerGroup,
+    pattern = "*",
+    callback = function()
+        vim.lsp.buf.format({ async = false })
+    end,
+})
+
 autocmd({ "BufWritePre" }, {
     group = maxronnerGroup,
     pattern = "*.go",
