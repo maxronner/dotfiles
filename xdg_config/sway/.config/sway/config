@@ -112,7 +112,6 @@ input "type:touchpad" {
     bindsym $mod+d exec $menu
 
     bindsym $mod+u exec $browser
-    bindsym $mod+m exec flatpak run so.libdb.dissent
     bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
 
@@ -159,7 +158,7 @@ input "type:touchpad" {
     # Switch to workspace
     bindsym $mod+1 workspace number 1
     bindsym $mod+2 workspace number 2
-    bindsym $mod+3 workspace number 3
+    bindsym $mod+3 workspace number 3; layout stacking
     bindsym $mod+4 workspace number 4
     bindsym $mod+5 workspace number 5
     bindsym $mod+6 workspace number 6
@@ -303,3 +302,6 @@ exec $term
 exec $browser
 exec autotiling
 exec battery-watcher
+
+exec flatpak run dev.vencord.Vesktop
+exec flatpak run com.spotify.Client
