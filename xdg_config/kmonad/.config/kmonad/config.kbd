@@ -33,7 +33,7 @@
   tab  q    w    e    r    t    y    u    i    o    p    [  ]    \
   esc  @qatn @qstn @qdtn @qftn g    h    @qjtn @qktn @qltn @q;tn  '    ret
   lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           spc            ralt @clmk
+  lctl lmet lalt           @thspc            @syms @clmk
 )
 
 (defalias
@@ -55,11 +55,44 @@
   lctl lmet bspc           spc            ralt @qwrt
 )
 
-(deflayer symbols
-  _ _ _ _ _ _ _ _ _ _ _ _ _
-  _ _ _ _ _ _ _ _ _ _ _ _ _ _
-  _ _ _ _ _ _ _ _ _ _ _ _ _ _
-  _ _ _ _ _ _ _ _ _ _ _ _ _
-  _ _ _ _ _ _ _ _ _ _ _ _ _
-  _ _ _ _ _ _
+(defalias
+    thspc (tap-hold 200 spc @syms)
+    ft equal
+    bar RA-102d
+    lt 102d
+    gt S-102d
+    plus -
+    minus /
+    btick +
+    ldash ?
+    at RA-2
+    up S-]
+    lbr RA-8
+    rbr RA-9
+    lcbr RA-7
+    rcbr RA-0
+    lp *
+    rp \(
+    fs S-7
+    bs RA-minus
+    cln S-dot
+    equal S-0
+    dol RA-4
+    amp S-6
+    dq S-2
+    sq \
+    ast S-\
+    bt S-equal
+    qst S-minus
+    tlde RA-]
 )
+
+(deflayer symbols
+  caps f1   f2   f3   f4  f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1     @at    3     4        5    6    7    8    9    0    -    =    bspc
+  tab  @ft   @bar   @lbr  @rbr     #    @up  @lt  @gt  @at  %    [  ]    \
+  esc  @plus @minus @lcbr @rcbr    !    @qst @lp  @rp  @fs  @ast    '    ret
+  lsft @tlde @ldash @cln  @equal   @dol @amp @dq  @sq  @bs  @bt    /    rsft
+  lctl lmet  bspc           spc            ralt @qwrt
+)
+

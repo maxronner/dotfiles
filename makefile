@@ -163,6 +163,7 @@ ifeq ($(env), workstation)
 endif
 ifeq ($(env), laptop)
 	@echo "Nothing to do for laptop."
+	# TODO: install kmonad
 endif
 
 stow_dotfiles:
