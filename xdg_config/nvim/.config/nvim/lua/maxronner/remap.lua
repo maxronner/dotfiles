@@ -19,7 +19,6 @@ vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
 
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
@@ -50,3 +49,11 @@ vim.keymap.set(
   "<leader>ef",
   "oif err != nil {<CR>}<Esc>Olog.Fatalf(\"error: %s\\n\", err.Error())<Esc>jj"
 )
+
+function CopyDiagnostics()
+  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
+  local json = vim.json.encode(diagnostics)
+  vim.fn.system("echo '" .. json .. "' | jq -r 'map(.message) | join(\", \")' | wl-copy")
+end
+
+vim.keymap.set('n', '<leader>cd', ':lua CopyDiagnostics()<CR>', { noremap = true, silent = true })
