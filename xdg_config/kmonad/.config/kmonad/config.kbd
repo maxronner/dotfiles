@@ -92,7 +92,7 @@
   grv  1     @at    3     @dol     5    6    @lcbr @lbr @rbr @rcbr    -    =    bspc
   tab  @ft   @bar   @lbr  @rbr     #    @up  @lt   @gt  @at  %    [  ]    \
   esc  @plus @minus @lcbr @rcbr    !    @qst @lp   @rp  @fs  @ast    '    ret
-  lsft @tlde @ldash @cln  @equal   @dol @amp @dq   @sq  @bs  @bt    /    rsft
+  lsft 102d  @tlde @ldash @cln  @equal   @dol @amp @dq   @sq  @bs  @bt    rsft
   lctl lmet  bspc           spc            ralt @qwrt
 )
 
