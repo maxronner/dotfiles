@@ -20,7 +20,7 @@
     qftn (tap-hold 200 f lctl)
     qjtn (tap-hold 200 j rctl)
     qktn (tap-hold 200 k rsft)
-    qltn (tap-hold 200 l ralt)
+    qltn (tap-hold 200 l lalt)
     q;tn (tap-hold 200 ; rmet)
     syms (layer-toggle symbols)
     clmk (layer-switch colemakdh)

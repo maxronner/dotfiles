@@ -35,10 +35,10 @@ fe() {
 # Find emoji
 femo() {
     emojis=$(cat ~/.local/share/emoji.txt)
-    selected_emoji=$(echo "$emojis" | fzf | awk '{print $1}' )
-    echo $selected_emoji
+    selected_emoji=($(echo "$emojis" | fzf-tmux --query="$1" --multi --select-1 --exit-0 | awk '{print $1}' ))
+    wl-copy "$selected_emoji"
 }
-
+bindkey -s '\ee' '^ufemo^M'
 # Advanced customization of fzf options via _fzf_comprun function
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
