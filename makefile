@@ -5,8 +5,8 @@ USERNAME := max
 
 # Variables for directories
 TMP_DIR := /tmp/sysconfig
-HOME := /home/max
-STOW_DIR := $(HOME)/dotfiles/xdg_config
+HOME := /home/$(USERNAME)
+STOW_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/xdg_config
 
 # Pacman packages: CLI/Environment Tools
 CLI_PKGS := \
@@ -36,6 +36,7 @@ CLI_PKGS := \
 	nss-mdns \
 	openntpd \
 	openssh \
+	pass \
 	pipewire-pulse \
 	ripgrep \
 	rsync \
