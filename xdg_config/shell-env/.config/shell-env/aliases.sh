@@ -19,6 +19,10 @@ if command -v nvim &>/dev/null; then
     alias vim="nvim"
 fi
 
+if command -v pass &>/dev/null; then
+    alias pw="pass fzf"
+fi
+
 # --- thefuck ---
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
