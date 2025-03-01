@@ -310,4 +310,3 @@ exec autotiling
 exec battery-watcher
 
 exec flatpak run dev.vencord.Vesktop
-exec flatpak run com.spotify.Client
