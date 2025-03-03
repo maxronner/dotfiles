@@ -21,6 +21,7 @@ fi
 
 if command -v pass &>/dev/null; then
     alias pw="pass fzf"
+    alias otp="pass fzf-otp"
 fi
 
 # --- thefuck ---
