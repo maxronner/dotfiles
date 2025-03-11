@@ -24,6 +24,10 @@ if command -v pass &>/dev/null; then
     alias otp="pass fzf-otp"
 fi
 
+if command -v gh &>/dev/null; then
+    alias ai="gh copilot"
+fi
+
 # --- thefuck ---
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
