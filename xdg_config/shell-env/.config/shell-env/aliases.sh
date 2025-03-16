@@ -17,6 +17,7 @@ fi
 
 if command -v nvim &>/dev/null; then
     alias vim="nvim"
+    alias nano="nvim"
 fi
 
 if command -v pass &>/dev/null; then
