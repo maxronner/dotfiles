@@ -28,6 +28,10 @@ if command -v gh &>/dev/null; then
     alias ai="gh copilot"
 fi
 
+if command -v gurk &>/dev/null && command -v tmux-sessionizer &>/dev/null ; then
+    alias gurk="tmux-sessionizer gurk"
+fi
+
 # --- thefuck ---
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
