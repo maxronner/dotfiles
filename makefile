@@ -155,16 +155,16 @@ install_aur:
 install_optional:
 ifeq ($(strip $(env)),)
 	@echo "env is not set, nothing to do."
-else
-	su - $(USERNAME) -c "stow -d $(HOME)/dotfiles/devices -t $(HOME) --no-folding $(env)"
 endif
 ifeq ($(env), workstation)
-	@echo "Building Tabby for workstation..."
-	# TODO: build tabby
+	@echo "Installing workstation specific packages..."
+	@echo "Disabling USB wakeup for microphone..."
+	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 endif
 ifeq ($(env), laptop)
-	@echo "Nothing to do for laptop."
-	# TODO: install kmonad
+	@echo "Installing laptop specific packages..."
+	@echo "Installing kmonad..."
+	yay kmonad
 endif
 
 stow_dotfiles:
