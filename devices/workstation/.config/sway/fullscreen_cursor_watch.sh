@@ -74,20 +74,6 @@ get_cmdline() {
     fi
 }
 
-# Initial state check
-check_initial_state() {
-    local pids=$(pgrep -f "$CMDLINE_MATCH")
-    for pid in $pids; do
-        local cmdline=$(get_cmdline "$pid")
-        if [[ "$cmdline" == *"$CMDLINE_MATCH"* ]]; then
-            local json=$(swaymsg -t get_tree | jq -c --arg pid "$pid" 'recurse(.nodes[]?) | select(.pid == ($pid | tonumber))')
-            if [[ -n "$json" ]]; then
-                handle_event "$json"
-            fi
-        fi
-    done
-}
-
 # Main logic: evaluate JSON window event
 handle_event() {
     local json="$1"
@@ -168,16 +154,10 @@ fi
 
 log info "Starting fullscreen cursor grab monitor..."
 
-# Initial state check
-check_initial_state
-
 # Persistent subscription to survive swaymsg exit
 while true; do
-    swaymsg -t subscribe '["window"]' | while read -r line; do
-        if [[ -n "$line" ]]; then
-            handle_event "$line"
-        fi
-    done
+    swaymsg -t subscribe '["window"]'
     log normal "Subscription ended; reconnecting..."
-    sleep 1  # Add a small delay before reconnecting to avoid a tight loop
+done | while read -r line; do
+    handle_event "$line"
 done
