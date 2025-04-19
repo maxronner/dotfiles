@@ -81,6 +81,10 @@ if [ -f ~/.config/shell-env/aliases.sh ]; then
     source ~/.config/shell-env/aliases.sh
 fi
 
+if [ -f ~/.config/zsh/pomodoro.zsh ]; then
+    source ~/.config/zsh/pomodoro.zsh
+fi
+
 eval "$(gh copilot alias -- zsh)"
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"

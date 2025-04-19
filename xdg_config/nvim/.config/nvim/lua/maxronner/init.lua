@@ -7,12 +7,14 @@ local maxronnerGroup = augroup('maxronner', {})
 
 local autocmd = vim.api.nvim_create_autocmd
 
+-- Remove trailing whitespace on save
 autocmd({ "BufWritePre" }, {
   group = maxronnerGroup,
   pattern = "*",
   command = [[%s/\s\+$//e]],
 })
 
+-- Format on save
 autocmd({ "BufWritePre" }, {
   group = maxronnerGroup,
   pattern = "*",
@@ -21,6 +23,7 @@ autocmd({ "BufWritePre" }, {
   end,
 })
 
+-- Organize imports (go) on save
 autocmd({ "BufWritePre" }, {
   group = maxronnerGroup,
   pattern = "*.go",
@@ -45,6 +48,7 @@ autocmd({ "BufWritePre" }, {
   end
 })
 
+-- LSP keymaps
 autocmd('LspAttach', {
   group = maxronnerGroup,
   callback = function(e)
