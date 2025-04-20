@@ -1,6 +1,7 @@
 require("maxronner.set")
 require("maxronner.remap")
 require("maxronner.lazy_init")
+require("maxronner.snippets")
 
 local augroup = vim.api.nvim_create_augroup
 local maxronnerGroup = augroup('maxronner', {})

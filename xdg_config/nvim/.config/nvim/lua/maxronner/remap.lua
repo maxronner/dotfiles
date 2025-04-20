@@ -1,5 +1,4 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>ex", vim.cmd.Ex)
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
@@ -19,8 +18,8 @@ vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
 
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
-vim.keymap.set("i", "<C-Del>", "<C-o>dE")
-vim.keymap.set("n", "<C-Del>", "dE")
+vim.keymap.set("i", "<C-Del>", "<C-o>de")
+vim.keymap.set("n", "<C-Del>", "de")
 
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
@@ -29,7 +28,10 @@ vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
-vim.keymap.set({ "n", "v" }, "<leader>b", "<cmd>e#<CR>")
+-- Open alternate file
+vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>")
+
+vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = 'Diagnostics to quickfix' })
 
 vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
@@ -41,27 +43,16 @@ vim.keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
 end)
 
-vim.keymap.set(
-  "n",
-  "<leader>ee",
-  "oif err != nil {<CR>}<Esc>Oreturn err<Esc>"
-)
-
-vim.keymap.set(
-  "n",
-  "<leader>ef",
-  "oif err != nil {<CR>}<Esc>Olog.Fatalf(\"error: %s\\n\", err.Error())<Esc>jj"
-)
-
-function CopyDiagnostics()
+-- Copy diagnostic message to clipboard
+vim.keymap.set('n', '<leader>cd', function()
   local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
   local json = vim.json.encode(diagnostics)
   vim.fn.system("echo '" .. json .. "' | jq -r 'map(.message) | join(\", \")' | wl-copy")
 end
+, { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>cd', ':lua CopyDiagnostics()<CR>', { noremap = true, silent = true })
-
-vim.keymap.set("n", "<leader>sb", function()
+-- Swap false and true
+vim.keymap.set("n", "<leader>bb", function()
   local word = vim.fn.expand("<cword>")
   if word == "true" then
     vim.cmd("normal! ciwfalse")
