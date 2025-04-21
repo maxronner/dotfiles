@@ -29,7 +29,7 @@ vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" }
 vim.keymap.set("n", "<C-Del>", "de", { desc = "Delete word (normal mode)" })
 
 -- LSP formatting
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { desc = "Format buffer" })
+vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "Format buffer" })
 
 -- Quickfix / location list navigation
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })

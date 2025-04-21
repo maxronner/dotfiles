@@ -98,6 +98,13 @@ return {
 
     vim.diagnostic.config({
       -- update_in_insert = true,
+      virtual_text = {
+        prefix = '●', -- Or '■', '●', '>>', '⚠️', etc.
+        spacing = 2,
+      },
+      signs = true,
+      underline = true,
+      update_in_insert = false,
       float = {
         focusable = false,
         style = "minimal",
