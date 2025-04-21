@@ -1,57 +1,71 @@
 vim.g.mapleader = " "
 
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+-- Move visual selection up/down
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
-vim.keymap.set("n", "J", "mzJ`z")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+-- Cursor stays in place when joining lines / scrolling
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join line below with cursor stay" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up, center screen" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next match, center screen" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev match, center screen" })
 
-vim.keymap.set("x", "<leader>p", [["_dP]])
+-- Paste over without yanking
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over (no yank)" })
 
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
+-- System clipboard
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
-vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
+-- Delete without yanking
+vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
 
-vim.keymap.set("i", "<C-c>", "<Esc>")
+-- Escape insert mode
+vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Escape insert mode" })
 
-vim.keymap.set("i", "<C-Del>", "<C-o>de")
-vim.keymap.set("n", "<C-Del>", "de")
+-- Delete word forward
+vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
+vim.keymap.set("n", "<C-Del>", "de", { desc = "Delete word (normal mode)" })
 
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+-- LSP formatting
+vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { desc = "Format buffer" })
 
-vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+-- Quickfix / location list navigation
+vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
+vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
+vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
+vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
--- Open alternate file
-vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>")
+-- Alternate file (toggle between buffers)
+vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" })
 
-vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = 'Diagnostics to quickfix' })
+vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
-vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
-vim.keymap.set("n", "<leader>X", "<cmd>!chmod -x %<CR>", { silent = true })
+-- Search & replace word under cursor
+vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Substitute word under cursor" })
 
-vim.keymap.set("n", "<leader>fd", "<cmd> w !git diff % -<CR>")
+-- Make file executable/non-executable
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
+vim.keymap.set("n", "<leader>X", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
 
+-- Show git diff for current buffer
+vim.keymap.set("n", "<leader>df", "<cmd> w !git diff % -<CR>", { desc = "Show git diff of buffer" })
+
+-- Source current file
 vim.keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
-end)
+end, { desc = "Source current file" })
 
 -- Copy diagnostic message to clipboard
 vim.keymap.set('n', '<leader>cd', function()
   local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
   local json = vim.json.encode(diagnostics)
   vim.fn.system("echo '" .. json .. "' | jq -r 'map(.message) | join(\", \")' | wl-copy")
-end
-, { noremap = true, silent = true })
+end, { noremap = true, silent = true, desc = "Copy diagnostics to clipboard" })
 
--- Swap false and true
+-- Swap true/false
 vim.keymap.set("n", "<leader>bb", function()
   local word = vim.fn.expand("<cword>")
   if word == "true" then
@@ -59,4 +73,4 @@ vim.keymap.set("n", "<leader>bb", function()
   elseif word == "false" then
     vim.cmd("normal! ciwtrue")
   end
-end, { silent = true })
+end, { silent = true, desc = "Toggle true/false" })
