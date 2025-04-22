@@ -87,5 +87,6 @@ vim.keymap.set("n", "<leader>o", function()
   vim.cmd.term()
   vim.cmd.wincmd("J")
   vim.api.nvim_win_set_height(0, term_height)
+  vim.opt_local.laststatus = 0
   vim.cmd.startinsert()
 end, { desc = "Open terminal in bottom split (1/5 screen height)" })
