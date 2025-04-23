@@ -296,6 +296,7 @@ bar {
         background $highlightlow
         focused_workspace $highlighthigh $highlighthigh $text
         inactive_workspace $highlightlow $highlightlow #5c5c5c
+        urgent_workspace $love $love $text
     }
 }
 
