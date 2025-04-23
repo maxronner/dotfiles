@@ -2,6 +2,7 @@ return {
   "tpope/vim-fugitive",
   config = function()
     vim.keymap.set("n", "<leader>gg", vim.cmd.Git, { desc = "Fugitive: Open window" })
+    vim.keymap.set("n", "<leader>gbb", ":Git blame<CR>", { desc = "Fugitive: Blame" })
 
     local maxronner_Fugitive = vim.api.nvim_create_augroup("maxronner_Fugitive", {})
 
