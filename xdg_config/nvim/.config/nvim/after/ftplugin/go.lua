@@ -1,5 +1,5 @@
 -- Organize imports (go) on save
-vim.nvim_create_autocmd({ "BufWritePre" }, {
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   pattern = "*.go",
   callback = function()
     local params = vim.lsp.util.make_range_params()
@@ -21,4 +21,3 @@ vim.nvim_create_autocmd({ "BufWritePre" }, {
     vim.lsp.buf.format({ async = false })
   end
 })
-
