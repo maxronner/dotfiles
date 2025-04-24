@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec &>/dev/null
+
+#–– Configuration & discovery
+SESSION="$(tmux display-message -p '#S')"             # current session name
+MARKER="__helper_window__"                            # unique title we look for
+SRC_IDX="$(tmux display-message -p '#I')"             # your "current" window index
+TGT_IDX=$(( SRC_IDX + 1 ))                            # the next window over
+
+#–– Try to locate any pane titled $MARKER, anywhere in this session
+#    Output format: "session:window.pane  TITLE"
+PANE_INFO=$(
+  tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{pane_title}" \
+  | grep -F "$MARKER" || true
+)
+
+if [[ -n "$PANE_INFO" ]]; then
+  echo "Found helper pane: $PANE_INFO"
+  # –– We found our helper pane… let’s parse out its ID and owning window
+  PANE_ID="${PANE_INFO%% *}"                          # e.g. "mysession:3.2"
+  PANE_WIN="${PANE_ID#*:}"                            # drop session prefix → "3.2"
+  WIN_IDX="${PANE_WIN%%.*}"                           # take "3" out of "3.2"
+
+  if (( WIN_IDX == SRC_IDX )); then
+    #–– It’s currently in the source window → move it to target
+    echo "It’s in the source window → moving it to target"
+    tmux break-pane -d -s "$PANE_ID"                   # pop it out into its own window
+  else
+    #–– It’s somewhere *else* (presumably the target) → move it back to source
+    echo "It’s somewhere else → moving it back to source"
+    echo "Moving pane"
+    tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX".1 -l 10
+    echo "Selecting window"
+    tmux select-window -t "$SESSION:$SRC_IDX"
+  fi
+
+else
+  #–– Marker pane doesn’t exist yet: join the first pane of SRC into TGT
+  echo "No helper pane found, creating one"
+  tmux split-window -t "$SESSION:$SRC_IDX" -l 10
+  tmux select-pane -T "$MARKER" -t "$SESSION:$SRC_IDX.$TGT_IDX"
+fi
+
