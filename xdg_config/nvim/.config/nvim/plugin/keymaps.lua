@@ -1,5 +1,3 @@
-vim.g.mapleader = " "
-
 -- Move visual selection up/down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
@@ -77,16 +75,3 @@ vim.keymap.set("n", "<leader>bb", function()
     vim.cmd("normal! ciwtrue")
   end
 end, { silent = true, desc = "Toggle true/false" })
-
--- Open terminal in bottom split (1/5 screen height)
-vim.keymap.set("n", "<leader>o", function()
-  local total_lines = vim.o.lines
-  local term_height = math.floor(total_lines / 5)
-
-  vim.cmd.new()
-  vim.cmd.term()
-  vim.cmd.wincmd("J")
-  vim.api.nvim_win_set_height(0, term_height)
-  vim.opt_local.laststatus = 0
-  vim.cmd.startinsert()
-end, { desc = "Open terminal in bottom split (1/5 screen height)" })
