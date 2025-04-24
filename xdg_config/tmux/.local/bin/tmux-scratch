@@ -4,7 +4,7 @@ exec &>/dev/null
 
 #–– Configuration & discovery
 SESSION="$(tmux display-message -p '#S')"             # current session name
-MARKER="__helper_window__"                            # unique title we look for
+MARKER="__scratch__"                                    # marker pane name
 SRC_IDX="$(tmux display-message -p '#I')"             # your "current" window index
 TGT_IDX=$(( SRC_IDX + 1 ))                            # the next window over
 
@@ -12,6 +12,7 @@ TGT_IDX=$(( SRC_IDX + 1 ))                            # the next window over
 #    Output format: "session:window.pane  TITLE"
 PANE_INFO=$(
   tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{pane_title}" \
+  | grep -F "$SESSION" \
   | grep -F "$MARKER" || true
 )
 

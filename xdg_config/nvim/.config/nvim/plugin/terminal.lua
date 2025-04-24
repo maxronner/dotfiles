@@ -10,7 +10,7 @@
 --  vim.cmd.startinsert()
 --end, { desc = "Open terminal in bottom split (1/5 screen height)" })
 
-vim.keymap.set("n", "<leader>o", "<cmd>silent !tmux-spawner<CR>",
+vim.keymap.set("n", "<leader>o", "<cmd>silent !tmux-scratch<CR>",
   { silent = true, desc = "Swap tmux pane between foreground and background" })
 
 vim.api.nvim_create_autocmd("TermOpen", {
