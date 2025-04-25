@@ -51,9 +51,6 @@ vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
 vim.keymap.set("n", "<leader>X", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
 
--- Show git diff for current buffer
-vim.keymap.set("n", "<leader>df", "<cmd> w !git diff % -<CR>", { desc = "Show git diff of buffer" })
-
 -- Source current file
 vim.keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
@@ -75,3 +72,5 @@ vim.keymap.set("n", "<leader>bb", function()
     vim.cmd("normal! ciwtrue")
   end
 end, { silent = true, desc = "Toggle true/false" })
+
+vim.keymap.set("n", "<leader>dl", "<cmd>!find . | wc -l<CR>", { desc = "Count lines in directory" })
