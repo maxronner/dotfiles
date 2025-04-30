@@ -10,18 +10,21 @@ STOW_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/xdg_config
 
 # Pacman packages: CLI/Environment Tools
 CLI_PKGS := \
+	7zip \
 	base-devel \
+	bash-completion \
 	bat \
 	btop \
 	dhcpcd \
 	eza \
-	fd \
 	fastfetch \
+	fd \
 	fzf \
 	gammastep \
 	git \
 	git-delta \
 	go \
+	htop \
 	inotify-tools \
 	iwd \
 	jq \
@@ -37,6 +40,8 @@ CLI_PKGS := \
 	openntpd \
 	openssh \
 	pass \
+	pass-otp \
+	passff-host \
 	pipewire-pulse \
 	ripgrep \
 	rsync \
@@ -59,9 +64,11 @@ DESKTOP_PKGS := \
 	autotiling \
 	bemenu \
 	bluez \
+	chromium \
 	firefox \
 	flatpak \
 	foot \
+	gimp \
 	gnome-themes-extra \
 	mako \
 	pavucontrol \
