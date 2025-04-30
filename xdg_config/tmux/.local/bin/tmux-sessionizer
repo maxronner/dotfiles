@@ -22,9 +22,7 @@ hydrate() {
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~ ~/personal -mindepth 1 -maxdepth 1 -type d -print)
-    selected+=$'\n'$(find ~/git -mindepth 1 -maxdepth 2 -type d -print)
-    echo "$selected" | fzf
+    selected=$({ find ~/ ~/personal -mindepth 1 -maxdepth 1 -type d; find ~/git -mindepth 1 -maxdepth 2 -type d; } | fzf)
 fi
 
 if [[ -z $selected ]]; then
