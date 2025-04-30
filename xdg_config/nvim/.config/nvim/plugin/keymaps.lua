@@ -2,6 +2,10 @@
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
+-- Increment/decrement numbers
+vim.keymap.set({ "n", "v" }, "<C-c>", "<C-a>gv=gv", { desc = "Increment number" })
+vim.keymap.set({ "n", "v" }, "<C-x>", "<C-x>gv=gv", { desc = "Decrement number" })
+
 -- Cursor stays in place when joining lines / scrolling
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join line below with cursor stay" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })
