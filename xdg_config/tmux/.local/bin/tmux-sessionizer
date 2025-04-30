@@ -22,7 +22,7 @@ hydrate() {
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$({ find ~/ ~/personal -mindepth 1 -maxdepth 1 -type d; find ~/git -mindepth 1 -maxdepth 2 -type d; } | fzf)
+    selected=$({ find ~/ ~/personal -mindepth 1 -maxdepth 1 -type d; find ~/git -mindepth 1 -maxdepth 2 -type d; } | grep -v '/\.' | fzf)
 fi
 
 if [[ -z $selected ]]; then
