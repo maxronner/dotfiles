@@ -25,10 +25,6 @@ if command -v pass &>/dev/null; then
     alias otp="pass fzf-otp"
 fi
 
-if command -v gh &>/dev/null; then
-    alias ai="gh copilot"
-fi
-
 if command -v tmux-sessionizer &>/dev/null ; then
     alias chat="tmux-sessionizer chat"
 fi
