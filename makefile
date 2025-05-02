@@ -77,6 +77,7 @@ DESKTOP_PKGS := \
 	swayidle \
 	swaylock \
 	ttf-hack-nerd \
+	waybar \
 	wl-clipboard \
 	xdg-desktop-portal-gtk \
 	xdg-desktop-portal-wlr
