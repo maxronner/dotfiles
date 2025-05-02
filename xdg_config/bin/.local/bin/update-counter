@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Run yay -Sy to get available updates, then parse and count them
+update_count=$(yay -Sy --print-format "%n" | grep -v "nothing to do" | wc -l)
+
+# Print the number of updates available
+echo "$update_count"
+
