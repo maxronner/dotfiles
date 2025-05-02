@@ -18,7 +18,6 @@
 @define-color highlightHigh   #56526e;
 
 * {
-    /* `otf-font-awesome` is required to be installed for icons */
     font-family: Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
@@ -33,16 +32,14 @@ window#waybar {
 window#waybar.hidden {
     opacity: 0.2;
 }
-
 /*
 window#waybar.empty {
     background-color: transparent;
 }
+
 window#waybar.solo {
     background-color: #FFFFFF;
 }
-*/
-
 window#waybar.termite {
     background-color: #3F3F3F;
 }
@@ -51,6 +48,7 @@ window#waybar.chromium {
     background-color: #000000;
     border: none;
 }
+*/
 
 button {
     /* Use box-shadow instead of border so the text isn't offset */
@@ -67,7 +65,12 @@ button:hover {
 }
 
 /* you can set a style on hover for any module like this */
-#pulseaudio:hover {
+#pulseaudio:hover,
+#network:hover,
+#battery:hover,
+#clock:hover,
+#custom-media:hover,
+#idle_inhibitor:hover {
     background-color: @highlightHigh;
 }
 
@@ -95,29 +98,12 @@ button:hover {
     box-shadow: inset 0 -3px #ffffff;
 }
 
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#custom-coolant,
-#custom-dog,
-#backlight,
-#network,
-#pulseaudio,
-#wireplumber,
-#custom-media,
-#tray,
-#mode,
-#idle_inhibitor,
-#scratchpad,
-#power-profiles-daemon,
-#mpd {
-    padding: 0 10px;
+label.module,
+#tray {
     color: @text;
     background-color: @highlightLow;
     border: 1px solid @highlightMed;
+    padding: 0 10px;
 }
 
 #window,
@@ -211,11 +197,11 @@ label:focus {
 #network {
     background-color: @pine;
 }
-
+*/
 #network.disconnected {
-    background-color: #f53c3c;
+    background-color: @love;
 }
-
+/*
 #pulseaudio {
     background-color: #f1c40f;
     color: #000000;
