@@ -49,6 +49,16 @@ exec_always --no-startup-id swaymsg seat seat0 xcursor_theme BreezeX-RosePine-Li
 # Configure the default border:
 default_border pixel 2
 
+# Set default gaps
+gaps inner 10
+gaps outer 10
+
+# remove gaps when only one window is present
+smart_gaps on
+
+# remove outer gaps when only one workspace exists on output
+smart_borders on
+
 for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
 for_window [workspace=4] inhibit_idle fullscreen
@@ -307,9 +317,8 @@ include /etc/sway/config.d/*
 #
 # Autostart programs:
 #
-exec $term
+exec $term -L tmux-default
 exec $browser
 exec autotiling
-exec battery-watcher
 
 exec flatpak run dev.vencord.Vesktop

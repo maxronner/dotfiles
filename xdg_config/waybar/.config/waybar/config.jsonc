@@ -11,6 +11,7 @@
         "custom/notification",
         "clock",
         "custom/pacman",
+        "custom/dog",
         "tray"
     ],
     "modules-center": [
@@ -23,8 +24,6 @@
         "pulseaudio",
         "network",
         "power-profiles-daemon",
-        "custom/dog",
-        "backlight",
         // "sway/language",
         "battery",
         "battery#bat2"
