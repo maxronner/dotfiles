@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-#exec &>/dev/null # Hide output
+exec &>/dev/null # Hide output
 
 #–– Configuration & discovery
 SESSION="$(tmux display-message -p '#S')"             # current session name
