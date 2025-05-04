@@ -18,6 +18,7 @@
         "sway/workspaces"
     ],
     "modules-right": [
+        "sway/mode",
         "idle_inhibitor",
         "group/expand",
         "bluetooth",
