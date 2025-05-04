@@ -12,6 +12,10 @@ if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
   echo "[MARKER] Name of the pane to create or move (optional, defaults to $MARKER)"
   echo "[COMMAND] Command to run in the pane (optional)"
   echo
+  echo "Flags:"
+  echo "-h, --help  Show this help message and exit"
+  echo
+  echo "Description:"
   echo "Creates a new pane with the given command, or moves an existing pane"
   echo "to the current window if it exists already."
   exit

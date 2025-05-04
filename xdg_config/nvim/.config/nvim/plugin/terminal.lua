@@ -13,6 +13,22 @@
 vim.keymap.set("n", "<leader>o", "<cmd>silent !tmux-scratch<CR>",
   { silent = true, desc = "Swap tmux pane between foreground and background" })
 
+vim.keymap.set("n", "<leader>O", function()
+  local filepath = vim.fn.expand("%:p")
+  vim.ui.input({ prompt = "Ask tgpt: " }, function(input)
+    if not input or input == "" then
+      return
+    end
+    -- Escape any single quotes in the input
+    local escaped = input:gsub("'", [["'""]]) -- Shell-safe escaping
+    local cmd = string.format("<cmd>silent !tmux-scratch ai \"bash -c 'tgpt \"%s\" < %s ; read'\"<CR>",
+      "'" .. escaped .. "'",
+      filepath)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, false, true), "n", false)
+  end)
+end, { desc = "Ask gpt" })
+
+
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function()
     vim.opt_local.winbar = ""
