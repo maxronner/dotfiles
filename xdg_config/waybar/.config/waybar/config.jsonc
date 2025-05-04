@@ -49,7 +49,10 @@
         "escape": true
     },
     "custom/pacman": {
-        "format": "󰅢 {}",
+        "format": "{} {icon}",
+        "format-icons": {
+            "default": ""
+        },
         "interval": 3600,
         "exec": "checkupdates | wc -l",
         "exec-if": "exit 0",
