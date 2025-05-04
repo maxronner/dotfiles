@@ -61,11 +61,11 @@
         "tooltip": false
     },
     "custom/uptime": {
-        "format": " {} {icon}",
+        "format": "{} {icon}",
         "format-icons": {
             "default": ""
         },
-        "exec": "uptime -p | sed 's/up //'",
+        "exec": "uptime | awk '{print $3}' | sed 's/,//'",
         "interval": 60,
         "tooltip": false
     },
