@@ -85,10 +85,10 @@ temperature:hover{
     padding: 0px 8px 0px 5px;
 }
 #workspaces button:hover {
-    color: @highlightLow;
+    color: @subtle;
     border: none;
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
-    transition: all 1s ease;
+    transition: all .5s ease;
 }
 #workspaces button.focused {
     color: @iris;

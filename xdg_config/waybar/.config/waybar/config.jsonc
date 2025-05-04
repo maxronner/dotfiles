@@ -31,7 +31,7 @@
         // "custom/power"
     ],
     "sway/workspaces": {
-        "disable-scroll": true,
+        "disable-scroll": false,
         "all-outputs": true,
         "warp-on-scroll": false,
         "format": "{icon}",
