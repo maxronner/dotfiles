@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-exec &>/dev/null # Hide output
+#exec &>/dev/null # Hide output
 
 #–– Configuration & discovery
 SESSION="$(tmux display-message -p '#S')"             # current session name
@@ -38,14 +38,21 @@ if [[ -n "$PANE_INFO" ]]; then
   else
     echo "It’s somewhere else → moving it back to source"
     # Move the pane to the last position
-    tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10
+    tmux move-pane -s "$PANE_ID" -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10
     echo "Selecting window"
     tmux select-window -t "$SESSION:$SRC_IDX"
   fi
 
 else
-  echo "No helper pane found, creating one"
-  tmux split-window -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10
+  echo "No helper pane found"
+  if [ $# -ne 0 ]; then
+    echo "Creating new pane with command: $@"
+    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10 "$@")
+  else
+    echo "Creating new pane"
+    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10)
+  fi
+  tmux select-pane -t "$NEW_PANE"
   tmux select-pane -T "$MARKER"
 fi
 
