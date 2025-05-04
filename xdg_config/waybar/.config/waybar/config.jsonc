@@ -60,6 +60,15 @@
         "signal": 8,
         "tooltip": false
     },
+    "custom/uptime": {
+        "format": " {} {icon}",
+        "format-icons": {
+            "default": ""
+        },
+        "exec": "uptime -p | sed 's/up //'",
+        "interval": 60,
+        "tooltip": false
+    },
     "group/expand": {
         "orientation": "horizontal",
         "drawer": {
@@ -71,7 +80,8 @@
             "cpu",
             "memory",
             "temperature",
-            "custom/coolant"
+            "custom/coolant",
+            "custom/uptime"
         ]
     },
     "keyboard-state": {
