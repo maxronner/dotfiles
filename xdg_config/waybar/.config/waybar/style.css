@@ -27,7 +27,7 @@ window#waybar {
     background-color: transparent;
     box-shadow: none;
     border: none;
-    color: @text;
+    color: @subtle;
 }
 
 /* Module containers (all children): background set to your @base color */
