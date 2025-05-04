@@ -40,6 +40,6 @@ else
   #–– Marker pane doesn’t exist yet: join the first pane of SRC into TGT
   echo "No helper pane found, creating one"
   tmux split-window -t "$SESSION:$SRC_IDX" -l 10
-  tmux select-pane -T "$MARKER" -t "$SESSION:$SRC_IDX.$TGT_IDX"
+  tmux select-pane -T "$MARKER"
 fi
 
