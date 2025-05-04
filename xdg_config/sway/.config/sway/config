@@ -321,4 +321,3 @@ exec $term -L tmux-default
 exec $browser
 exec autotiling
 
-exec flatpak run dev.vencord.Vesktop
