@@ -1,11 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+MARKER="__scratch__"
+
+if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
+  echo "Create quick and dirty scratch panes in tmux"
+  echo
+  echo "Usage: tmux-scratch [MARKER] [COMMAND]"
+  echo
+  echo "Arguments:"
+  echo "[MARKER] Name of the pane to create or move (optional, defaults to $MARKER)"
+  echo "[COMMAND] Command to run in the pane (optional)"
+  echo
+  echo "Creates a new pane with the given command, or moves an existing pane"
+  echo "to the current window if it exists already."
+  exit
+fi
+
 exec &>/dev/null # Hide output
 
 #–– Configuration & discovery
-SESSION="$(tmux display-message -p '#S')"             # current session name
-MARKER="__scratch__"                                    # marker pane name
-SRC_IDX="$(tmux display-message -p '#I')"             # your "current" window index
+SESSION="$(tmux display-message -p '#S')"
+SRC_IDX="$(tmux display-message -p '#I')"
+
+# –– Parse command line arguments
+if [ $# -eq 1 ]; then
+  MARKER="$1"
+  COMMAND=""
+elif [ $# -eq 2 ]; then
+  MARKER="$1"
+  COMMAND="$2"
+fi
 
 #–– Try to locate any pane titled $MARKER, anywhere in this session
 #    Output format: "session:window.pane  TITLE"
@@ -45,9 +70,9 @@ if [[ -n "$PANE_INFO" ]]; then
 
 else
   echo "No helper pane found"
-  if [ $# -ne 0 ]; then
+  if [ $# -eq 2 ]; then
     echo "Creating new pane with command: $@"
-    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10 "$@")
+    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10 "$COMMAND")
   else
     echo "Creating new pane"
     NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -ft "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 10)
