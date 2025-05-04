@@ -24,13 +24,15 @@ if [[ -n "$PANE_INFO" ]]; then
   WIN_IDX="${PANE_WIN%%.*}"                           # take "3" out of "3.2"
 
   if (( WIN_IDX == SRC_IDX )); then
-    #–– It’s currently in the source window → move it to target
     echo "It’s in the source window → moving it to target"
     tmux break-pane -d -s "$PANE_ID"                   # pop it out into its own window
+
+    # -- Select the target window for easy access with last-window
+    LAST_INDEX=$(tmux list-windows -F "#{window_index}" | sort -n | tail -1)
+    tmux select-window -t :"$LAST_INDEX"
+    tmux select-window -t "$SESSION:$SRC_IDX"
   else
-    #–– It’s somewhere *else* (presumably the target) → move it back to source
     echo "It’s somewhere else → moving it back to source"
-    echo "Moving pane"
     tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX".1 -l 10
     echo "Selecting window"
     tmux select-window -t "$SESSION:$SRC_IDX"
