@@ -39,6 +39,7 @@ CLI_PKGS := \
 	nss-mdns \
 	openntpd \
 	openssh \
+	pacman-contrib \
 	pass \
 	pass-otp \
 	passff-host \
