@@ -30,15 +30,26 @@ window#waybar {
     color: @subtle;
 }
 
-/* Module containers (all children): background set to your @base color */
-#waybar > box > *,
+.module,
 tooltip {
     box-shadow: 0px 0px 8px rgba(0, 0, 0, .6);
 }
 
-tooltip {
+tooltip,
+tooltip label {
+    color: @subtle;
     background: @base;
 }
+
+.module{
+    padding: 0px 5px;
+    transition: all .3s ease;
+}
+.module:hover {
+    transition: all .3s ease;
+    color: @rose;
+}
+
 .modules-left,
 .modules-right,
 .modules-center {
@@ -56,18 +67,6 @@ tooltip {
 }
 .modules-center {
     margin: 10 0 5 0;
-}
-
-#clock:hover,
-#custom-pacman:hover,
-#custom-notification:hover,
-bluetooth:hover,
-network:hover,
-battery:hover,
-#cpu:hover,
-memory:hover,
-temperature:hover{
-    transition: all .3s ease;
 }
 
 #workspaces {
@@ -129,26 +128,4 @@ temperature:hover{
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-}
-
-#custom-notification,
-#custom-pacman,
-#custom-uptime,
-#group-expand,
-#idle_inhibitor,
-#cpu,
-#memory,
-#temperature,
-#pulseaudio,
-#custom-coolant,
-#custom-dog,
-#network,
-#battery,
-#clock,
-#tray,
-#tray menu,
-#tray menu separator,
-#bluetooth{
-    padding: 0px 5px;
-    transition: all .3s ease;
 }

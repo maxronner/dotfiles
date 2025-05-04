@@ -67,7 +67,8 @@
         },
         "exec": "uptime | awk '{print $3}' | sed 's/,//'",
         "interval": 60,
-        "tooltip": false
+        "tooltip": true,
+        "tooltip-format": "Uptime"
     },
     "group/expand": {
         "orientation": "horizontal",
