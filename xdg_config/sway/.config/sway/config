@@ -62,7 +62,6 @@ smart_borders on
 for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
 for_window [workspace=4] inhibit_idle fullscreen
-for_window [app_id="org.pulseaudio.pavucontrol"] floating enable
 for_window [class="Godot"] floating enable
 assign [class="steam"] workspace 4
 assign [app_id="gamemoderun"] workspace 4
