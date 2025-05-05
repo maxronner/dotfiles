@@ -65,7 +65,6 @@ CLI_PKGS := \
 DESKTOP_PKGS := \
 	autotiling \
 	bemenu \
-	bluez \
 	chromium \
 	firefox \
 	flatpak \
@@ -88,6 +87,16 @@ DESKTOP_PKGS := \
 AUR_PKGS := \
 	rose-pine-cursor \
 	zen-browser-bin
+
+WORKSPACE_PKGS := \
+	steam \
+	nvidia-open
+
+LAPTOP_PKGS := \
+	kmonad \
+	iwd \
+	bluez \
+	bluez-utils
 
 DEPS := \
 	install_cli \
@@ -168,13 +177,13 @@ ifeq ($(strip $(env)),)
 endif
 ifeq ($(env), workstation)
 	@echo "Installing workstation specific packages..."
+	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
-	@echo "Installing kmonad..."
-	yay kmonad
+	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
 endif
 
 stow_dotfiles:
