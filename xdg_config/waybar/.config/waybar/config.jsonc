@@ -58,7 +58,8 @@
         "exec-if": "exit 0",
         "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
         "signal": 8,
-        "tooltip": false
+        "tooltip": true,
+        "tooltip-format": "Click to update"
     },
     "custom/uptime": {
         "format": "{} {icon}",
