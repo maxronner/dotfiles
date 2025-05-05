@@ -19,10 +19,8 @@ vim.keymap.set("n", "<leader>O", function()
     if not input or input == "" then
       return
     end
-    -- Escape any single quotes in the input
-    local escaped = input:gsub("'", [["'""]]) -- Shell-safe escaping
-    local cmd = string.format("<cmd>silent !tmux-scratch ai \"bash -c 'tgpt \"%s\" < %s ; read'\"<CR>",
-      "'" .. escaped .. "'",
+    local cmd = string.format("<cmd>silent !tmux-scratch ai 'tgpt \"%s\" < %s ; read'<CR>",
+      input,
       filepath)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, false, true), "n", false)
   end)
