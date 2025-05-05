@@ -17,7 +17,7 @@ if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
   echo
   echo "Description:"
   echo "Creates a new pane with the given command, or moves an existing pane"
-  echo "to the current window if it exists already."
+  echo "to the current window if it already exists."
   exit
 fi
 
