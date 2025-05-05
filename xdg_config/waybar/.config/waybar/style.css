@@ -104,7 +104,7 @@ tooltip label {
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
 }
 #workspaces button.empty {
-    color: @subtle;
+    color: @muted;
     border: none;
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
 }
