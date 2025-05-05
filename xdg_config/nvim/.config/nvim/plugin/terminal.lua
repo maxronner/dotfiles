@@ -13,9 +13,9 @@
 vim.keymap.set("n", "<leader>o", "<cmd>silent !tmux-scratch<CR>",
   { silent = true, desc = "Swap tmux pane between foreground and background" })
 
-vim.keymap.set("n", "<leader>O", function()
+vim.keymap.set("n", "<leader>i", function()
   local filepath = vim.fn.expand("%:p")
-  vim.ui.input({ prompt = "Ask tgpt: " }, function(input)
+  vim.ui.input({ prompt = "Ask AI about file: " }, function(input)
     if not input or input == "" then
       return
     end
@@ -24,7 +24,8 @@ vim.keymap.set("n", "<leader>O", function()
       filepath)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, false, true), "n", false)
   end)
-end, { desc = "Ask gpt" })
+end, { desc = "Ask AI about file" })
+
 
 
 vim.api.nvim_create_autocmd("TermOpen", {
