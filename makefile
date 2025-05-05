@@ -51,6 +51,7 @@ CLI_PKGS := \
 	sudo \
 	syncthing \
 	tealdeer \
+	tgpt \
 	thefuck \
 	tmux \
 	unzip \
