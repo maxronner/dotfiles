@@ -53,7 +53,7 @@
         "format-icons": {
             "default": ""
         },
-        "interval": 3600,
+        "interval": 300,
         "exec": "checkupdates | wc -l",
         "exec-if": "exit 0",
         "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
