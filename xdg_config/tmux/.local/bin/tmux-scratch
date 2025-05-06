@@ -1,40 +1,91 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+#–– Default values
 MARKER="__scratch__"
+POS=""
+COMMAND=()
 
-if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
-  echo "Create quick and dirty scratch panes in tmux"
-  echo
-  echo "Usage: tmux-scratch [MARKER] [COMMAND]"
-  echo
-  echo "Arguments:"
-  echo "[MARKER] Name of the pane to create or move (optional, defaults to $MARKER)"
-  echo "[COMMAND] Command to run in the pane (optional)"
-  echo
-  echo "Flags:"
-  echo "-h, --help  Show this help message and exit"
-  echo
-  echo "Description:"
-  echo "Creates a new pane with the given command, or moves an existing pane"
-  echo "to the current window if it already exists."
-  exit
+print_help() {
+  cat <<-EOF
+Create quick and dirty scratch panes in tmux
+
+Usage: $(basename "$0") [-m MARKER] [-p POSITION] [--] [COMMAND...]
+
+Options:
+  -m, --marker MARKER    Name of the pane to find/create (default: $MARKER)
+  -p, --position POS     Pane position specifier: 'bottom|b' or 'right|r'
+                         (default: right)
+  -h, --help             Show this help message and exit
+
+Everything after the '--' is treated as the COMMAND to run in your pane;
+e.g.:
+
+  $(basename "$0") -m ai -p bottom -- tgpt --chat --model gpt-4
+EOF
+}
+
+#–– Use GNU getopt to support long options and `--`
+OPTS=$(getopt \
+  --options m:p:h \
+  --longoptions marker:,position:,help \
+  --name "$(basename "$0")" \
+  -- "$@"
+) || exit 1
+
+eval set -- "$OPTS"
+
+#–– Parse flags
+while true; do
+  case "$1" in
+    -m|--marker)
+      MARKER="$2"
+      shift 2
+      ;;
+    -p|--position)
+      POS="$2"
+      shift 2
+      ;;
+    -h|--help)
+      print_help
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      # Should never happen
+      echo "Unexpected option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+#–– Anything left is the command to run
+if [[ $# -gt 0 ]]; then
+  COMMAND=("$@")
 fi
+
+#–– Normalize POS into the tmux args you want
+case "$POS" in
+  bottom|b)
+    POS_ARGS="-f -l 16"
+    ;;
+  right|r|"" )
+    POS_ARGS="-fh -l 80"
+    ;;
+  *)
+    echo "Unknown position: '$POS'" >&2
+    exit 1
+    ;;
+esac
 
 exec &>/dev/null # Hide output
 
 #–– Configuration & discovery
 SESSION="$(tmux display-message -p '#S')"
 SRC_IDX="$(tmux display-message -p '#I')"
-
-# –– Parse command line arguments
-if [ $# -eq 1 ]; then
-  MARKER="$1"
-  COMMAND=""
-elif [ $# -eq 2 ]; then
-  MARKER="$1"
-  COMMAND="$2"
-fi
 
 #–– Try to locate any pane titled $MARKER, anywhere in this session
 #    Output format: "session:window.pane  TITLE"
@@ -66,20 +117,28 @@ if [[ -n "$PANE_INFO" ]]; then
     tmux select-window -t "$SESSION:$SRC_IDX"
   else
     echo "It’s somewhere else → moving it back to source"
-    # Move the pane to the last position
-    tmux move-pane -s "$PANE_ID" -fht "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 80
+    tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" $POS_ARGS
     echo "Selecting window"
     tmux select-window -t "$SESSION:$SRC_IDX"
   fi
 
 else
   echo "No helper pane found"
-  if [ $# -eq 2 ]; then
-    echo "Creating new pane with command: $@"
-    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -fht "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 80 "$COMMAND")
+  if (( ${#COMMAND[@]} )); then
+    echo "Creating new pane with: ${COMMAND[*]}"
+    NEW_PANE=$(
+      tmux split-window -P -F '#{pane_id}' \
+        -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
+        $POS_ARGS \
+        "${COMMAND[@]}"
+    )
   else
-    echo "Creating new pane"
-    NEW_PANE=$(tmux split-window -P -F '#{pane_id}' -fht "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" -l 80)
+    echo "Creating new pane (no command)"
+    NEW_PANE=$(
+      tmux split-window -P -F '#{pane_id}' \
+        -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
+        $POS_ARGS
+    )
   fi
   tmux select-pane -t "$NEW_PANE"
   tmux select-pane -T "$MARKER"
