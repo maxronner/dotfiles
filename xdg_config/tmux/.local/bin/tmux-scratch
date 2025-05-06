@@ -39,7 +39,7 @@ eval set -- "$OPTS"
 while true; do
   case "$1" in
     -m|--marker)
-      MARKER="$2"
+      MARKER="__$2__"
       shift 2
       ;;
     -p|--position)
