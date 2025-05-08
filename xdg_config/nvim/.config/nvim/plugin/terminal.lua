@@ -15,7 +15,13 @@ vim.keymap.set("n", "<leader>o", "<cmd>silent !tmux-scratch<CR>",
 
 vim.keymap.set("n", "<leader>i", function()
   local filepath = vim.fn.expand("%:p")
+  vim.opt_local.relativenumber = false
+  vim.cmd.redraw()
   vim.ui.input({ prompt = "Ask AI about file: " }, function(input)
+    -- Restore relativenumber after user input is complete
+    vim.schedule(function()
+      vim.opt_local.relativenumber = true
+    end)
     if not input or input == "" then
       return
     end
