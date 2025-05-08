@@ -10,7 +10,6 @@
 
 [advice]
     addEmptyPathspec = false
-    pushNonFastForward = false
     statusHints = false
 
 [url "ssh://git@github.com:max-ronner/"]
@@ -42,7 +41,17 @@
 	defaultBranch = main
 
 [pull]
+    default = current
     rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true
+    followTags = true
+
+[rebase]
+    autoStash = true
+    missingCommitsCheck = warn
 
 [interactive]
     diffFilter = delta --color-only
