@@ -20,14 +20,18 @@
 
 [pager]
     diff = delta
+    branch = false
 
-[diff]
-    context = 3
-    renames = copies
+[branch]
+    sort = -committerdate
 
 [commit]
     verbose = true
     template = ~/.config/git/commit-template
+
+[diff]
+    context = 3
+    renames = copies
 
 [status]
     branch = true
@@ -52,6 +56,9 @@
 [rebase]
     autoStash = true
     missingCommitsCheck = warn
+
+[tag]
+    sort = -taggerdate
 
 [interactive]
     diffFilter = delta --color-only
