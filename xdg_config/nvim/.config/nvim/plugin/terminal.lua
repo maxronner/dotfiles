@@ -25,7 +25,7 @@ vim.keymap.set("n", "<leader>i", function()
     if not input or input == "" then
       return
     end
-    local cmd = string.format("<cmd>silent !tmux-scratch -m ai -- 'tgpt \"%s\" < %s ; read'<CR>",
+    local cmd = string.format("<cmd>silent !tmux-scratch -m ai -- 'ai-chat \"%s\" < %s ; read'<CR>",
       input,
       filepath)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, false, true), "n", false)
