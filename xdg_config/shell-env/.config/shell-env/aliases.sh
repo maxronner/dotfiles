@@ -45,9 +45,15 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 # --- Git ---
-alias gs="git status"
+alias gs="git status --short"
 alias gc="git commit"
 alias gd="git diff"
 alias gp="git push"
+alias gu="git pull"
+alias gl="git log --oneline --decorate --graph"
+alias gb="git branch"
+alias gi="git init"
+alias gcl="git clone"
+alias gap="git add --patch"
 
 alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"

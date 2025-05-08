@@ -1,26 +1,39 @@
-[core]
-	sshCommand = ssh -i ~/.ssh/id_ed25519 -F /dev/null
-
 [user]
 	email = max@ronner.dev
 	name = Max Ronner
 
 [core]
-    pager = delta
     editor = nvim
+    whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    sshCommand = ssh -i ~/.ssh/id_ed25519 -F /dev/null
+    preloadindex = true
 
-[interactive]
-    diffFilter = delta --color-only
+[advice]
+    addEmptyPathspec = false
+    pushNonFastForward = false
+    statusHints = false
 
-[delta]
-    navigate = true    # use n and N to move between diff sections
-    line-numbers = true
-	file-style = white
-	line-numbers = true
-	hunk-header-style = white
-    # delta detects terminal colors automatically; set one of these to disable auto-detection
-    # dark = true
-    # light = true
+[url "ssh://git@github.com:max-ronner/"]
+    insteadOf = "mr:"
+
+[url "ssh://git@github.com:"]
+    insteadOf = "gh:"
+
+[pager]
+    diff = delta
+
+[diff]
+    context = 3
+    renames = copies
+
+[commit]
+    verbose = true
+    template = ~/.config/git/commit-template
+
+[status]
+    branch = true
+    show-stash = true
+    showUntrackedFiles = all
 
 [merge]
     conflictstyle = zdiff3
@@ -31,5 +44,16 @@
 [pull]
     rebase = true
 
-[advice]
-    addEmptyPathspec = false
+[interactive]
+    diffFilter = delta --color-only
+    singlekey = true
+
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    line-numbers = true
+	file-style = white
+	line-numbers = true
+	hunk-header-style = white
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
