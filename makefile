@@ -6,7 +6,8 @@ USERNAME := max
 # Variables for directories
 TMP_DIR := /tmp/sysconfig
 HOME := /home/$(USERNAME)
-STOW_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))xdg_config
+BASE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+STOW_DIR := $(BASE_DIR)config
 
 # Pacman packages: CLI/Environment Tools
 CLI_PKGS := \
@@ -180,19 +181,18 @@ ifeq ($(env), workstation)
 	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
+	@echo "Installing workstation specific dotfiles..."
+	@./stow-target.sh $(BASE_DIR)/devices/workstation
 endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
+	@echo "Installing laptop specific dotfiles..."
+	@./stow-target.sh $(BASE_DIR)/devices/laptop
 endif
 
 stow_dotfiles:
-	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
-	@for dir in $(STOW_DIR)/*; do \
-		if [ -d $$dir ]; then \
-			su - $(USERNAME) -c "stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir)"; \
-		fi \
-	done
+	@./stow-target.sh $(STOW_DIR)
 
 clean:
 	@echo "Cleaning up build files..."
