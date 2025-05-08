@@ -6,7 +6,7 @@ USERNAME := max
 # Variables for directories
 TMP_DIR := /tmp/sysconfig
 HOME := /home/$(USERNAME)
-STOW_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/xdg_config
+STOW_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))xdg_config
 
 # Pacman packages: CLI/Environment Tools
 CLI_PKGS := \
@@ -190,7 +190,7 @@ stow_dotfiles:
 	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
 	@for dir in $(STOW_DIR)/*; do \
 		if [ -d $$dir ]; then \
-			su - $(USERNAME) -c "stow -d $(STOW_DIR) -t $(HOME) $$(basename $$dir)"; \
+			su - $(USERNAME) -c "stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir)"; \
 		fi \
 	done
 
