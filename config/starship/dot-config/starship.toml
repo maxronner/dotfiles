@@ -22,6 +22,8 @@ rose = '#ea9a97'
 pine = '#3e8fb0'
 foam = '#9ccfd8'
 iris = '#c4a7e7'
+subtle = '#908caa'
+muted = '#6e6a86'
 
 [directory]
 style = "pine"
@@ -34,9 +36,13 @@ success_symbol = "[❯](iris)"
 error_symbol = "[❯](love)"
 vimcmd_symbol = "[❮](foam)"
 
+[hostname]
+ssh_only = true
+format = '$hostname '
+
 [git_status]
 style = "fg:love"
-format = '[$all_status$ahead_behind]($style)'
+format = '[$all_status$ahead_behind]($style) '
 up_to_date = '[✓](fg:foam)'
 untracked = '[?\($count\)](fg:gold)'
 stashed = '[≡](fg:rose)'
@@ -50,31 +56,32 @@ behind = '[⇣\(${count}\)](fg:rose)'
 
 [git_branch]
 format = "on [$branch(:$remote_branch)]($style) "
+style = "iris"
 truncation_symbol = "⋯"
 truncation_length = 11
 only_attached = true
 
 [git_metrics]
-format = ' ([▴$added]($added_style))([▾$deleted]($deleted_style)) '
+format = '([▴$added]($added_style))([▾$deleted]($deleted_style))'
 added_style = 'italic dimmed foam'
 deleted_style = 'italic dimmed love'
 ignore_submodules = true
-disabled = true
+disabled = false
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
-style = "bright-black"
+style = "subtle"
 
 [cmd_duration]
-format = "[$duration]($style) "
-style = "gold"
+format = " [$duration]($style) "
+style = "muted"
 
 [golang]
 format = "[$symbol$version]($style) "
 disabled = false
-style = "overlay"
+style = "subtle"
 symbol = " "
 
 [python]
 format = "[$virtualenv]($style) "
-style = "overlay"
+style = "subtle"
