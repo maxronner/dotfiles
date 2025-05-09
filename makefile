@@ -154,6 +154,10 @@ create_user:
 install_cli:
 	@echo "Installing CLI/Environment packages..."
 	$(PACKAGE_MANAGER) $(CLI_PKGS)
+	@echo "Installing TPM (tmux package manager)..."
+	@if [ ! -d ~/.config/tmux/plugins/tpm ]; then \
+		git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; \
+	fi
 
 # Install Desktop Environment packages
 install_desktop:
@@ -182,13 +186,13 @@ ifeq ($(env), workstation)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 	@echo "Installing workstation specific dotfiles..."
-	@./stow-target.sh $(BASE_DIR)/devices/workstation
+	@stow --dotfiles -d devices -t ~ workstation
 endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
 	@echo "Installing laptop specific dotfiles..."
-	@./stow-target.sh $(BASE_DIR)/devices/laptop
+	@stow --dotfiles -d devices -t ~ laptop
 endif
 
 stow_dotfiles:
