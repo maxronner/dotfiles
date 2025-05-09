@@ -5,6 +5,7 @@ $directory\
 $git_branch\
 $git_state\
 $git_status\
+$git_metrics\
 $cmd_duration\
 $line_break\
 $go\
@@ -24,6 +25,9 @@ iris = '#c4a7e7'
 
 [directory]
 style = "pine"
+
+[fill]
+symbol = " "
 
 [character]
 success_symbol = "[❯](iris)"
@@ -51,11 +55,11 @@ truncation_length = 11
 only_attached = true
 
 [git_metrics]
-format = '([▴$added]($added_style))([▿$deleted]($deleted_style))'
-added_style = 'italic dimmed green'
-deleted_style = 'italic dimmed red'
+format = ' ([▴$added]($added_style))([▾$deleted]($deleted_style)) '
+added_style = 'italic dimmed foam'
+deleted_style = 'italic dimmed love'
 ignore_submodules = true
-disabled = false
+disabled = true
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
