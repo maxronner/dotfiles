@@ -196,7 +196,12 @@ ifeq ($(env), laptop)
 endif
 
 stow_dotfiles:
-	@su - $(USERNAME) -c "$(BASE_DIR)stow-target.sh $(STOW_DIR)"
+	@if [ "$$(id -u)" -eq 0 ]; then \
+		echo "Running stow-target.sh using su..."; \
+		su - $(USERNAME) -c "$(BASE_DIR)stow-target.sh $(STOW_DIR)"; \
+	else \
+		$(BASE_DIR)stow-target.sh $(STOW_DIR); \
+	fi
 
 clean:
 	@echo "Cleaning up build files..."
