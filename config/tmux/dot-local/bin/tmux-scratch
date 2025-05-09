@@ -132,22 +132,19 @@ if [[ -n "$PANE_INFO" ]]; then
   fi
 
 else
-  echo "No helper pane found"
+  COMMAND_STRING="${COMMAND[*]}"
   if (( ${#COMMAND[@]} )); then
-    echo "Creating new pane with: ${COMMAND[*]}"
-    NEW_PANE=$(
-      tmux split-window -P -F '#{pane_id}' \
-        -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
-        $POS_ARGS \
-        "${COMMAND[*]}")
+    echo "Creating new pane with: $COMMAND_STRING"
   else
     echo "Creating new pane (no command)"
-    NEW_PANE=$(
-      tmux split-window -P -F '#{pane_id}' \
-        -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
-        $POS_ARGS
-    )
   fi
+
+  NEW_PANE=$(
+    tmux split-window -P -F '#{pane_id}' \
+      -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
+      $POS_ARGS \
+      ${COMMAND_STRING:+ "$COMMAND_STRING"}
+  )
   tmux select-pane -t "$NEW_PANE" -T "$MARKER"
 fi
 
