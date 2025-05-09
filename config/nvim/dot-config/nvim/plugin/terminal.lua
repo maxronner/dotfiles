@@ -98,11 +98,16 @@ vim.keymap.set("n", "<leader>i", function()
 
     local escaped_input = vim.fn.shellescape(input)
     local escaped_filepath = vim.fn.shellescape(filepath)
-
-    local cmd = string.format("<cmd>silent !tmux-scratch -m ai -- 'ai-chat \"%s\" < %s'<CR>",
+    vim.fn.system({
+      "tmux-scratch",
+      "-m",
+      "ai",
+      "--",
+      "ai-chat",
       escaped_input,
-      escaped_filepath)
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(cmd, true, false, true), "n", false)
+      "<",
+      escaped_filepath,
+    })
   end)
 end, { desc = "Ask AI about file" })
 
