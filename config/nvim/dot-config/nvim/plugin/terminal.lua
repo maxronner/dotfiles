@@ -122,14 +122,14 @@ vim.keymap.set("v", "<leader>i", function()
     local output = string.format("```%s\n%s\n```%s\n%s", placeholder, selection, placeholder, input)
     local escaped_output = vim.fn.shellescape(output)
 
-    vim.notify(escaped_output, vim.log.levels.INFO)
-    --vim.fn.system({
-    --  "tmux-scratch",
-    --  "-m",
-    --  "ai",
-    --  "--",
-    --  "ai-chat",
-    --  escaped_output,
-    --})
+    --vim.notify(escaped_output, vim.log.levels.INFO)
+    vim.fn.system({
+      "tmux-scratch",
+      "-m",
+      "ai",
+      "--",
+      "ai-chat",
+      escaped_output,
+    })
   end)
 end, { desc = "Ask AI about selection" })
