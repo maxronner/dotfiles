@@ -39,13 +39,29 @@ local function get_visual_selection()
 
   if #lines == 0 then return "" end
 
-  lines[1] = string.sub(lines[1], start_col)
-  if #lines == 1 then
-    lines[1] = string.sub(lines[1], 1, end_col - start_col + 1)
+  if mode == '\22' then
+    local out = {}
+    for i, line in ipairs(lines) do
+      -- Lua indexing starts at 1, but Neovim columns are 1-based for `getpos`
+      -- pad short lines to avoid nil errors
+      if #line < end_col then
+        line = line .. string.rep(" ", end_col - #line)
+      end
+      table.insert(out, line:sub(start_col, end_col))
+    end
+    return table.concat(out, "\n")
   else
-    lines[#lines] = string.sub(lines[#lines], 1, end_col)
+    if mode == 'V' then
+      start_col = 1
+      end_col = -1
+    end
+    lines[1] = string.sub(lines[1], start_col)
+    if #lines == 1 then
+      lines[1] = string.sub(lines[1], 1, end_col - start_col + 1)
+    else
+      lines[#lines] = string.sub(lines[#lines], 1, end_col)
+    end
   end
-
   return table.concat(lines, "\n")
 end
 
@@ -106,14 +122,14 @@ vim.keymap.set("v", "<leader>i", function()
     local output = string.format("```%s\n%s\n```%s\n%s", placeholder, selection, placeholder, input)
     local escaped_output = vim.fn.shellescape(output)
 
-    -- vim.notify(escaped_output, vim.log.levels.INFO)
-    vim.fn.system({
-      "tmux-scratch",
-      "-m",
-      "ai",
-      "--",
-      "ai-chat",
-      escaped_output,
-    })
+    vim.notify(escaped_output, vim.log.levels.INFO)
+    --vim.fn.system({
+    --  "tmux-scratch",
+    --  "-m",
+    --  "ai",
+    --  "--",
+    --  "ai-chat",
+    --  escaped_output,
+    --})
   end)
 end, { desc = "Ask AI about selection" })
