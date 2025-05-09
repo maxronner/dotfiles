@@ -7,6 +7,7 @@ $git_state\
 $git_status\
 $cmd_duration\
 $line_break\
+$go\
 $python\
 $character"""
 
@@ -22,12 +23,12 @@ foam = '#9ccfd8'
 iris = '#c4a7e7'
 
 [directory]
-style = "blue"
+style = "pine"
 
 [character]
-success_symbol = "[❯](purple)"
-error_symbol = "[❯](red)"
-vimcmd_symbol = "[❮](green)"
+success_symbol = "[❯](iris)"
+error_symbol = "[❯](love)"
+vimcmd_symbol = "[❮](foam)"
 
 [git_status]
 style = "fg:love"
@@ -62,8 +63,14 @@ style = "bright-black"
 
 [cmd_duration]
 format = "[$duration]($style) "
-style = "yellow"
+style = "gold"
+
+[golang]
+format = "[$symbol$version]($style) "
+disabled = false
+style = "overlay"
+symbol = " "
 
 [python]
 format = "[$virtualenv]($style) "
-style = "bright-black"
+style = "overlay"
