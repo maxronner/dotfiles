@@ -115,6 +115,7 @@ if [[ -n "$PANE_INFO" ]]; then
 
   if (( WIN_IDX == SRC_IDX )); then
     if (( LAST_PANE_INDEX == 1 )); then
+      echo "It is in the source window and is the only pane → do nothing"
       exit
     fi
     echo "It’s in the source window → moving it to target"
