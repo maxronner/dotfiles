@@ -7,7 +7,7 @@ $git_state\
 $git_status\
 $git_metrics\
 $cmd_duration\
-$line_break\
+${custom.conditional_line_break}\
 $go\
 $python\
 $character"""
@@ -87,3 +87,8 @@ symbol = " "
 format = "[$virtualenv]($style) "
 style = "subtle"
 disabled = false
+
+[custom.conditional_line_break]
+when = "git rev-parse --is-inside-work-tree"
+command = "echo"
+format = "\n"
