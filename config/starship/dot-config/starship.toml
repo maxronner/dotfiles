@@ -26,7 +26,7 @@ subtle = '#908caa'
 muted = '#6e6a86'
 
 [directory]
-style = "pine"
+style = "bold pine"
 
 [fill]
 symbol = " "
@@ -45,7 +45,7 @@ style = "fg:love"
 format = '[$all_status$ahead_behind]($style) '
 up_to_date = '[✓](fg:foam)'
 untracked = '[?\($count\)](fg:gold)'
-stashed = '[≡](fg:rose)'
+stashed = '[\$](fg:rose)'
 modified = '[!\($count\)](fg:gold)'
 renamed = '[»\($count\)](fg:iris)'
 deleted = '[✘\($count\)](style)'
@@ -56,13 +56,14 @@ behind = '[⇣\(${count}\)](fg:rose)'
 
 [git_branch]
 format = "on [$branch(:$remote_branch)]($style) "
-style = "iris"
+style = "bold iris"
 truncation_symbol = "⋯"
 truncation_length = 11
 only_attached = true
 
 [git_metrics]
-format = '([▴$added]($added_style))([▾$deleted]($deleted_style))'
+format = '([+$added]($added_style))([-$deleted]($deleted_style))'
+only_nonzero_diffs = true
 added_style = 'italic dimmed foam'
 deleted_style = 'italic dimmed love'
 ignore_submodules = true
@@ -85,3 +86,4 @@ symbol = " "
 [python]
 format = "[$virtualenv]($style) "
 style = "subtle"
+disabled = false
