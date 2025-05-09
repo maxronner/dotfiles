@@ -2,7 +2,7 @@
 set -euo pipefail
 
 #–– Default values
-MARKER="__scratch__"
+MARKER="scratch"
 POS=""
 COMMAND=()
 KILL=0
