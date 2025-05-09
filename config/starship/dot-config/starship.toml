@@ -62,7 +62,8 @@ truncation_length = 11
 only_attached = true
 
 [git_metrics]
-format = '([+$added]($added_style))([-$deleted]($deleted_style))'
+format = '([+$added]($added_style))([-$deleted]($deleted_style)) '
+#format = '([▴$added]($added_style))([▾$deleted]($deleted_style)) '
 only_nonzero_diffs = true
 added_style = 'italic dimmed foam'
 deleted_style = 'italic dimmed love'
@@ -74,7 +75,7 @@ format = '\([$state( $progress_current/$progress_total)]($style)\) '
 style = "subtle"
 
 [cmd_duration]
-format = " [$duration]($style) "
+format = "[$duration]($style) "
 style = "muted"
 
 [golang]
