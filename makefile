@@ -156,7 +156,7 @@ install_cli:
 	$(PACKAGE_MANAGER) $(CLI_PKGS)
 	@echo "Installing TPM (tmux package manager)..."
 	@if [ ! -d ~/.config/tmux/plugins/tpm ]; then \
-		git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; \
+		su - $(USERNAME) -c "git clone https://github.com/tmux-plugins/tpm $(HOME)/.config/tmux/plugins/tpm"; \
 	fi
 
 # Install Desktop Environment packages
@@ -186,17 +186,17 @@ ifeq ($(env), workstation)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 	@echo "Installing workstation specific dotfiles..."
-	@stow --dotfiles -d devices -t ~ workstation
+	@su - $(USERNAME) -c "stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation"
 endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
 	@echo "Installing laptop specific dotfiles..."
-	@stow --dotfiles -d devices -t ~ laptop
+	@su - $(USERNAME) -c "stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop"
 endif
 
 stow_dotfiles:
-	@./stow-target.sh $(STOW_DIR)
+	@su - $(USERNAME) -c "$(BASE_DIR)stow-target.sh $(STOW_DIR)"
 
 clean:
 	@echo "Cleaning up build files..."
