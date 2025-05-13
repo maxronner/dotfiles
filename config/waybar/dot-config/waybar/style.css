@@ -37,9 +37,15 @@ tooltip {
 
 tooltip,
 tooltip label {
-    color: @subtle;
+    color: @text;
     background: @base;
     font-size: 13px;
+    padding: 0px;
+    margin: 0px;
+}
+
+tooltip {
+    border: 1px solid @rose;
 }
 
 .module{

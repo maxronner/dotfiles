@@ -59,7 +59,7 @@
         "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
         "signal": 8,
         "tooltip": true,
-        "tooltip-format": "Click to update"
+        "tooltip-format": "Install {} pending updates"
     },
     "custom/uptime": {
         "format": "{} {icon}",
