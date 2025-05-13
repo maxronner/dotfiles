@@ -65,7 +65,6 @@ CLI_PKGS := \
 # Pacman packages: Desktop Environment
 DESKTOP_PKGS := \
 	autotiling \
-	bemenu \
 	chromium \
 	firefox \
 	flatpak \
@@ -81,6 +80,7 @@ DESKTOP_PKGS := \
 	ttf-hack-nerd \
 	waybar \
 	wl-clipboard \
+	wofi \
 	xdg-desktop-portal-gtk \
 	xdg-desktop-portal-wlr
 

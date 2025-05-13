@@ -19,8 +19,10 @@ set $term foot
 #set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $font "pango:Hack Nerd Font Mono"
 
-set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
-    --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose"
+#set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
+#    --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose"
+
+set $menu wofi --show drun
 
 set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
     -i $HOME/.config/sway/lock.wallpaper
