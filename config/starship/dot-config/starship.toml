@@ -32,9 +32,9 @@ style = "bold pine"
 symbol = " "
 
 [character]
-success_symbol = "[❯](iris)"
+success_symbol = "[❯](foam)"
 error_symbol = "[❯](love)"
-vimcmd_symbol = "[❮](foam)"
+vimcmd_symbol = "[❮](rose)"
 
 [hostname]
 ssh_only = true
@@ -57,6 +57,7 @@ behind = '[↓\(${count}\)](fg:rose)'
 [git_branch]
 format = "on [$branch(:$remote_branch)]($style) "
 style = "bold iris"
+#ignore_branches = ["main", "master"]
 truncation_symbol = "⋯"
 truncation_length = 11
 only_attached = true
