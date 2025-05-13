@@ -68,17 +68,15 @@ plugins=(git vi-mode)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-export MANPATH="/usr/local/man:$MANPATH"
-export LANG=en_US.UTF-8
-if [ -f ~/.config/shell-env/exports.sh ]; then
-    source ~/.config/shell-env/exports.sh
+if [ -f ~/.config/environment/exports.sh ]; then
+    source ~/.config/environment/exports.sh
 fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
-if [ -f ~/.config/shell-env/aliases.sh ]; then
-    source ~/.config/shell-env/aliases.sh
+if [ -f ~/.config/environment/aliases.sh ]; then
+    source ~/.config/environment/aliases.sh
 fi
 
 if [ -f ~/.config/zsh/pomodoro.zsh ]; then

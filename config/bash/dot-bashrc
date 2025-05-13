@@ -74,12 +74,12 @@ if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 # Show auto-completion list automatically, without double tab
 if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
-if [ -f ~/.config/shell-env/aliases.sh ]; then
-    . ~/.config/shell-env/aliases.sh
+if [ -f ~/.config/environment/aliases.sh ]; then
+    . ~/.config/environment/aliases.sh
 fi
 
-if [ -f ~/.config/shell-env/exports.sh ]; then
-    . ~/.config/shell-env/exports.sh
+if [ -f ~/.config/environment/exports.sh ]; then
+    . ~/.config/environment/exports.sh
 fi
 
 bind '"\C-f": "tmux-sessionizer\n"'
