@@ -63,7 +63,7 @@
         "format-icons": {
             "default": ""
         },
-        "exec": "uptime | awk '{print $3}' | sed 's/,//'",
+        "exec": "uptime -p | awk '{print $2, $3}' | tr -d ','",
         "interval": 60,
         "tooltip": true,
         "tooltip-format": "Uptime"
@@ -187,7 +187,7 @@
         "tooltip": true
     },
     "memory": {
-        "format": "{}% "
+        "format": "{used:0.1f}G/{total:0.1f}G "
     },
     "temperature": {
         "thermal-zone": 2,
