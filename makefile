@@ -1,7 +1,8 @@
 PACKAGE_MANAGER := pacman -Syu --needed --noconfirm
 AUR_HELPER := yay --needed --noconfirm --sudoflags "-S"
 
-USERNAME := max
+# If username is not set, use default
+USERNAME ?= max
 
 # Variables for directories
 TMP_DIR := /tmp/sysconfig
