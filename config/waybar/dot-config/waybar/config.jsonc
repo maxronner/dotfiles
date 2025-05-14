@@ -6,7 +6,6 @@
     "height": 30, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 10, // Gaps between modules (4px)
-    // Choose the order of the modules
     "modules-left": [
         "custom/notification",
         "clock",
@@ -25,10 +24,8 @@
         "pulseaudio",
         "network",
         "power-profiles-daemon",
-        // "sway/language",
         "battery",
         "battery#bat2"
-        // "custom/power"
     ],
     "sway/workspaces": {
         "disable-scroll": false,
@@ -54,7 +51,7 @@
             "default": ""
         },
         "interval": 300,
-        "exec": "checkupdates | wc -l",
+        "exec": "updates=$(checkupdates | wc -l); if [ $? -eq 0 ]; then echo \"$updates\"; else echo '?'; fi",
         "exec-if": "exit 0",
         "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
         "signal": 8,

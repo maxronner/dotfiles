@@ -12,6 +12,7 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term foot
+set $tmux $term -L tmux-default
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -120,7 +121,7 @@ input "type:touchpad" {
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+t exec $term -L tmux-default
+    bindsym $mod+t exec $tmux
     bindsym $mod+Shift+t exec $term
 
     # Kill focused window
@@ -145,6 +146,9 @@ input "type:touchpad" {
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload
+
+    # Reload waybar
+    bindsym $mod+Shift+x exec pkill -SIGUSR2 waybar
 
 #
 # Moving around:
@@ -318,7 +322,7 @@ include /etc/sway/config.d/*
 #
 # Autostart programs:
 #
-exec $term -L tmux-default
+exec $tmux
 exec $browser
 exec autotiling
 
