@@ -20,8 +20,8 @@
     "modules-right": [
         "idle_inhibitor",
         "group/expand",
-        "bluetooth",
         "pulseaudio",
+        "bluetooth",
         "network",
         "power-profiles-daemon",
         "battery",
@@ -206,6 +206,7 @@
         "exec": "~/.config/waybar/scripts/coolant.sh",
         "interval": 5,
         "return-type": "json",
+        "on-failure": "ignore",
         "format": "{text} {icon}",
         "format-icons": [
             ""

@@ -18,8 +18,8 @@
 @define-color highlightHigh   #56526e;
 
 * {
-    font-family: Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-family: Jetbrains Mono, Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
 }
 
 window#waybar {
@@ -39,7 +39,6 @@ tooltip,
 tooltip label {
     color: @text;
     background: @base;
-    font-size: 13px;
     padding: 0px;
     margin: 0px;
 }

@@ -18,7 +18,7 @@ set $tmux $term -L tmux-default
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 #set $menu dmenu_path | dmenu | xargs swaymsg exec --
-set $font "pango:Hack Nerd Font Mono"
+set $font "pango:Jetbrains Mono"
 
 #set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
 #    --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose"
@@ -46,7 +46,7 @@ include /etc/sway/config-vars.d/*
 #client.focused_inactive $cl_back $cl_back $cl_fore $cl_back $cl_back
 #client.unfocused        $cl_back $cl_back $cl_fore $cl_back $cl_back
 #client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
-font $font 10
+font $font 12
 exec_always --no-startup-id swaymsg seat seat0 xcursor_theme BreezeX-RosePine-Linux
 
 # Configure the default border:
