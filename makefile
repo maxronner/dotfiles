@@ -1,11 +1,8 @@
-PACKAGE_MANAGER := pacman -Syu --needed --noconfirm
+PACKAGE_MANAGER := sudo pacman -Syu --needed --noconfirm
 AUR_HELPER := yay --needed --noconfirm --sudoflags "-S"
 
-# If username is not set, use default
-USERNAME ?= max
-
 # Variables for directories
-TMP_DIR := /tmp/sysconfig
+USERNAME := $(shell whoami)
 HOME := /home/$(USERNAME)
 BASE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 STOW_DIR := $(BASE_DIR)config
@@ -50,7 +47,6 @@ CLI_PKGS := \
 	rsync \
 	starship \
 	stow \
-	sudo \
 	syncthing \
 	tealdeer \
 	tgpt \
@@ -103,53 +99,15 @@ LAPTOP_PKGS := \
 DEPS := \
 	install_cli \
 	install_desktop \
-	create_user \
 	install_aur \
 	install_optional \
-	stow_dotfiles \
-	clean
+	stow_dotfiles
 
-.PHONY: all install_cli install_desktop install_aur stow_dotfiles create_user clean
+.PHONY: all install_cli install_desktop install_aur stow_dotfiles
 
 # Default target
 all: $(DEPS)
 	@echo "All packages installed and dotfiles symlinked successfully!"
-
-create_user:
-	@echo "Checking if user $(USERNAME) exists..."
-	@if id $(USERNAME) &>/dev/null; then \
-		echo "User $(USERNAME) already exists. Skipping user creation."; \
-	else \
-		echo "Creating user $(USERNAME)..."; \
-		useradd -m -s /bin/bash $(USERNAME); \
-		echo "User $(USERNAME) created."; \
-	fi
-	@echo "Setting up sudo"
-	@if ! grep "%sudo ALL=(ALL:ALL) ALL" /etc/sudoers > /dev/null 2>&1; then \
-	    echo "%sudo ALL=(ALL:ALL) ALL" >> /etc/sudoers; \
-	fi
-
-	@if ! grep -q '^sudo:' /etc/group; then \
-	    groupadd sudo; \
-	fi
-
-	@echo "Checking if /home/$(USERNAME) exists..."
-	@if [ ! -d /home/$(USERNAME) ]; then \
-		echo "Creating /home/$(USERNAME) directory..."; \
-		mkdir -p /home/$(USERNAME); \
-		chown $(USERNAME):$(USERNAME) /home/$(USERNAME); \
-		echo "/home/$(USERNAME) directory created."; \
-	else \
-		echo "/home/$(USERNAME) directory already exists. Skipping."; \
-	fi
-
-	@echo "Adding $(USERNAME) to sudo group if not already added..."
-	@if ! groups $(USERNAME) | grep -q '\bsudo\b'; then \
-		usermod -aG sudo $(USERNAME); \
-		echo "$(USERNAME) added to sudo group."; \
-	else \
-		echo "$(USERNAME) is already a member of the sudo group."; \
-	fi
 
 # Install CLI/Environment tools
 install_cli:
@@ -175,7 +133,7 @@ install_aur:
 		rm -rf /tmp/yay; \
 	fi
 	@echo "Downloading AUR packages..."
-	su - $(USERNAME) -c "$(AUR_HELPER) $(AUR_PKGS)"
+	$(AUR_HELPER) $(AUR_PKGS)
 
 install_optional:
 ifeq ($(strip $(env)),)
@@ -187,24 +145,21 @@ ifeq ($(env), workstation)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 	@echo "Installing workstation specific dotfiles..."
-	@su - $(USERNAME) -c "stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation"
+	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation
 endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
 	@echo "Installing laptop specific dotfiles..."
-	@su - $(USERNAME) -c "stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop"
+	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop
 endif
 
 stow_dotfiles:
-	@if [ "$$(id -u)" -eq 0 ]; then \
-		echo "Running stow-target.sh using su..."; \
-		su - $(USERNAME) -c "$(BASE_DIR)stow-target.sh $(STOW_DIR)"; \
-	else \
-		$(BASE_DIR)stow-target.sh $(STOW_DIR); \
-	fi
-
-clean:
-	@echo "Cleaning up build files..."
-	@rm -rf $(TMP_DIR)
+	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
+	@for dir in $(STOW_DIR)/*; do \
+		if [ -d $$dir ]; then \
+			echo "Stowing $$(basename $$dir)..."; \
+			stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
+		fi \
+	done
 
