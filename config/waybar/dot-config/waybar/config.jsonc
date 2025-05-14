@@ -163,8 +163,23 @@
         "on-click-right": "blueman-manager"
     },
     "clock": {
-        // "timezone": "America/New_York",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "timezone": "Europe/Stockholm",
+        "locale": "sv_SE.UTF-8",
+        "tooltip-format": "<tt><big>{calendar}</big></tt>",
+        "calendar": {
+            "mode": "year",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<span color='#e0def4'><b>{}</b></span>",
+                "days": "<span color='#9ccfd8'><b>{}</b></span>",
+                "weeks": "<span color='#3e8fb0'><b>v{}</b></span>",
+                "weekdays": "<span color='#f6c177'><b>{}</b></span>",
+                "today": "<span color='#ea9a97'><b><u>{}</u></b></span>"
+            }
+        },
         "format-alt": "{:%Y-%m-%d}"
     },
     "cpu": {
