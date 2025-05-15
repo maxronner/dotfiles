@@ -4,6 +4,8 @@ export EDITOR='nvim'
 export MANPATH="/usr/local/man:$MANPATH"
 export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
 
+export GPG_TTY=$(tty)
+
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
