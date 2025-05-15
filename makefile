@@ -68,6 +68,7 @@ DESKTOP_PKGS := \
 	foot \
 	gimp \
 	gnome-themes-extra \
+	ly \
 	mako \
 	pavucontrol \
 	sway \
@@ -101,9 +102,10 @@ DEPS := \
 	install_desktop \
 	install_aur \
 	install_optional \
+	ly-setup \
 	stow_dotfiles
 
-.PHONY: all install_cli install_desktop install_aur stow_dotfiles
+.PHONY: install_cli install_desktop install_aur ly-setup
 
 # Default target
 all: $(DEPS)
@@ -115,7 +117,7 @@ install_cli:
 	$(PACKAGE_MANAGER) $(CLI_PKGS)
 	@echo "Installing TPM (tmux package manager)..."
 	@if [ ! -d ~/.config/tmux/plugins/tpm ]; then \
-		su - $(USERNAME) -c "git clone https://github.com/tmux-plugins/tpm $(HOME)/.config/tmux/plugins/tpm"; \
+		git clone https://github.com/tmux-plugins/tpm $(HOME)/.config/tmux/plugins/tpm; \
 	fi
 
 # Install Desktop Environment packages
@@ -128,7 +130,7 @@ install_aur:
 	@if ! command -v yay > /dev/null; then \
 		echo "yay not found. Installing yay..."; \
 		[ -d /tmp/yay ] && rm -rf /tmp/yay; \
-		su - $(USERNAME) -c "git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -s --noconfirm"; \
+		git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -s --noconfirm; \
 		pacman -U --noconfirm --needed $(find /tmp/yay -name "*.pkg.tar.zst" | head -n 1); \
 		rm -rf /tmp/yay; \
 	fi
@@ -142,8 +144,13 @@ endif
 ifeq ($(env), workstation)
 	@echo "Installing workstation specific packages..."
 	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
+
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
+
+	@echo "Configuring sway for nvidia..."
+	sudo sed -i 's|^\s*Exec\s*=.*|Exec=sway --unsupported-gpu|' /usr/share/wayland-sessions/sway.desktop
+
 	@echo "Installing workstation specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation
 endif
@@ -153,6 +160,25 @@ ifeq ($(env), laptop)
 	@echo "Installing laptop specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop
 endif
+
+ly-setup:
+	@echo "Configuring ly..."; \
+	LY_CONFIG=/etc/ly/config.ini; \
+	sudo sed -i 's/^[[:space:]]*animation[[:space:]]*=.*/animation = matrix/' $$LY_CONFIG; \
+	sudo sed -i 's/^[[:space:]]*clock[[:space:]]*=.*/clock = %c/' $$LY_CONFIG; \
+	sudo sed -i 's/^[[:space:]]*bigclock[[:space:]]*=.*/bigclock = true/' $$LY_CONFIG; \
+	sudo sed -i 's/^[[:space:]]*vi_mode[[:space:]]*=.*/vi_mode = true/' $$LY_CONFIG; \
+	echo "Overriding ly service..."; \
+	LY_OVERRIDE_DIR=/etc/systemd/system/ly.service.d; \
+	LY_OVERRIDE_FILE=$$LY_OVERRIDE_DIR/override.conf; \
+	sudo mkdir -p $$LY_OVERRIDE_DIR; \
+	echo "[Service]" | sudo tee $$LY_OVERRIDE_FILE > /dev/null; \
+	echo "StandardOutput=null" | sudo tee -a $$LY_OVERRIDE_FILE > /dev/null; \
+	echo "StandardError=null" | sudo tee -a $$LY_OVERRIDE_FILE > /dev/null; \
+	sudo systemctl daemon-reexec; \
+	echo "Enabling ly service..."; \
+	sudo systemctl enable --now ly.service; \
+	sudo systemctl disable --now getty@tty2.service
 
 stow_dotfiles:
 	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
