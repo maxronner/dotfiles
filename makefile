@@ -63,6 +63,7 @@ CLI_PKGS := \
 DESKTOP_PKGS := \
 	autotiling \
 	chromium \
+	cmatrix \
 	firefox \
 	flatpak \
 	foot \
