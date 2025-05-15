@@ -40,10 +40,15 @@
         }
     },
     "custom/notification": {
-        "tooltip": false,
-        "format": "",
+        "tooltip": true,
+        "format": "{icon}",
+        "format-icons": {
+            "active": "",
+            "default": "󰂚"
+        },
         "on-click": "makoctl restore",
-        "escape": true
+        "escape": true,
+        "tooltip-format": "Display recent notifications",
     },
     "custom/pacman": {
         "format": "{} {icon}",
