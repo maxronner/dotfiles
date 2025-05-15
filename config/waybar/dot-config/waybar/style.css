@@ -141,3 +141,10 @@ tooltip {
     animation-iteration-count: infinite;
     animation-direction: alternate;
 }
+#network {
+    /* This is here because current wifi icon will be cut off otherwise */
+    padding: 0px 8px 0px 0px;
+}
+.group-item .module {
+    padding: 0px 10px;
+}

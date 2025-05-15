@@ -71,6 +71,7 @@
     "group/expand": {
         "orientation": "horizontal",
         "drawer": {
+            "children-class": "group-item",
             "transition-duration": 600,
             "transition-to-left": true,
             "click-to-reveal": true
@@ -165,7 +166,7 @@
     "clock": {
         "timezone": "Europe/Stockholm",
         "locale": "sv_SE.UTF-8",
-        "tooltip-format": "<tt><big>{calendar}</big></tt>",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "year",
             "mode-mon-col": 3,
@@ -273,7 +274,7 @@
     },
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%)  ",
+        "format-wifi": "{essid}({signalStrength}%) ",
         "format-ethernet": "{ipaddr}/{cidr} 󰱔",
         "tooltip-format": "{ifname} via {gwaddr}",
         "format-linked": "{ifname} (No IP) 󰱟",
