@@ -42,7 +42,7 @@
     "custom/notification": {
         "tooltip": false,
         "format": "",
-        "on-click": "swaync-client -t -sw",
+        "on-click": "makoctl restore",
         "escape": true
     },
     "custom/pacman": {
