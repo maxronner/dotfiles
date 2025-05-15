@@ -1,6 +1,9 @@
 PACKAGE_MANAGER := sudo pacman -Syu --needed --noconfirm
 AUR_HELPER := yay --needed --noconfirm --sudoflags "-S"
 
+TIMEZONE := Europe/Stockholm
+NTP_SERVERS := 0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org
+
 # Variables for directories
 USERNAME := $(shell whoami)
 HOME := /home/$(USERNAME)
@@ -36,7 +39,6 @@ CLI_PKGS := \
 	noto-fonts-emoji \
 	npm \
 	nss-mdns \
-	openntpd \
 	openssh \
 	pacman-contrib \
 	pass \
@@ -98,11 +100,25 @@ LAPTOP_PKGS := \
 	bluez \
 	bluez-utils
 
+SYSTEM_SERVICES := \
+	avahi-daemon.service \
+	bluetooth.service \
+	dhcpcd.service \
+	sshd.service \
+	systemd-resolved.service \
+	systemd-timesyncd.service
+
+USER_SERVICES := \
+	mako.service \
+	syncthing.service
+
 DEPS := \
 	install_cli \
 	install_desktop \
 	install_aur \
 	install_optional \
+	enable_systemd_services \
+	setup_timesyncd \
 	ly-setup \
 	stow_dotfiles
 
@@ -130,10 +146,9 @@ install_desktop:
 install_aur:
 	@if ! command -v yay > /dev/null; then \
 		echo "yay not found. Installing yay..."; \
-		[ -d /tmp/yay ] && rm -rf /tmp/yay; \
-		git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -s --noconfirm; \
-		pacman -U --noconfirm --needed $(find /tmp/yay -name "*.pkg.tar.zst" | head -n 1); \
-		rm -rf /tmp/yay; \
+		git clone https://aur.archlinux.org/yay.git $(HOME)/yay && cd $(HOME)/yay && makepkg -s --noconfirm; \
+		sudo pacman -U --noconfirm --needed $(find $(HOME)/yay -name "*.pkg.tar.zst" | head -n 1); \
+		rm -rf $(HOME)/yay; \
 	fi
 	@echo "Downloading AUR packages..."
 	$(AUR_HELPER) $(AUR_PKGS)
@@ -189,4 +204,24 @@ stow_dotfiles:
 			stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
 		fi \
 	done
+
+enable_systemd_services:
+	@echo "Enabling generic systemd services..."
+	@sudo systemctl enable --now $(SYSTEM_SERVICES) || exit 1
+
+	@echo "Enabling specific user services..."
+	@systemctl --user enable --now $(USER_SERVICES) || exit 1
+
+	@echo "Enabling all user services in $(HOME)/.config/systemd/user..."
+	@systemctl --user enable --now $$(find $(HOME)/.config/systemd/user -maxdepth 1 -name "*.service") || exit 1
+
+setup_timesyncd:
+	@echo "Setting up timesyncd..."
+	@sudo mkdir -p /etc/systemd/timesyncd.conf.d
+	@echo "[Time]" | sudo tee /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
+	@echo "NTP=$(NTP_SERVERS)" | sudo tee -a /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
+	@sudo timedatectl set-ntp false
+	@sudo timedatectl set-ntp true
+	@sudo systemctl restart systemd-timesyncd
+	@sudo timedatectl set-timezone $(TIMEZONE)
 
