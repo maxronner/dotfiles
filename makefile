@@ -117,10 +117,10 @@ DEPS := \
 	install_desktop \
 	install_aur \
 	install_optional \
+	stow_dotfiles \
 	enable_systemd_services \
 	setup_timesyncd \
-	ly-setup \
-	stow_dotfiles
+	ly-setup
 
 .PHONY: install_cli install_desktop install_aur ly-setup
 
@@ -152,6 +152,35 @@ install_aur:
 	fi
 	@echo "Downloading AUR packages..."
 	$(AUR_HELPER) $(AUR_PKGS)
+
+stow_dotfiles:
+	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
+	@for dir in $(STOW_DIR)/*; do \
+		if [ -d $$dir ]; then \
+			echo "Stowing $$(basename $$dir)..."; \
+			stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
+		fi \
+	done
+
+enable_systemd_services:
+	@echo "Enabling generic systemd services..."
+	@sudo systemctl enable --now $(SYSTEM_SERVICES) || exit 1
+
+	@echo "Enabling specific user services..."
+	@systemctl --user enable --now $(USER_SERVICES) || exit 1
+
+	@echo "Enabling all user services in $(HOME)/.config/systemd/user..."
+	@systemctl --user enable --now $$(find $(HOME)/.config/systemd/user -maxdepth 1 -name "*.service") || exit 1
+
+setup_timesyncd:
+	@echo "Setting up timesyncd..."
+	@sudo mkdir -p /etc/systemd/timesyncd.conf.d
+	@echo "[Time]" | sudo tee /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
+	@echo "NTP=$(NTP_SERVERS)" | sudo tee -a /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
+	@sudo timedatectl set-ntp false
+	@sudo timedatectl set-ntp true
+	@sudo systemctl restart systemd-timesyncd
+	@sudo timedatectl set-timezone $(TIMEZONE)
 
 install_optional:
 ifeq ($(strip $(env)),)
@@ -195,33 +224,4 @@ ly-setup:
 	echo "Enabling ly service..."; \
 	sudo systemctl enable --now ly.service; \
 	sudo systemctl disable --now getty@tty2.service
-
-stow_dotfiles:
-	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
-	@for dir in $(STOW_DIR)/*; do \
-		if [ -d $$dir ]; then \
-			echo "Stowing $$(basename $$dir)..."; \
-			stow --dotfiles -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
-		fi \
-	done
-
-enable_systemd_services:
-	@echo "Enabling generic systemd services..."
-	@sudo systemctl enable --now $(SYSTEM_SERVICES) || exit 1
-
-	@echo "Enabling specific user services..."
-	@systemctl --user enable --now $(USER_SERVICES) || exit 1
-
-	@echo "Enabling all user services in $(HOME)/.config/systemd/user..."
-	@systemctl --user enable --now $$(find $(HOME)/.config/systemd/user -maxdepth 1 -name "*.service") || exit 1
-
-setup_timesyncd:
-	@echo "Setting up timesyncd..."
-	@sudo mkdir -p /etc/systemd/timesyncd.conf.d
-	@echo "[Time]" | sudo tee /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
-	@echo "NTP=$(NTP_SERVERS)" | sudo tee -a /etc/systemd/timesyncd.conf.d/local.conf > /dev/null
-	@sudo timedatectl set-ntp false
-	@sudo timedatectl set-ntp true
-	@sudo systemctl restart systemd-timesyncd
-	@sudo timedatectl set-timezone $(TIMEZONE)
 
