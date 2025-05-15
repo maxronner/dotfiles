@@ -19,7 +19,7 @@
 
 * {
     font-family: Jetbrains Mono, Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 window#waybar {
@@ -76,6 +76,10 @@ tooltip {
 }
 .modules-center {
     margin: 10 0 5 0;
+}
+
+#mode {
+    font-size: 14px;
 }
 
 #workspaces {
