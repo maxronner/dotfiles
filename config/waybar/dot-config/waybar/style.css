@@ -30,21 +30,24 @@ window#waybar {
     color: @text;
 }
 
-.module,
-tooltip {
+.module {
     box-shadow: 0px 0px 8px rgba(0, 0, 0, .6);
 }
 
 tooltip,
 tooltip label {
     color: @text;
-    background: @base;
     padding: 0px;
     margin: 0px;
+    background: alpha(@base,.8);
 }
 
 tooltip {
-    border: 1px solid @rose;
+    border: 1px solid @iris;
+}
+
+tooltip label {
+    background-color: transparent;
 }
 
 .module{
@@ -61,7 +64,8 @@ tooltip {
 
 .modules-left,
 .modules-right,
-.modules-center {
+.modules-center,
+tooltip {
     padding:7px;
     border-radius:10px;
     background: alpha(@base,.6);
