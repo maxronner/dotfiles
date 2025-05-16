@@ -1,3 +1,6 @@
+-- Replay last macro
+vim.keymap.set("n", "Q", "@@")
+
 -- Move visual selection up/down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
