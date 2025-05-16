@@ -13,6 +13,7 @@ if command -v eza &>/dev/null; then
     alias tree="eza --tree --level=3"
     alias ll="eza --long --all --icons --git --mounts --smart-group"
     alias ls="eza --no-permissions --no-user --no-time --no-filesize --icons=always"
+    alias l="eza --no-permissions --no-user --no-time --no-filesize --icons=always --long"
 fi
 
 if command -v nvim &>/dev/null; then

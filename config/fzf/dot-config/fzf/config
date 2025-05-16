@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
+
 export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
@@ -15,20 +17,13 @@ fman() {
     man -k . | fzf -q "$1" --prompt='man> '  --preview $'echo {} | tr -d \'()\' | awk \'{printf "%s ", $2} {print $1}\' | xargs -r man | col -bx | bat -l man -p --color always' | tr -d '()' | awk '{printf "%s ", $2} {print $1}' | xargs -r man
 }
 
-# Find file and open in nvim
-fe() {
-    IFS=$'\n' files=($(fzf-tmux --query="$1" --multi --select-1 --exit-0))
-    [[ -n "$files" ]] && ${EDITOR:-nvim} "${files[@]}"
-}
-#bind '"\C-t": "fe\n"'
-
 # Find emoji
-femo() {
+fzf-emoji() {
     emojis=$(cat ~/.local/share/emoji.txt)
     selected_emoji=($(echo "$emojis" | fzf-tmux --query="$1" --multi --select-1 --exit-0 | awk '{print $1}' ))
     wl-copy "$selected_emoji"
 }
-bindkey -s '\ee' '^ufemo^M'
+
 # Advanced customization of fzf options via _fzf_comprun function
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
