@@ -17,7 +17,6 @@ CLI_PKGS := \
 	bash-completion \
 	bat \
 	btop \
-	dhcpcd \
 	eza \
 	fastfetch \
 	fd \
@@ -95,6 +94,7 @@ WORKSPACE_PKGS := \
 	nvidia-open
 
 LAPTOP_PKGS := \
+	dhcpcd \
 	kmonad \
 	iwd \
 	bluez \
@@ -103,7 +103,6 @@ LAPTOP_PKGS := \
 SYSTEM_SERVICES := \
 	avahi-daemon.service \
 	bluetooth.service \
-	dhcpcd.service \
 	sshd.service \
 	systemd-resolved.service \
 	systemd-timesyncd.service
@@ -202,6 +201,10 @@ endif
 ifeq ($(env), laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
+
+	@echo "Setting up dhcpcd..."
+	@sudo systemctl enable --now dhcpcd.service
+
 	@echo "Installing laptop specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop
 endif
