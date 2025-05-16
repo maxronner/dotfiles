@@ -162,6 +162,17 @@ stow_dotfiles:
 		fi \
 	done
 
+unstow_dotfiles:
+	@echo "Unstowing dotfiles from $(HOME)..."
+	@for dir in $(STOW_DIR)/*; do \
+		if [ -d $$dir ]; then \
+			echo "Unstowing $$(basename $$dir)..."; \
+			stow --dotfiles --delete -d $(STOW_DIR) -t $(HOME) $$(basename $$dir); \
+		fi \
+	done
+
+
+
 enable_systemd_services:
 	@echo "Enabling generic systemd services..."
 	@sudo systemctl enable --now $(SYSTEM_SERVICES) || exit 1

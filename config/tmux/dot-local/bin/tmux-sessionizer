@@ -5,7 +5,7 @@ CONFIG_FILE="$CONFIG_DIR/tmux-sessionizer.conf"
 # config file example
 # ------------------------
 # # file: ~/.config/tmux-sessionizer/tmux-sessionizer.conf
-# # If set this override the default TS_SEARCH_PATHS (~/ ~/personal ~/git ~/.config)
+# # If set this override the default TS_SEARCH_PATHS
 # TS_SEARCH_PATHS=(~/)
 # # If set this add additional search paths to the default TS_SEARCH_PATHS
 # # The number prefix is the depth for the Path [OPTIONAL]
@@ -55,7 +55,7 @@ hydrate() {
 sanity_check
 
 # if TS_SEARCH_PATHS is not set use default
-[[ -n "$TS_SEARCH_PATHS" ]] || TS_SEARCH_PATHS=(~/ ~/personal ~/git ~/.config)
+[[ -n "$TS_SEARCH_PATHS" ]] || TS_SEARCH_PATHS=(~/ ~/personal ~/personal/dev ~/git)
 
 # Add any extra search paths to the TS_SEARCH_PATHS array
 # e.g : EXTRA_SEARCH_PATHS=("$HOME/extra1:4" "$HOME/extra2")
@@ -89,7 +89,7 @@ find_dirs() {
 
         # Increase the maxdepth if the path is a git directory
         maxdepth=${depth:-${TS_MAX_DEPTH:-1}}
-        [[ "$path" == *git* ]] && ((maxdepth++))
+        [[ "$path" == *git* || "$path" == *personal/dev* ]] && ((maxdepth++))
 
         [[ -d "$path" ]] && \
           find "$path" \
