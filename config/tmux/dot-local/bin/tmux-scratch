@@ -140,9 +140,11 @@ else
     echo "Creating new pane (no command)"
   fi
 
+  CURRENT_DIR=$(tmux display-message -p -F "#{pane_current_path}")
   NEW_PANE=$(
     tmux split-window -P -F '#{pane_id}' \
       -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
+      -c "$CURRENT_DIR" \
       $POS_ARGS \
       ${COMMAND_STRING:+ "$COMMAND_STRING"}
   )
