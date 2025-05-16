@@ -171,8 +171,6 @@ unstow_dotfiles:
 		fi \
 	done
 
-
-
 enable_systemd_services:
 	@echo "Enabling generic systemd services..."
 	@sudo systemctl enable --now $(SYSTEM_SERVICES) || exit 1
