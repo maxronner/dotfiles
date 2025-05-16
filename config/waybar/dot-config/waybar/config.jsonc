@@ -48,7 +48,7 @@
         },
         "on-click": "makoctl restore",
         "escape": true,
-        "tooltip-format": "Display recent notifications",
+        "tooltip-format": "Display recent notifications"
     },
     "custom/pacman": {
         "format": "{} {icon}",
