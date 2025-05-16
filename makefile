@@ -53,6 +53,7 @@ CLI_PKGS := \
 	tgpt \
 	thefuck \
 	tmux \
+	ttf-hack-nerd \
 	unzip \
 	yazi \
 	zig \
@@ -77,7 +78,7 @@ DESKTOP_PKGS := \
 	swaybg \
 	swayidle \
 	swaylock \
-	ttf-hack-nerd \
+	ttf-jetbrains-mono-nerd \
 	waybar \
 	wl-clipboard \
 	wofi \
