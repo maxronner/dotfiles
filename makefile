@@ -67,6 +67,7 @@ DESKTOP_PKGS := \
 	chromium \
 	cmatrix \
 	firefox \
+	flameshot \
 	flatpak \
 	foot \
 	gimp \
@@ -142,6 +143,9 @@ install_desktop:
 	@echo "Installing Desktop Environment packages..."
 	$(PACKAGE_MANAGER) $(DESKTOP_PKGS)
 
+	@echo "Overriding sway .desktop file..."
+	sudo sed -i -E "s|^([[:space:]]*Exec=)(sway)(.*)$|\1sh -c 'export XDG_CURRENT_DESKTOP=sway \\&\\& \2\3'|" /usr/share/wayland-sessions/sway.desktop
+
 # Install AUR packages
 install_aur:
 	@if ! command -v yay > /dev/null; then \
@@ -203,7 +207,7 @@ ifeq ($(env), workstation)
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 
 	@echo "Configuring sway for nvidia..."
-	sudo sed -i 's|^\s*Exec\s*=.*|Exec=sway --unsupported-gpu|' /usr/share/wayland-sessions/sway.desktop
+	sudo sed -i '/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s/^\([[:space:]]*Exec=.*sway\)/\1 --unsupported-gpu/}' /usr/share/wayland-sessions/sway.desktop
 
 	@echo "Installing workstation specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation

@@ -134,6 +134,7 @@ input "type:touchpad" {
     bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
 
+    bindsym $mod+Shift+Print exec flameshot gui
     bindsym $mod+Print exec screenshot focused
     bindsym Print exec screenshot full
 
