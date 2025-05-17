@@ -79,10 +79,6 @@ if [ -f ~/.config/environment/aliases.sh ]; then
     source ~/.config/environment/aliases.sh
 fi
 
-if [ -f ~/.config/zsh/pomodoro.zsh ]; then
-    source ~/.config/zsh/pomodoro.zsh
-fi
-
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
