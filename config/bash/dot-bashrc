@@ -93,7 +93,7 @@ NC='\033[0m' # No Color
 PS1=""
 # Construct the prompt
 if [[ "$SSH_CONNECTION" != "" ]]; then
-    PS1="\[\e[38;5;27m\]\u@\h\[\e[m\]:"  # username@host:current_directory
+    PS1="\[\e[38;5;27m\]\u@\h\[\e[m\]:"  # username@host:
 fi
 PS1+="\[\e[34m\]\w\[\e[m\]"
 PS1+="\[$MAGENTA\] \$(parse_git_branch)\[$NC\]" # Git branch
