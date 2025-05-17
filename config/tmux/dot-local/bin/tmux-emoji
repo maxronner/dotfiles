@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Step 1: Record current pane ID
+caller_pane=$(tmux display-message -p '#{pane_id}')
+
+# Step 2: Spawn a new tmux pane or window to run fzf
+tmux neww bash -c "
+  emoji=\$(fzf-emoji);
+  if [ -n \"\$emoji\" ]; then
+    tmux send-keys -t '$caller_pane' \"\$emoji\";
+  fi
+  tmux kill-pane
+"
+
+# Step 3: (Optional) Focus back on the original pane
+tmux select-pane -t "$caller_pane"
+

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+emojis=$(cat ~/.local/share/emoji.txt)
+selected_emoji=($(echo "$emojis" | fzf --prompt='Pick emoji: ' --query="$1" --multi --select-1 --exit-0 | awk '{print $1}' ))
+echo $selected_emoji
+
