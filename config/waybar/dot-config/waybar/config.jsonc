@@ -222,7 +222,8 @@
         "exec": "~/.config/waybar/scripts/dog.sh",
         "interval": 60,
         "return-type": "json",
-        "format": "{text} {icon}",
+        "format": "{icon}",
+        "format-alt": "{text} {icon}",
         "format-icons": [
             ""
         ]
