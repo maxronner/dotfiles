@@ -90,23 +90,17 @@ return {
     end
   },
   {
-    "NvChad/nvim-colorizer.lua",
-    opts = {
-      user_default_options = {
-        RGB = true,        -- #RGB hex codes
-        RRGGBB = true,     -- #RRGGBB hex codes
-        names = false,     -- "blue", "red", etc.
+    "norcalli/nvim-colorizer.lua",
+    config = function()
+      require("colorizer").setup(nil, {
+        RGB = true,          -- #RGB hex codes
+        RRGGBB = true,       -- #RRGGBB hex codes
+        names = true,        -- "blue", "red", etc.
         RRGGBBAA = true,
-        rgb_fn = true,     -- rgb(...) and rgba(...)
-        hsl_fn = true,     -- hsl(...) and hsla(...)
-        mode = "background", -- background | foreground | virtualtext
-        tailwind = false,
-        sass = { enable = true, parsers = { "css" } },
-        always_update = false
-      },
-    },
-    config = function(_, opts)
-      require("colorizer").setup(nil, opts)
+        rgb_fn = true,       -- rgb(...) and rgba(...)
+        hsl_fn = true,       -- hsl(...) and hsla(...)
+        mode = "background", -- background | foreground
+      })
     end,
   }
 }

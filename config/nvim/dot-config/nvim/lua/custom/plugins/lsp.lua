@@ -1,153 +1,289 @@
 return {
-  "neovim/nvim-lspconfig",
-  dependencies = {
-    "stevearc/conform.nvim",
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "hrsh7th/cmp-nvim-lsp",
-    "hrsh7th/cmp-buffer",
-    "hrsh7th/cmp-path",
-    "hrsh7th/cmp-cmdline",
-    "hrsh7th/nvim-cmp",
-    "L3MON4D3/LuaSnip",
-    "saadparwaiz1/cmp_luasnip",
-    "j-hui/fidget.nvim",
-  },
-
-  config = function()
-    require("conform").setup({
-      formatters_by_ft = {
-      }
-    })
-    local cmp = require('cmp')
-    local cmp_lsp = require("cmp_nvim_lsp")
-    local capabilities = vim.tbl_deep_extend(
-      "force",
-      {},
-      vim.lsp.protocol.make_client_capabilities(),
-      cmp_lsp.default_capabilities())
-
-    require("fidget").setup({})
-    require("mason").setup()
-    require("mason-lspconfig").setup({
-      ensure_installed = {
-        "lua_ls",
-        "rust_analyzer",
-        "gopls",
+  {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      {
+        -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+        -- used for completion, annotations and signatures of Neovim apis
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+          library = {
+            -- See the configuration section for more details
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+          },
+        },
       },
-      handlers = {
-        function(server_name) -- default handler (optional)
-          require("lspconfig")[server_name].setup {
-            capabilities = capabilities
-          }
-        end,
 
-        zls = function()
-          local lspconfig = require("lspconfig")
-          lspconfig.zls.setup({
-            root_dir = lspconfig.util.root_pattern(".git", "build.zig", "zls.json"),
-            settings = {
-              zls = {
-                enable_inlay_hints = true,
-                enable_snippets = true,
-                warn_style = true,
+      -- Tooling package management
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+
+      -- Autoformatting and linting
+      "stevearc/conform.nvim",
+
+      -- Schema information
+      "b0o/SchemaStore.nvim",
+
+      -- LSP progress messages
+      "j-hui/fidget.nvim",
+    },
+
+    config = function()
+      -- TODO: Don't do LSP stuff if we're in notetaking mode
+      if vim.o.filetype == "markdown" then
+        return
+      end
+
+      local extend = function(name, key, values)
+        local mod = require(string.format("lspconfig.configs.%s", name))
+        local default = mod.default_config
+        local keys = vim.split(key, ".", { plain = true })
+        while #keys > 0 do
+          local item = table.remove(keys, 1)
+          default = default[item]
+        end
+
+        if vim.islist(default) then
+          for _, value in ipairs(default) do
+            table.insert(values, value)
+          end
+        else
+          for item, value in pairs(default) do
+            if not vim.tbl_contains(values, item) then
+              values[item] = value
+            end
+          end
+        end
+        return values
+      end
+
+      local capabilities = nil
+      if pcall(require, "cmp_nvim_lsp") then
+        capabilities = require("cmp_nvim_lsp").default_capabilities()
+      end
+
+      local lspconfig = require "lspconfig"
+
+      local servers = {
+        bashls = true,
+        gopls = {
+          manual_install = true,
+          settings = {
+            gopls = {
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
               },
             },
-          })
-          vim.g.zig_fmt_parse_errors = 0
-          vim.g.zig_fmt_autosave = 0
-        end,
-        ["lua_ls"] = function()
-          local lspconfig = require("lspconfig")
-          lspconfig.lua_ls.setup {
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                runtime = { version = "Lua 5.1" },
-                diagnostics = {
-                  globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
-                }
-              }
-            }
-          }
-        end,
+          },
+        },
+        lua_ls = {
+          server_capabilities = {
+            semanticTokensProvider = vim.NIL,
+          },
+        },
+        rust_analyzer = true,
+        svelte = true,
+        templ = true,
+        taplo = true,
+        intelephense = true,
+
+        pyright = true,
+        ruff = { manual_install = true },
+        -- mojo = { manual_install = true },
+
+        -- Enabled biome formatting, turn off all the other ones generally
+        biome = true,
+        -- ts_ls = {
+        --   root_dir = require("lspconfig").util.root_pattern "package.json",
+        --   single_file = false,
+        --   server_capabilities = {
+        --     documentFormattingProvider = false,
+        --   },
+        -- },
+        vtsls = {
+          server_capabilities = {
+            documentFormattingProvider = false,
+          },
+        },
+        -- denols = true,
+        jsonls = {
+          server_capabilities = {
+            documentFormattingProvider = false,
+          },
+          settings = {
+            json = {
+              validate = { enable = true },
+            },
+          },
+        },
+
+        -- cssls = {
+        --   server_capabilities = {
+        --     documentFormattingProvider = false,
+        --   },
+        -- },
+
+        yamlls = {
+          settings = {
+            yaml = {
+              schemaStore = {
+                enable = false,
+                url = "",
+              },
+              -- schemas = require("schemastore").yaml.schemas(),
+            },
+          },
+        },
+
+        ols = {},
+        racket_langserver = { manual_install = true },
+        roc_ls = { manual_install = true },
+
+        ocamllsp = {
+          manual_install = true,
+          cmd = { "dune", "tools", "exec", "ocamllsp" },
+          -- cmd = { "dune", "exec", "ocamllsp" },
+          settings = {
+            codelens = { enable = true },
+            inlayHints = { enable = true },
+            syntaxDocumentation = { enable = true },
+          },
+
+          server_capabilities = { semanticTokensProvider = false },
+        },
+
+        gleam = {
+          manual_install = true,
+        },
+
+        clangd = {
+          -- cmd = { "clangd", unpack(require("custom.clangd").flags) },
+          -- TODO: Could include cmd, but not sure those were all relevant flags.
+          --    looks like something i would have added while i was floundering
+          init_options = { clangdFileStatus = true },
+
+          filetypes = { "c" },
+        },
       }
-    })
 
-    local cmp_select = { behavior = cmp.SelectBehavior.Select }
+      local servers_to_install = vim.tbl_filter(function(key)
+        local t = servers[key]
+        if type(t) == "table" then
+          return not t.manual_install
+        else
+          return t
+        end
+      end, vim.tbl_keys(servers))
 
-    cmp.setup({
-      snippet = {
-        expand = function(args)
-          require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+      require("mason").setup()
+      local ensure_installed = {
+        "gopls",
+        "bashls",
+        "lua_ls",
+        "delve",
+        -- "tailwind-language-server",
+      }
+
+      vim.list_extend(ensure_installed, servers_to_install)
+      -- require("mason-tool-installer").setup { ensure_installed = ensure_installed }
+
+      for name, config in pairs(servers) do
+        if config == true then
+          config = {}
+        end
+        config = vim.tbl_deep_extend("force", {}, {
+          capabilities = capabilities,
+        }, config)
+
+        lspconfig[name].setup(config)
+      end
+
+      local disable_semantic_tokens = {
+        lua = true,
+      }
+
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local bufnr = args.buf
+          local client = assert(vim.lsp.get_client_by_id(args.data.client_id), "must have valid client")
+
+          local settings = servers[client.name]
+          if type(settings) ~= "table" then
+            settings = {}
+          end
+
+          local builtin = require "telescope.builtin"
+
+          vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
+          vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = 0, desc = "Go to definition" })
+          vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = 0, desc = "References" })
+          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "Declaration" })
+          vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0, desc = "Type definition" })
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0, desc = "Hover documentation" })
+          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0, desc = "Code actions" })
+          vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = 0, desc = "Rename symbol" })
+          vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, { buffer = 0, desc = "Open diagnostics float" })
+          vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, { buffer = 0, desc = "Workspace symbols" })
+          vim.keymap.set("n", "<C-h>", vim.lsp.buf.signature_help, { buffer = 0, desc = "Signature help" })
+          vim.keymap.set("n", "[d", vim.diagnostic.goto_next, { buffer = 0, desc = "Next diagnostic" })
+          vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, { buffer = 0, desc = "Previous diagnostic" })
+          vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, { buffer = 0, desc = "Document symbols" })
+
+          local filetype = vim.bo[bufnr].filetype
+          if disable_semantic_tokens[filetype] then
+            client.server_capabilities.semanticTokensProvider = nil
+          end
+
+          -- Override server capabilities
+          if settings.server_capabilities then
+            for k, v in pairs(settings.server_capabilities) do
+              if v == vim.NIL then
+                ---@diagnostic disable-next-line: cast-local-type
+                v = nil
+              end
+
+              client.server_capabilities[k] = v
+            end
+          end
         end,
-      },
-      mapping = cmp.mapping.preset.insert({
-        ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-        ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-        ["<C-Space>"] = cmp.mapping.complete(),
-      }),
-      sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' }, -- For luasnip users.
-      }, {
-        { name = 'buffer' },
       })
-    })
 
-    vim.diagnostic.config({
-      -- update_in_insert = true,
-      virtual_text = {
-        prefix = '●', -- Or '■', '●', '>>', '⚠️', etc.
-        spacing = 2,
-      },
-      signs = true,
-      underline = true,
-      update_in_insert = false,
-      float = {
-        focusable = false,
-        style = "minimal",
-        border = "rounded",
-        source = "always",
-        header = "",
-        prefix = "",
-      },
-    })
-    vim.api.nvim_create_autocmd('LspAttach', {
-      callback = function(e)
-        local opts = { buffer = e.buf }
+      require("custom.autoformat").setup()
 
-        vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end,
-          vim.tbl_extend("force", opts, { desc = "Go to definition" }))
+      vim.diagnostic.config({
+        -- update_in_insert = true,
+        virtual_text = {
+          prefix = '●', -- Or '■', '●', '>>', '⚠️', etc.
+          spacing = 2,
+        },
+        signs = true,
+        underline = true,
+        update_in_insert = false,
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          header = "",
+          prefix = "",
+        },
+      })
 
-        vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end,
-          vim.tbl_extend("force", opts, { desc = "Hover documentation" }))
-
-        vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end,
-          vim.tbl_extend("force", opts, { desc = "Workspace symbols" }))
-
-        vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end,
-          vim.tbl_extend("force", opts, { desc = "Open diagnostics float" }))
-
-        vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end,
-          vim.tbl_extend("force", opts, { desc = "Code actions" }))
-
-        vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end,
-          vim.tbl_extend("force", opts, { desc = "References" }))
-
-        vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end,
-          vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
-
-        vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end,
-          vim.tbl_extend("force", opts, { desc = "Signature help" }))
-
-        vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end,
-          vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-
-        vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end,
-          vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
-      end,
-    })
-  end
+      vim.keymap.set("", "<leader>l", function()
+        local config = vim.diagnostic.config() or {}
+        if config.virtual_text then
+          vim.diagnostic.config { virtual_text = false, virtual_lines = true }
+        else
+          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+        end
+      end, { desc = "Toggle lsp_lines" })
+    end,
+  },
 }
