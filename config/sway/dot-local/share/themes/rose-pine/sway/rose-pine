@@ -22,8 +22,8 @@ set $indicator      #817ca3
 
 # Teming border and Windows --------------
 # target                 border    bg    text   indicator  child-border
-client.focused           $hlh      $hlh  $text  $hlh       $highlighthigh
-client.focused_inactive  $hll      $base $text  $hll       $highlightlow
+client.focused           $hlh      $hlh  $text  $hlh       $hlh
+client.focused_inactive  $hll      $hll  $text  $hll       $hll
 client.focused_tab_title $hlh      $hlh  $text
 client.unfocused         $hll      $base $text  $hll       $highlightlow
 client.urgent            $text     $base $text  $love      $love
