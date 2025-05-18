@@ -1,0 +1,6 @@
+width=1200
+height=600
+location=center
+layer=overlay
+allow_markup=true
+font=/usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf

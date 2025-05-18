@@ -1,5 +1,6 @@
 # Read `man 5 sway` for a complete reference.
 include $HOME/.local/share/themes/rose-pine/sway/rose-pine
+set $font "pango:Jetbrains Mono Nerd Font"
 
 ### Variables
 #
@@ -17,13 +18,10 @@ set $tmux $term -L tmux-default
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-#set $menu dmenu_path | dmenu | xargs swaymsg exec --
-set $font "pango:Jetbrains Mono Nerd Font"
-
-#set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
-#    --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose"
-
-set $menu wofi --show drun
+set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
+    --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose" | xargs -r swaymsg exec --
+set $menu wofi --show drun --prompt "Search applications..." | xargs -r swaymsg exec --
+set $menu tofi-drun --font /usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf | xargs -r swaymsg exec --
 
 set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
     -i $HOME/.config/sway/lock.wallpaper
