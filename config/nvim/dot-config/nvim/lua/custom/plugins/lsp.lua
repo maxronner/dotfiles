@@ -233,8 +233,8 @@ return {
           vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, { buffer = 0, desc = "Open diagnostics float" })
           vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, { buffer = 0, desc = "Workspace symbols" })
           vim.keymap.set("n", "<C-h>", vim.lsp.buf.signature_help, { buffer = 0, desc = "Signature help" })
-          vim.keymap.set("n", "[d", vim.diagnostic.goto_next, { buffer = 0, desc = "Next diagnostic" })
-          vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, { buffer = 0, desc = "Previous diagnostic" })
+          vim.keymap.set("n", "[d", vim.diagnostic.get_next, { buffer = 0, desc = "Next diagnostic" })
+          vim.keymap.set("n", "]d", vim.diagnostic.get_prev, { buffer = 0, desc = "Previous diagnostic" })
           vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, { buffer = 0, desc = "Document symbols" })
 
           local filetype = vim.bo[bufnr].filetype
