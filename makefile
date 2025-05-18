@@ -144,7 +144,7 @@ install_desktop:
 	$(PACKAGE_MANAGER) $(DESKTOP_PKGS)
 
 	@echo "Overriding sway .desktop file..."
-	sudo sed -i -E "s|^([[:space:]]*Exec=)(sway)(.*)$|\1sh -c 'export XDG_CURRENT_DESKTOP=sway \\&\\& \2\3'|" /usr/share/wayland-sessions/sway.desktop
+	@sudo sed -i -E "s|^([[:space:]]*Exec=)(sway)(.*)$$|\\1sh -c 'export XDG_CURRENT_DESKTOP=sway \\\&\\\& \\2\\3'|" /usr/share/wayland-sessions/sway.desktop
 
 # Install AUR packages
 install_aur:
