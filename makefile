@@ -117,7 +117,7 @@ DEPS := \
 	install_cli \
 	install_desktop \
 	install_aur \
-	install_optional \
+	setup_device_specifics \
 	stow_dotfiles \
 	enable_systemd_services \
 	setup_timesyncd \
@@ -195,7 +195,7 @@ setup_timesyncd:
 	@sudo systemctl restart systemd-timesyncd
 	@sudo timedatectl set-timezone $(TIMEZONE)
 
-install_optional:
+setup_device_specifics:
 ifeq ($(strip $(env)),)
 	@echo "env is not set, nothing to do."
 endif
@@ -207,7 +207,7 @@ ifeq ($(env), workstation)
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 
 	@echo "Configuring sway for nvidia..."
-	sudo sed -i '/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s/^\([[:space:]]*Exec=.*sway\)/\1 --unsupported-gpu/}' /usr/share/wayland-sessions/sway.desktop
+	@sudo sed -i '/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s/^\([[:space:]]*Exec=.*sway\)/\1 --unsupported-gpu/}' /usr/share/wayland-sessions/sway.desktop
 
 	@echo "Installing workstation specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation
