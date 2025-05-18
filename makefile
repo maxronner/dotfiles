@@ -82,12 +82,12 @@ DESKTOP_PKGS := \
 	ttf-jetbrains-mono-nerd \
 	waybar \
 	wl-clipboard \
-	wofi \
 	xdg-desktop-portal-gtk \
 	xdg-desktop-portal-wlr
 
 # AUR packages
 AUR_PKGS := \
+	tofi \
 	rose-pine-cursor \
 	zen-browser-bin
 
