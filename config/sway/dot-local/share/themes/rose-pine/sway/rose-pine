@@ -22,7 +22,7 @@ set $indicator      #817ca3
 # Teming border and Windows --------------
 # target                 title     bg    text   indicator  border
 client.focused           $hlh      $base $text  $hlh       $highlighthigh
-client.focused_inactive  $text     $base $text  $surface   $surface
+client.focused_inactive  $hlh      $base $text  $surface   $surface
 client.focused_tab_title $hll      $base $text
 client.unfocused         $hll      $base $text  $overlay   $overlay
 client.urgent            $text     $base $text  $love      $love
