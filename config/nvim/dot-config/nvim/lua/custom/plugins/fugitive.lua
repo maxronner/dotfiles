@@ -26,6 +26,13 @@ return {
 
         vim.keymap.set("n", "<leader>t", ":Git push -u origin ",
           vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
+
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_get_option(buf, "modified") then
+            vim.notify("Warning: You have unsaved buffers!", vim.log.levels.WARN)
+            break
+          end
+        end
       end,
     })
 
