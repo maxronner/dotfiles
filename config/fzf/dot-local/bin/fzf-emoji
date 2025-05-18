@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+query=${1:-}
+emojis=$(cat ~/.local/share/emoji.txt)
+selected_emoji=$(echo "$emojis" | fzf --query="$query" --multi --select-1 --exit-0 | awk '{print $1}' | paste -sd '' -)
+echo "$selected_emoji"

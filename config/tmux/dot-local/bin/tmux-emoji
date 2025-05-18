@@ -4,20 +4,13 @@ set -euo pipefail
 mode=${1:-insert}
 caller_pane=$(tmux display-message -p '#{pane_id}')
 
-fzf_emoji() {
-  local query=${1:-}
-  emojis=$(cat ~/.local/share/emoji.txt)
-  selected_emoji=($(echo "$emojis" | fzf --query="$query" --multi --select-1 --exit-0 | awk '{print $1}' ))
-  echo $selected_emoji
-}
-
 copy_clipboard() {
   if command -v wl-copy &>/dev/null; then
-    wl-copy
+    exec wl-copy
   elif command -v xclip &>/dev/null; then
-    xclip -selection clipboard
+    exec xclip -selection clipboard
   elif command -v xsel &>/dev/null; then
-    xsel --clipboard --input
+    exec xsel --clipboard --input
   else
     echo "No clipboard utility found" >&2
     return 1
@@ -25,14 +18,13 @@ copy_clipboard() {
 }
 
 if [[ "$mode" == "clipboard" ]]; then
-  emoji=$(fzf_emoji)
+  emoji=$(fzf-emoji)
   if [[ -n "$emoji" ]]; then
-    copy_clipboard <<< "$emoji"
+    printf %s "$emoji" | copy_clipboard
   fi
 else
   tmux popup -E "
-    emojis=\$(cat ~/.local/share/emoji.txt)
-    emoji=\$(echo \"\$emojis\" | fzf --multi --select-1 --exit-0 | awk '{print \$1}')
+    emoji=\$(fzf-emoji)
     tmux send-keys -t \"${caller_pane}\" \"\$emoji\"
   "
 fi
