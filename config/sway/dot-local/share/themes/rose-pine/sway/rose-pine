@@ -25,7 +25,7 @@ set $indicator      #817ca3
 client.focused           $hlh      $hlh  $text  $hlh       $hlh
 client.focused_inactive  $hll      $hll  $text  $hll       $hll
 client.focused_tab_title $hlh      $hlh  $text
-client.unfocused         $hll      $base $text  $hll       $highlightlow
-client.urgent            $love     $base $text  $love      $love
+client.unfocused         $hll      $hll  $text  $hll       $highlightlow
+client.urgent            $love     $love $text  $love      $love
 client.placeholder       $base     $base $text  $overlay   $overlay
 client.background        $base
