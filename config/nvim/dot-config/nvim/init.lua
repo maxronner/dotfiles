@@ -1,4 +1,7 @@
 vim.g.mapleader = " "
+
+-- This is here because of what seems
+-- to be a race condition with nvim-colorizer
 vim.opt.termguicolors = true
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
