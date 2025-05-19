@@ -29,7 +29,7 @@ vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" }
 vim.keymap.set("n", "Q", "@@", { desc = "Replay last macro" })
 
 -- Split line at midpoint
-vim.keymap.set('n', '<leader>cc', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
+vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
 
 -- Move visual selection up/down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })

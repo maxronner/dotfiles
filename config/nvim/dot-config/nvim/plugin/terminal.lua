@@ -16,16 +16,13 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-local function get_visual_selection()
-  -- Save the current mode
+--- Get the visual selection range: start_line, start_col, end_line, end_col, mode
+function Get_visual_range()
   local mode = vim.fn.mode()
-
-  -- Return if not in visual mode
   if mode ~= 'v' and mode ~= 'V' and mode ~= '\22' then
     return nil
   end
 
-  -- Get start and end positions
   local _, start_line, start_col = unpack(vim.fn.getpos("v"))
   local _, end_line, end_col = unpack(vim.fn.getpos("."))
 
@@ -35,35 +32,48 @@ local function get_visual_selection()
     start_col, end_col = end_col, start_col
   end
 
-  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+  return {
+    start_line = start_line,
+    start_col = start_col,
+    end_line = end_line,
+    end_col = end_col,
+    mode = mode,
+  }
+end
 
+--- Get the text from visual selection
+local function get_visual_selection_text()
+  local range = Get_visual_range()
+  if not range then return nil end
+
+  local lines = vim.api.nvim_buf_get_lines(0, range.start_line - 1, range.end_line, false)
   if #lines == 0 then return "" end
 
-  if mode == '\22' then
+  if range.mode == '\22' then -- blockwise visual
     local out = {}
-    for i, line in ipairs(lines) do
-      -- Lua indexing starts at 1, but Neovim columns are 1-based for `getpos`
-      -- pad short lines to avoid nil errors
-      if #line < end_col then
-        line = line .. string.rep(" ", end_col - #line)
+    for _, line in ipairs(lines) do
+      if #line < range.end_col then
+        line = line .. string.rep(" ", range.end_col - #line)
       end
-      table.insert(out, line:sub(start_col, end_col))
+      table.insert(out, line:sub(range.start_col, range.end_col))
     end
     return table.concat(out, "\n")
   else
-    if mode == 'V' then
-      start_col = 1
-      end_col = -1
+    if range.mode == 'V' then
+      range.start_col = 1
+      range.end_col = -1
     end
-    lines[1] = string.sub(lines[1], start_col)
+
+    lines[1] = string.sub(lines[1], range.start_col)
     if #lines == 1 then
-      lines[1] = string.sub(lines[1], 1, end_col - start_col + 1)
+      lines[1] = string.sub(lines[1], 1, range.end_col - range.start_col + 1)
     else
-      lines[#lines] = string.sub(lines[#lines], 1, end_col)
+      lines[#lines] = string.sub(lines[#lines], 1, range.end_col)
     end
+    return table.concat(lines, "\n")
   end
-  return table.concat(lines, "\n")
 end
+
 
 vim.keymap.set("n", "<leader>o", function()
   -- Check if tmux-scratch is available
@@ -118,7 +128,7 @@ vim.keymap.set("v", "<leader>i", function()
       return
     end
 
-    local selection = get_visual_selection()
+    local selection = get_visual_selection_text()
     if not selection or selection == "" then
       return
     end
