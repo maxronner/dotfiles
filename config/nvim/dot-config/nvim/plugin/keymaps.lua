@@ -97,4 +97,7 @@ vim.keymap.set("n", "<leader>bb", function()
   end
 end, { silent = true, desc = "Toggle true/false" })
 
-vim.keymap.set("n", "<leader>dl", "<cmd>!find . | wc -l<CR>", { desc = "Count lines in directory" })
+vim.keymap.set("n", "<leader>lf", "<cmd>!find . | wc -l<CR>", { desc = "Count files in directory" })
+vim.keymap.set("n", "<leader>ll",
+  "<cmd>!find . -type f -exec wc -l {} \\; | awk '{ total += $1 } END { print total }'<CR>",
+  { desc = "Count lines in all files of current directory" })
