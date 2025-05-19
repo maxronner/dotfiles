@@ -228,14 +228,14 @@ return {
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "Declaration" })
           vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0, desc = "Type definition" })
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0, desc = "Hover documentation" })
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0, desc = "Code actions" })
-          vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = 0, desc = "Rename symbol" })
-          vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, { buffer = 0, desc = "Open diagnostics float" })
-          vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, { buffer = 0, desc = "Workspace symbols" })
+          vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, { buffer = 0, desc = "Code actions" })
+          vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { buffer = 0, desc = "Rename symbol" })
+          vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float, { buffer = 0, desc = "Open diagnostics float" })
           vim.keymap.set("n", "<C-h>", vim.lsp.buf.signature_help, { buffer = 0, desc = "Signature help" })
           vim.keymap.set("n", "[d", vim.diagnostic.get_next, { buffer = 0, desc = "Next diagnostic" })
           vim.keymap.set("n", "]d", vim.diagnostic.get_prev, { buffer = 0, desc = "Previous diagnostic" })
-          vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, { buffer = 0, desc = "Document symbols" })
+          vim.keymap.set("n", "<leader>lws", vim.lsp.buf.workspace_symbol, { buffer = 0, desc = "Workspace symbols" })
+          vim.keymap.set("n", "<leader>ls", builtin.lsp_document_symbols, { buffer = 0, desc = "Document symbols" })
 
           local filetype = vim.bo[bufnr].filetype
           if disable_semantic_tokens[filetype] then
