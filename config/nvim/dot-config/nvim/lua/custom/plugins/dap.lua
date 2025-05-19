@@ -24,8 +24,8 @@ return {
       --   },
       -- }
 
-      vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint)
-      vim.keymap.set("n", "<leader>gb", dap.run_to_cursor)
+      vim.keymap.set("n", "<leader>bt", dap.toggle_breakpoint, { desc = "DAP: Toggle Breakpoint" })
+      vim.keymap.set("n", "<F6>", dap.run_to_cursor, { desc = "DAP: Run to Cursor" })
 
       -- Eval var under cursor
       vim.keymap.set("n", "<leader>?", function()
