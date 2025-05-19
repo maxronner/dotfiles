@@ -1,23 +1,23 @@
 vim.g.mapleader = " "
 
--- This is here because of what seems
--- to be a race condition with nvim-colorizer
-vim.opt.termguicolors = true
-
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  vim.fn.system {
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
+    "--branch=stable",
     lazypath,
-  })
+  }
 end
+
+-- Add lazy to the `runtimepath`, this allows us to `require` it.
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup(
-  { import = "custom/plugins" }, {
-    change_detection = { notify = false },
-  })
+-- Set up lazy, and load my `lua/custom/plugins/` folder
+require("lazy").setup({ import = "custom/plugins" }, {
+  change_detection = {
+    notify = false,
+  },
+})
