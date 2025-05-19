@@ -2,7 +2,9 @@
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   pattern = "*.go",
   callback = function()
+    ---@diagnostic disable-next-line: missing-parameter
     local params = vim.lsp.util.make_range_params()
+    ---@diagnostic disable-next-line: inject-field
     params.context = { only = { "source.organizeImports" } }
     -- buf_request_sync defaults to a 1000ms timeout. Depending on your
     -- machine and codebase, you may want longer. Add an additional
