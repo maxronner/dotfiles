@@ -1,11 +1,14 @@
-#!/usr/bin/env zsh
-local sessions
-sessions="$(tmux ls|fzf --exit-0 --multi)"  || return $?
-local i
-for i in "${(f@)sessions}"
-do
-    [[ $i =~ '([^:]*):.*' ]] && {
-        echo "Killing $match[1]"
-        tmux kill-session -t "$match[1]"
-    }
+#!/usr/bin/env bash
+
+sessions=$(tmux ls | fzf --exit-0 --multi)
+if [ -z "$sessions" ]; then
+  exit $?
+fi
+
+for i in $sessions; do
+  session_name="${i%%:*}"  # remove everything after the first colon
+  if [ -n "$session_name" ]; then
+    echo "Killing $session_name"
+    tmux kill-session -t "$session_name"
+  fi
 done
