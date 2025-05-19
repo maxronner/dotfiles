@@ -8,10 +8,10 @@ return {
 
     -- Sets prompt history to be project specific.
     "nvim-telescope/telescope-smart-history.nvim",
+    "kkharji/sqlite.lua",
 
     -- Sets vim.ui.select to telescope.
     "nvim-telescope/telescope-ui-select.nvim",
-    "kkharji/sqlite.lua",
   },
 
   config = function()
