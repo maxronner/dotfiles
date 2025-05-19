@@ -64,7 +64,7 @@ vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source current 
 ---- Clipboard ----
 
 -- Copy diagnostic message to clipboard
-vim.keymap.set('n', '<leader>cd', function()
+vim.keymap.set('n', '<leader>yd', function()
   local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
   local json = vim.json.encode(diagnostics)
   vim.fn.system("echo '" .. json .. "' | jq -r 'map(.message) | join(\", \")' | wl-copy")
