@@ -25,7 +25,7 @@ pcall(telescope.load_extension, "ui-select")
 pcall(telescope.load_extension, "frecency")
 
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<space>/", builtin.current_buffer_fuzzy_find, { desc = "Telescope: Fuzzy find in current buffer" })
+vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, { desc = "Telescope: Fuzzy find in current buffer" })
 vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Telescope: Keymaps" })
 vim.keymap.set("n", "<leader>fp", builtin.find_files, { desc = "Telescope: Find files" })
 vim.keymap.set("n", "<leader>fg", builtin.git_files, { desc = "Telescope: Git files" })
