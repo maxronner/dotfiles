@@ -9,19 +9,21 @@ Usage: $(basename "$0") [OPTIONS]
 Set default applications for common MIME types using xdg-mime.
 
 Options:
-  -i, --image-viewer <file.desktop>  Set default image viewer to the specified .desktop file.
-  -w, --web-browser <file.desktop>   Set default web browser to the specified .desktop file.
-  -v, --video-player <file.desktop>  Set default video player to the specified .desktop file.
-  -a, --audio-player <file.desktop>  Set default audio player to the specified .desktop file.
-  -t, --text-editor <file.desktop>   Set default text editor to the specified .desktop file.
-  -p, --pdf-viewer <file.desktop>    Set default PDF viewer to the specified .desktop file.
-  -I, --interactive-image-viewer     Set default image viewer using interactive fzf prompt.
-  -W, --interactive-web-browser      Set default web browser using interactive fzf prompt.
-  -V, --interactive-video-player     Set default video player using interactive fzf prompt.
-  -A, --interactive-audio-player     Set default audio player using interactive fzf prompt.
-  -T, --interactive-text-editor      Set default text editor using interactive fzf prompt.
-  -P, --interactive-pdf-viewer       Set default PDF viewer using interactive fzf prompt.
-  -h, --help                         Show this help message and exit
+  -i, --image-viewer <file.desktop>         Set default image viewer to the specified .desktop file.
+  -w, --web-browser <file.desktop>          Set default web browser to the specified .desktop file.
+  -v, --video-player <file.desktop>         Set default video player to the specified .desktop file.
+  -a, --audio-player <file.desktop>         Set default audio player to the specified .desktop file.
+  -t, --text-editor <file.desktop>          Set default text editor to the specified .desktop file.
+  -p, --pdf-viewer <file.desktop>           Set default PDF viewer to the specified .desktop file.
+  -b, --bittorrent-client <file.desktop>    Set default BitTorrent client to the specified .desktop file.
+  -I, --interactive-image-viewer            Set default image viewer using interactive fzf prompt.
+  -W, --interactive-web-browser             Set default web browser using interactive fzf prompt.
+  -V, --interactive-video-player            Set default video player using interactive fzf prompt.
+  -A, --interactive-audio-player            Set default audio player using interactive fzf prompt.
+  -T, --interactive-text-editor             Set default text editor using interactive fzf prompt.
+  -P, --interactive-pdf-viewer              Set default PDF viewer using interactive fzf prompt.
+  -B, --interactive-bittorrent-client       Set default BitTorrent client using interactive fzf prompt.
+  -h, --help                                Show this help message and exit
 
 Interactive options launch an interactive fzf prompt to select a .desktop file.  Other options require a .desktop file to be passed as an argument.
 EOF
@@ -62,8 +64,11 @@ set_mime_types() {
 declare -A mime_map=()
 
 OPTS=$(getopt \
-  --options 'i:w:v:a:t:p:hIWVATP' \
-  --longoptions 'image-viewer:,web-browser:,video-player:,audio-player:,text-editor:,pdf-viewer:,help,interactive-image-viewer,interactive-web-browser,interactive-video-player,interactive-audio-player,interactive-text-editor,interactive-pdf-viewer' \
+  --options 'i:w:v:a:t:p:b:hIWVATPB' \
+  --longoptions 'image-viewer:,web-browser:,video-player:, \
+    audio-player:,text-editor:,pdf-viewer:,bittorrent-client:,help,interactive-image-viewer, \
+    interactive-web-browser,interactive-video-player,interactive-audio-player, \
+    interactive-text-editor,interactive-pdf-viewer,interactive-bittorrent-client' \
   --name "$(basename "$0")" \
   -- "$@") || exit 1
 
@@ -125,6 +130,15 @@ while true; do
         usage
       fi
       ;;
+    -b|--bittorrent-client)
+      if [[ -n "$2" ]]; then
+        set_mime_types "$2" x-scheme-handler/magnet
+        shift 2
+      else
+        echo "Error: Missing argument for $1" >&2
+        usage
+      fi
+      ;;
     -I|--interactive-image-viewer)
       if app=$(select_desktop_file "image viewer"); then
         set_mime_types "$app" image/jpeg image/png image/gif image/webp image/svg+xml image/bmp
@@ -158,6 +172,12 @@ while true; do
     -P|--interactive-pdf-viewer)
       if app=$(select_desktop_file "PDF viewer"); then
         set_mime_types "$app" application/pdf
+      fi
+      shift
+      ;;
+    -B|--interactive-bittorrent-client)
+      if app=$(select_desktop_file "BitTorrent client"); then
+        set_mime_types "$app" x-scheme-handler/magnet
       fi
       shift
       ;;
