@@ -74,130 +74,84 @@ OPTS=$(getopt \
 
 eval set -- "$OPTS"
 
+# Helper function to handle option processing and error checking
+process_option() {
+  local option="$1"
+  local app_type="$2"  # e.g., "image viewer", "web browser"
+  local mime_types="$3" # Space-separated list of mime types
+  local interactive="$4" # Flag to indicate interactive selection (true/false)
+
+  if [[ "$interactive" == "true" ]]; then
+    local app
+    app=$(select_desktop_file "$app_type")
+    if [[ -n "$app" ]]; then
+      set_mime_types "$app" $mime_types
+    fi
+  else
+    if [[ -n "$2" ]]; then
+      set_mime_types "$2" $mime_types
+    else
+      echo "Error: Missing argument for $option" >&2
+      usage
+      return 1 # Indicate error
+    fi
+  fi
+  return 0 # Indicate success
+}
+
 while true; do
   case "$1" in
     -i|--image-viewer)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" image/jpeg image/png image/gif image/webp image/svg+xml image/bmp
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "image/jpeg image/png image/gif image/webp image/svg+xml image/bmp" false && shift 2 || exit 1
       ;;
     -w|--web-browser)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" text/html x-scheme-handler/http x-scheme-handler/https
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "text/html x-scheme-handler/http x-scheme-handler/https" false && shift 2 || exit 1
       ;;
     -v|--video-player)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg" false && shift 2 || exit 1
       ;;
     -a|--audio-player)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" audio/mpeg audio/ogg audio/x-wav audio/flac
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "audio/mpeg audio/ogg audio/x-wav audio/flac" false && shift 2 || exit 1
       ;;
     -t|--text-editor)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" text/plain text/markdown
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "text/plain text/markdown" false && shift 2 || exit 1
       ;;
     -p|--pdf-viewer)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" application/pdf
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "application/pdf" false && shift 2 || exit 1
       ;;
     -b|--bittorrent-client)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" x-scheme-handler/magnet
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "x-scheme-handler/magnet" false && shift 2 || exit 1
       ;;
     -d|--directory-explorer)
-      if [[ -n "$2" ]]; then
-        set_mime_types "$2" inode/directory
-        shift 2
-      else
-        echo "Error: Missing argument for $1" >&2
-        usage
-      fi
+      process_option "$1" "" "inode/directory" false && shift 2 || exit 1
       ;;
     -I|--interactive-image-viewer)
-      if app=$(select_desktop_file "image viewer"); then
-        set_mime_types "$app" image/jpeg image/png image/gif image/webp image/svg+xml image/bmp
-      fi
-      shift
+      process_option "$1" "image viewer" "image/jpeg image/png image/gif image/webp image/svg+xml image/bmp" true && shift || exit 1
       ;;
     -W|--interactive-web-browser)
-      if app=$(select_desktop_file "web browser"); then
-        set_mime_types "$app" text/html x-scheme-handler/http x-scheme-handler/https
-      fi
-      shift
+      process_option "$1" "web browser" "text/html x-scheme-handler/http x-scheme-handler/https" true && shift || exit 1
       ;;
     -V|--interactive-video-player)
-      if app=$(select_desktop_file "video player"); then
-        set_mime_types "$app" video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg
-      fi
-      shift
+      process_option "$1" "video player" "video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg" true && shift || exit 1
       ;;
     -A|--interactive-audio-player)
-      if app=$(select_desktop_file "audio player"); then
-        set_mime_types "$app" audio/mpeg audio/ogg audio/x-wav audio/flac
-      fi
-      shift
+      process_option "$1" "audio player" "audio/mpeg audio/ogg audio/x-wav audio/flac" true && shift || exit 1
       ;;
     -T|--interactive-text-editor)
-      if app=$(select_desktop_file "text editor"); then
-        set_mime_types "$app" text/plain text/markdown
-      fi
-      shift
+      process_option "$1" "text editor" "text/plain text/markdown" true && shift || exit 1
       ;;
     -P|--interactive-pdf-viewer)
-      if app=$(select_desktop_file "PDF viewer"); then
-        set_mime_types "$app" application/pdf
-      fi
-      shift
+      process_option "$1" "PDF viewer" "application/pdf" true && shift || exit 1
       ;;
     -B|--interactive-bittorrent-client)
-      if app=$(select_desktop_file "BitTorrent client"); then
-        set_mime_types "$app" x-scheme-handler/magnet
-      fi
-      shift
+      process_option "$1" "BitTorrent client" "x-scheme-handler/magnet" true && shift || exit 1
       ;;
     -D|--interactive-directory-explorer)
-      if app=$(select_desktop_file "directory explorer"); then
-        set_mime_types "$app" inode/directory
-      fi
-      shift
+      process_option "$1" "directory explorer" "inode/directory" true && shift || exit 1
       ;;
     -h|--help)
       usage
+      exit 0
       ;;
     --)
       shift
