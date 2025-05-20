@@ -30,12 +30,12 @@ telescope.setup({
     },
     mappings = {
       i = {
-        ["<leader>bd"] = function(prompt_bufnr)
+        ["d"] = function(prompt_bufnr)
           delete_buffers(prompt_bufnr)
         end,
       },
       n = {
-        ["<leader>bd"] = function(prompt_bufnr)
+        ["d"] = function(prompt_bufnr)
           delete_buffers(prompt_bufnr)
         end,
       },
