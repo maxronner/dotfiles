@@ -20,7 +20,7 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
 -- Alternate file (toggle between buffers)
-vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" })
+vim.keymap.set({ "n", "x" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" })
 
 
 ---- Editing ----
@@ -29,14 +29,15 @@ vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" }
 vim.keymap.set("n", "Q", "@@", { desc = "Replay last macro" })
 
 -- Wrap selection in quotes
-vim.keymap.set('v', '<leader>"', 'c"<C-r>"\"<Esc>', { desc = "Wrap selection in quotes" })
+vim.keymap.set('x', '<leader>"', 'c"<C-r>"\"<Esc>', { desc = "Wrap selection in double quotes" })
+vim.keymap.set('x', '<leader>\'', 'c\'<C-r>"\'<Esc>', { desc = "Wrap selection in single quotes" })
 
 -- Split line at midpoint
 vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
 
 -- Move visual selection up/down
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+vim.keymap.set("x", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("x", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 -- Delete word forward
 vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
@@ -54,7 +55,7 @@ vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left
   { desc = "Substitute word under cursor" })
 
 -- Search & replace text under cursor
-vim.keymap.set("n", "<C-S>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
+vim.keymap.set("n", "<C-t>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute text under cursor" })
 
 ---- Files ----
@@ -77,14 +78,14 @@ vim.keymap.set('n', '<leader>yd', function()
 end, { noremap = true, silent = true, desc = "Copy diagnostics to clipboard" })
 
 -- System clipboard
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
+vim.keymap.set({ "n", "x" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
 -- Paste over without yanking
 vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over (no yank)" })
 
 -- Delete without yanking
-vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
+vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
 
 
 ---- Logic ----
@@ -105,5 +106,5 @@ end, { silent = true, desc = "Toggle true/false" })
 
 vim.keymap.set("n", "<leader>lf", "<cmd>!find . | wc -l<CR>", { desc = "Count files in directory" })
 vim.keymap.set("n", "<leader>ll",
-  "<cmd>!find . -type f -exec wc -l {} \\; | awk '{ total += $1 } END { print total }'<CR>",
+  "<cmd>!find . -type f -exec wc -l {} \\; | awk '{ total += $1 } END { print \"Lines in workspace: \" total }'<CR>",
   { desc = "Count lines in all files of current directory" })
