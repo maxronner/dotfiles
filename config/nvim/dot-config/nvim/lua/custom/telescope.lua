@@ -1,5 +1,25 @@
 local data = assert(vim.fn.stdpath "data") --[[@as string]]
 local telescope = require "telescope"
+local actions = require "telescope.actions"
+local action_state = require "telescope.actions.state"
+
+local function delete_buffers(prompt_bufnr)
+  local picker = action_state.get_current_picker(prompt_bufnr)
+  local selections = picker:get_multi_selection()
+
+  if #selections == 0 then
+    -- If nothing is multi-selected, delete the currently selected entry
+    local selection = action_state.get_selected_entry()
+    actions.close(prompt_bufnr)
+    vim.api.nvim_buf_delete(selection.bufnr, { force = true })
+  else
+    -- Delete all multi-selected buffers
+    actions.close(prompt_bufnr)
+    for _, entry in ipairs(selections) do
+      vim.api.nvim_buf_delete(entry.bufnr, { force = true })
+    end
+  end
+end
 
 telescope.setup({
   defaults = {
@@ -8,6 +28,18 @@ telescope.setup({
       path = vim.fs.joinpath(data, "telescope_history.sqlite3"),
       limit = 100,
     },
+    mappings = {
+      i = {
+        ["<leader>bd"] = function(prompt_bufnr)
+          delete_buffers(prompt_bufnr)
+        end,
+      },
+      n = {
+        ["<leader>bd"] = function(prompt_bufnr)
+          delete_buffers(prompt_bufnr)
+        end,
+      },
+    }
   },
   extensions = {
     wrap_results = true,

@@ -87,6 +87,9 @@ return {
         },
       })
       vim.keymap.set("n", "<leader>m", MiniMap.toggle, { desc = "Toggle MiniMap" })
+      vim.keymap.set('n', '<leader>bd', function()
+        require('mini.bufremove').delete(0, false)
+      end, { desc = 'Delete buffer without closing window' })
     end,
   },
 }
