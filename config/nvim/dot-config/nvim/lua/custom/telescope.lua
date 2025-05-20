@@ -50,6 +50,7 @@ vim.keymap.set("n", "<leader>ft", builtin.live_grep, { desc = "Telescope: Live g
 vim.keymap.set("n", "<leader>fs", builtin.grep_string, { desc = "Telescope: Grep selection" })
 vim.keymap.set("n", "<leader>fc", builtin.command_history, { desc = "Telescope: Command history" })
 vim.keymap.set("n", "<leader>fH", builtin.search_history, { desc = "Telescope: Search history" })
+vim.keymap.set("n", "<leader>o", builtin.git_status, { desc = "Telescope: Git status" })
 vim.keymap.set("n", "<leader>vv", function()
   builtin.find_files { cwd = vim.fn.stdpath "config", prompt_title = "Nvim Config" }
 end, { desc = "Telescope: Find files in config" })

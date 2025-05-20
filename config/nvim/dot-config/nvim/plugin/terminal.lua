@@ -75,7 +75,7 @@ local function get_visual_selection_text()
 end
 
 
-vim.keymap.set("n", "<leader>o", function()
+vim.keymap.set("n", "<leader>z", function()
   -- Check if tmux-scratch is available
   if vim.fn.executable("tmux-scratch") == 1 then
     vim.cmd("silent !tmux-scratch")
