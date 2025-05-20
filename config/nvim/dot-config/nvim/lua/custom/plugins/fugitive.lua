@@ -24,6 +24,9 @@ return {
           vim.cmd.Git({ 'pull', '--rebase' })
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Pull --rebase" }))
 
+        vim.keymap.set("n", "<leader>u", ":Git pull<CR>",
+          vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
+
         vim.keymap.set("n", "<leader>t", ":Git push -u origin ",
           vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
 
