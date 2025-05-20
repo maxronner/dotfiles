@@ -88,8 +88,8 @@ process_option() {
       set_mime_types "$app" $mime_types
     fi
   else
-    if [[ -n "$2" ]]; then
-      set_mime_types "$2" $mime_types
+    if [[ -n "$app_type" ]]; then
+      set_mime_types "$app_type" $mime_types
     else
       echo "Error: Missing argument for $option" >&2
       usage
@@ -102,28 +102,28 @@ process_option() {
 while true; do
   case "$1" in
     -i|--image-viewer)
-      process_option "$1" "" "image/jpeg image/png image/gif image/webp image/svg+xml image/bmp" false && shift 2 || exit 1
+      process_option "$1" "$2" "image/jpeg image/png image/gif image/webp image/svg+xml image/bmp" false && shift 2 || exit 1
       ;;
     -w|--web-browser)
-      process_option "$1" "" "text/html x-scheme-handler/http x-scheme-handler/https" false && shift 2 || exit 1
+      process_option "$1" "$2" "text/html x-scheme-handler/http x-scheme-handler/https" false && shift 2 || exit 1
       ;;
     -v|--video-player)
-      process_option "$1" "" "video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg" false && shift 2 || exit 1
+      process_option "$1" "$2" "video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg" false && shift 2 || exit 1
       ;;
     -a|--audio-player)
-      process_option "$1" "" "audio/mpeg audio/ogg audio/x-wav audio/flac" false && shift 2 || exit 1
+      process_option "$1" "$2" "audio/mpeg audio/ogg audio/x-wav audio/flac" false && shift 2 || exit 1
       ;;
     -t|--text-editor)
-      process_option "$1" "" "text/plain text/markdown" false && shift 2 || exit 1
+      process_option "$1" "$2" "text/plain text/markdown" false && shift 2 || exit 1
       ;;
     -p|--pdf-viewer)
-      process_option "$1" "" "application/pdf" false && shift 2 || exit 1
+      process_option "$1" "$2" "application/pdf" false && shift 2 || exit 1
       ;;
     -b|--bittorrent-client)
-      process_option "$1" "" "x-scheme-handler/magnet" false && shift 2 || exit 1
+      process_option "$1" "$2" "x-scheme-handler/magnet" false && shift 2 || exit 1
       ;;
     -d|--directory-explorer)
-      process_option "$1" "" "inode/directory" false && shift 2 || exit 1
+      process_option "$1" "$2" "inode/directory" false && shift 2 || exit 1
       ;;
     -I|--interactive-image-viewer)
       process_option "$1" "image viewer" "image/jpeg image/png image/gif image/webp image/svg+xml image/bmp" true && shift || exit 1
