@@ -15,6 +15,7 @@ return {
       require("mini.statusline").setup()
       require("mini.align").setup()
       require("mini.jump").setup()
+      require("mini.cursorword").setup()
 
       local miniclue = require('mini.clue')
       miniclue.setup({
