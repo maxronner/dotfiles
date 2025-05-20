@@ -50,6 +50,9 @@ vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics
 vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute word under cursor" })
 
+-- Search & replace text under cursor
+vim.keymap.set("n", "<C-S>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Substitute text under cursor" })
 
 ---- Files ----
 
