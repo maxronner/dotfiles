@@ -75,6 +75,11 @@ return {
           map.gen_integration.gitsigns(),
           map.gen_integration.diagnostic(),
         },
+        symbols = {
+          encode = nil,
+          scroll_view = "┃",
+          scroll_line = "▶"
+        },
         window = {
           show_integration_count = false,
           width = 8,
