@@ -21,6 +21,16 @@ telescope.setup({
     ["ui-select"] = {
       require("telescope.themes").get_dropdown {},
     },
+    frecency = {
+      auto_validate = false,
+      matcher = "fuzzy",
+      path_display = { "filename_first" },
+      ignore_patterns = { "*/.git", "*/.git/*", "*/.DS_Store" },
+      bootstrap = true,
+      default_workspace = "CWD",
+      hide_current_buffer = true,
+      prompt_title = "Find Files (frecency)",
+    }
   },
 })
 
@@ -44,9 +54,4 @@ vim.keymap.set("n", "<leader>vv", function()
   builtin.find_files { cwd = vim.fn.stdpath "config", prompt_title = "Nvim Config" }
 end, { desc = "Telescope: Find files in config" })
 
-vim.keymap.set("n", "<leader>ff", function()
-  telescope.extensions.frecency.frecency {
-    workspace = "CWD",
-    prompt_title = "Find Files (frecency)",
-  }
-end, { desc = "Telescope: Find frequent files" })
+vim.keymap.set("n", "<leader>ff", telescope.extensions.frecency.frecency, { desc = "Telescope: Find frequent files" })
