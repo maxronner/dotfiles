@@ -28,6 +28,9 @@ vim.keymap.set({ "n", "v" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" }
 -- Replay last macro
 vim.keymap.set("n", "Q", "@@", { desc = "Replay last macro" })
 
+-- Wrap selection in quotes
+vim.keymap.set('v', '<leader>"', 'c"<C-r>"\"<Esc>', { desc = "Wrap selection in quotes" })
+
 -- Split line at midpoint
 vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
 
