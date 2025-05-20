@@ -64,11 +64,11 @@ set_mime_types() {
 declare -A mime_map=()
 
 OPTS=$(getopt \
-  --options 'i:w:v:a:t:p:b:hIWVATPB' \
+  --options 'i:w:v:a:t:p:b:d:hIWVATPBD' \
   --longoptions 'image-viewer:,web-browser:,video-player:, \
-    audio-player:,text-editor:,pdf-viewer:,bittorrent-client:,help,interactive-image-viewer, \
+    audio-player:,text-editor:,pdf-viewer:,bittorrent-client:,directory-explorer:,help,interactive-image-viewer, \
     interactive-web-browser,interactive-video-player,interactive-audio-player, \
-    interactive-text-editor,interactive-pdf-viewer,interactive-bittorrent-client' \
+    interactive-text-editor,interactive-pdf-viewer,interactive-bittorrent-client,interactive-directory-explorer' \
   --name "$(basename "$0")" \
   -- "$@") || exit 1
 
@@ -139,6 +139,15 @@ while true; do
         usage
       fi
       ;;
+    -d|--directory-explorer)
+      if [[ -n "$2" ]]; then
+        set_mime_types "$2" inode/directory
+        shift 2
+      else
+        echo "Error: Missing argument for $1" >&2
+        usage
+      fi
+      ;;
     -I|--interactive-image-viewer)
       if app=$(select_desktop_file "image viewer"); then
         set_mime_types "$app" image/jpeg image/png image/gif image/webp image/svg+xml image/bmp
@@ -178,6 +187,12 @@ while true; do
     -B|--interactive-bittorrent-client)
       if app=$(select_desktop_file "BitTorrent client"); then
         set_mime_types "$app" x-scheme-handler/magnet
+      fi
+      shift
+      ;;
+    -D|--interactive-directory-explorer)
+      if app=$(select_desktop_file "directory explorer"); then
+        set_mime_types "$app" inode/directory
       fi
       shift
       ;;
