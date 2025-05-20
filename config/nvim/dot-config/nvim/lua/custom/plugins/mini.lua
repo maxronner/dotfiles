@@ -59,6 +59,13 @@ return {
           miniclue.gen_clues.windows(),
           miniclue.gen_clues.z(),
         },
+        window = {
+          delay = 1000,
+          config = {
+            width = 'auto',
+            border = 'double',
+          },
+        },
       })
 
       local map = require("mini.map")
