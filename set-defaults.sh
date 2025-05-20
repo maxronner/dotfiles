@@ -22,18 +22,21 @@ EOF
 exit 0
 }
 
+if [ $# -eq 0 ]; then
+  usage
+fi
+
 select_desktop_file() {
   local file
   file=$(find /usr/share/applications ~/.local/share/applications -name '*.desktop' 2>/dev/null \
-    | sort -u | fzf --prompt="$1")
+    | sort -u | fzf --prompt="Select $1: ")
   if [[ -z "$file" ]]; then
-    echo "No .desktop file selected. Exiting." >&2
-    exit 1
+    echo "No $1 was selected. Skipping." >&2
   fi
   echo "$(basename "$file")"
 }
 
-declare -A mime_map
+declare -A mime_map=()
 
 OPTS=$(getopt \
   --options iwvatph \
@@ -47,43 +50,56 @@ eval set -- "$OPTS"
 while true; do
   case "$1" in
     -i|--image-viewer)
-      app=$(select_desktop_file "Select image viewer: ")
-      for m in image/jpeg image/png image/gif image/webp image/svg+xml image/bmp; do
-        mime_map["$m"]="$app"
-      done
+      app=$(select_desktop_file "image viewer")
+      if [[ -n "$app" ]]; then
+        echo "Setting image viewer to $app"
+        for m in image/jpeg image/png image/gif image/webp image/svg+xml image/bmp; do
+          mime_map["$m"]="$app"
+        done
+      fi
       shift
       ;;
     -w|--web-browser)
-      app=$(select_desktop_file "Select web browser: ")
-      for m in text/html x-scheme-handler/http x-scheme-handler/https; do
-        mime_map["$m"]="$app"
-      done
+      app=$(select_desktop_file "web browser")
+      if [[ -n "$app" ]]; then
+        for m in text/html x-scheme-handler/http x-scheme-handler/https; do
+          mime_map["$m"]="$app"
+        done
+      fi
       shift
       ;;
     -v|--video-player)
-      app=$(select_desktop_file "Select video player: ")
-      for m in video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg; do
-        mime_map["$m"]="$app"
-      done
+      app=$(select_desktop_file "video player")
+      if [[ -n "$app" ]]; then
+        for m in video/mp4 video/x-matroska video/webm video/x-msvideo video/ogg; do
+          mime_map["$m"]="$app"
+        done
+      fi
       shift
       ;;
     -a|--audio-player)
-      app=$(select_desktop_file "Select audio player: ")
-      for m in audio/mpeg audio/ogg audio/x-wav audio/flac; do
-        mime_map["$m"]="$app"
-      done
+      app=$(select_desktop_file "audio player")
+      if [[ -n "$app" ]]; then
+        for m in audio/mpeg audio/ogg audio/x-wav audio/flac; do
+          mime_map["$m"]="$app"
+        done
+      fi
       shift
       ;;
     -t|--text-editor)
-      app=$(select_desktop_file "Select text editor: ")
-      for m in text/plain text/markdown; do
-        mime_map["$m"]="$app"
-      done
+      app=$(select_desktop_file "text editor")
+      if [[ -n "$app" ]]; then
+        for m in text/plain text/markdown; do
+          mime_map["$m"]="$app"
+        done
+      fi
       shift
       ;;
     -p|--pdf-viewer)
-      app=$(select_desktop_file "Select PDF viewer: ")
-      mime_map["application/pdf"]="$app"
+      app=$(select_desktop_file "PDF viewer")
+      if [[ -n "$app" ]]; then
+        mime_map["application/pdf"]="$app"
+      fi
       shift
       ;;
     -h|--help)
@@ -101,7 +117,7 @@ while true; do
 done
 
 if [ ${#mime_map[@]} -eq 0 ]; then
-    usage
+  exit 0
 fi
 
 echo "Setting defaults..."
