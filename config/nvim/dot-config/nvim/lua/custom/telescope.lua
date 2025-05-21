@@ -29,11 +29,6 @@ telescope.setup({
       limit = 100,
     },
     mappings = {
-      i = {
-        ["d"] = function(prompt_bufnr)
-          delete_buffers(prompt_bufnr)
-        end,
-      },
       n = {
         ["d"] = function(prompt_bufnr)
           delete_buffers(prompt_bufnr)
