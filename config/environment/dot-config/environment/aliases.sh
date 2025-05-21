@@ -28,6 +28,7 @@ fi
 
 alias pw="pass fzf"
 alias otp="pass fzf-otp"
+alias chat="tmux-sessionizer chat"
 
 # --- thefuck ---
 eval $(thefuck --alias)
