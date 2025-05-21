@@ -20,12 +20,13 @@ return {
           vim.cmd.Git('push')
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Push" }))
 
+        vim.keymap.set("n", "<leader>u", function()
+          vim.cmd.Git({ 'pull' })
+        end, vim.tbl_extend("force", opts, { desc = "Fugitive: Pull" }))
+
         vim.keymap.set("n", "<leader>P", function()
           vim.cmd.Git({ 'pull', '--rebase' })
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Pull --rebase" }))
-
-        vim.keymap.set("n", "<leader>u", ":Git pull<CR>",
-          vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
 
         vim.keymap.set("n", "<leader>t", ":Git push -u origin ",
           vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
