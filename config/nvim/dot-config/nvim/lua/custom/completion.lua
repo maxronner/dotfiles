@@ -1,6 +1,8 @@
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.shortmess:append "c"
 
+require("custom.snippets")
+
 local lspkind = require "lspkind"
 lspkind.init {
   symbol_map = {
@@ -34,6 +36,7 @@ cmp.setup {
       group_index = 0,
     },
     { name = "supermaven" },
+    { name = "luasnip" },
     { name = "nvim_lsp" },
     { name = "path" },
     { name = "buffer" },
