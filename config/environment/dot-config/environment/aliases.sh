@@ -19,23 +19,21 @@ fi
 if command -v nvim &>/dev/null; then
     alias vim="nvim"
     alias nano="nvim"
+    alias svim="sudo nvim"
 fi
 
-if command -v pass &>/dev/null; then
-    alias pw="pass fzf"
-    alias otp="pass fzf-otp"
+if command -v bat &>/dev/null; then
+    alias cat="bat"
 fi
 
-if command -v tmux-sessionizer &>/dev/null ; then
-    alias chat="tmux-sessionizer chat"
-fi
+alias pw="pass fzf"
+alias otp="pass fzf-otp"
 
 # --- thefuck ---
 eval $(thefuck --alias)
 eval $(thefuck --alias fk)
 
 # --- system ---
-alias h="history | grep "
 alias bd='cd "$OLDPWD"'
 alias reboot="systemctl reboot"
 
@@ -60,4 +58,3 @@ alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset 
 
 alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
 
-alias svim="sudo nvim"
