@@ -1,8 +1,8 @@
 local data = assert(vim.fn.stdpath "data") --[[@as string]]
 local telescope = require "telescope"
+local builtin = require "telescope.builtin"
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
-local builtin = require("telescope.builtin")
 
 local function delete_buffers(prompt_bufnr)
   local picker = action_state.get_current_picker(prompt_bufnr)
