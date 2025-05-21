@@ -1,15 +1,11 @@
 [Unit]
 Description=Play sound on notification
 After=graphical-session.target
-Wants=graphical-session.target
+PartOf=graphical-session.target
 
 [Service]
-ExecStart=/home/max/.local/bin/notify-sound-listener
+ExecStart=%h/.local/bin/notify-sound-listener
 Restart=on-failure
-Environment="DISPLAY=:0"
-Environment="XDG_RUNTIME_DIR=/run/user/%U"
-Environment="PULSE_RUNTIME_PATH=/run/user/%U/pulse"
-Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus"
 
 [Install]
 WantedBy=default.target

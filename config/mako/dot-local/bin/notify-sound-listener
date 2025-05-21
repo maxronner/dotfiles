@@ -1,8 +1,22 @@
 #!/bin/bash
 
+LOCK_FILE="/tmp/notification_lock"
+LOCK_TIMEOUT=1  # seconds
+
 dbus-monitor "interface='org.freedesktop.Notifications'" |
 while read -r line; do
     if echo "$line" | grep -q "method call.*Notify"; then
-        paplay /usr/share/sounds/freedesktop/stereo/message.oga
+        # Check if the lock file exists
+        if [ ! -f "$LOCK_FILE" ]; then
+            # Create the lock file (indicating a notification is being processed)
+            touch "$LOCK_FILE"
+
+            # Play the sound (single execution)
+            paplay /usr/share/sounds/freedesktop/stereo/message.oga
+
+            # Remove the lock file after a delay (allow for a burst of notifications)
+            sleep "$LOCK_TIMEOUT"
+            rm -f "$LOCK_FILE"
+        fi
     fi
 done
