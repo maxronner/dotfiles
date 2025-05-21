@@ -2,23 +2,33 @@ local data = assert(vim.fn.stdpath "data") --[[@as string]]
 local telescope = require "telescope"
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
+local builtin = require("telescope.builtin")
 
 local function delete_buffers(prompt_bufnr)
   local picker = action_state.get_current_picker(prompt_bufnr)
   local selections = picker:get_multi_selection()
+  local bufnrs = {}
 
   if #selections == 0 then
-    -- If nothing is multi-selected, delete the currently selected entry
     local selection = action_state.get_selected_entry()
-    actions.close(prompt_bufnr)
-    vim.api.nvim_buf_delete(selection.bufnr, { force = true })
+    table.insert(bufnrs, selection.bufnr)
   else
-    -- Delete all multi-selected buffers
-    actions.close(prompt_bufnr)
-    for _, entry in ipairs(selections) do
-      vim.api.nvim_buf_delete(entry.bufnr, { force = true })
+    for _, selection in ipairs(selections) do
+      table.insert(bufnrs, selection.bufnr)
     end
   end
+
+  actions.close(prompt_bufnr)
+
+  for _, bufnr in ipairs(bufnrs) do
+    if vim.api.nvim_buf_is_valid(bufnr) then
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+    end
+  end
+
+  vim.schedule(function()
+    builtin.buffers()
+  end)
 end
 
 telescope.setup({
@@ -66,7 +76,6 @@ pcall(telescope.load_extension, "smart_history")
 pcall(telescope.load_extension, "ui-select")
 pcall(telescope.load_extension, "frecency")
 
-local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, { desc = "Telescope: Fuzzy find in current buffer" })
 vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Telescope: Keymaps" })
 vim.keymap.set("n", "<leader>fp", builtin.find_files, { desc = "Telescope: Find files" })
