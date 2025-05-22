@@ -1,0 +1,16 @@
+# Load color scheme
+source ~/.config/neomutt/colors/rose-pine-moon.muttrc
+
+# Load account settings (non-secret)
+source ~/.config/neomutt/accounts/gmail.muttrc
+
+# Load secrets (ignored in Git)
+source ~/.config/neomutt/secrets/creds.muttrc
+
+# UI Preferences
+set header_cache =~/.cache/mutt/headers
+set message_cachedir =~/.cache/mutt/bodies
+set certificate_file =~/.cache/mutt/certificates
+set move = no
+set timeout = 15
+set sort = 'date'

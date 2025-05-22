@@ -1,0 +1,8 @@
+set realname = "Max Ronner"
+set from = "max.ronner@gmail.com"
+
+set imap_user = "max.ronner@gmail.com"
+set smtp_url = "smtps://max.ronner@gmail.com@smtp.gmail.com:465"
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+[Gmail]/Drafts"

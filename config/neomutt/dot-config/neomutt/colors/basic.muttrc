@@ -1,0 +1,8 @@
+color index          magenta    default
+color status         black      magenta
+color indicator      black      cyan
+color error          white      red
+color tree           yellow     default
+color normal         white      black
+color tilde          blue       default
+
