@@ -99,7 +99,7 @@ return {
         user_commands = true,    -- Enable all or some usercommands
         lazy_load = false,       -- Lazily schedule buffer highlighting setup function
         user_default_options = {
-          names = true,          -- "Name" codes like Blue or red.  Added from `vim.api.nvim_get_color_map()`
+          names = false,         -- "Name" codes like Blue or red.  Added from `vim.api.nvim_get_color_map()`
           names_opts = {         -- options for mutating/filtering names.
             lowercase = true,    -- name:lower(), highlight `blue` and `red`
             camelcase = true,    -- name, highlight `Blue` and `Red`
