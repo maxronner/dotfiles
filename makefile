@@ -17,6 +17,7 @@ CLI_PKGS := \
 	bash-completion \
 	bat \
 	btop \
+	dust \
 	eza \
 	fastfetch \
 	fd \
