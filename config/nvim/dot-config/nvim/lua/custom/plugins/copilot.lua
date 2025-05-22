@@ -21,8 +21,15 @@ return {
           },
         },
       })
-      vim.keymap.set("n", "<leader>i", "<cmd>CodeCompanionActions<cr>",
+      vim.keymap.set({ "n", "v" }, "<leader>i", "<cmd>CodeCompanionActions<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Actions" })
+      vim.keymap.set({ "n", "v" }, "<leader>o", "<cmd>CodeCompanionChat Toggle<cr>",
+        { noremap = true, silent = true, desc = "CodeCompanion: Chat Toggle" })
+      vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>",
+        { noremap = true, silent = true, desc = "CodeCompanion: Chat Add" })
+
+      -- Expand 'cc' into 'CodeCompanion' in the command line
+      vim.cmd([[cab cc CodeCompanion]])
     end,
   },
 }
