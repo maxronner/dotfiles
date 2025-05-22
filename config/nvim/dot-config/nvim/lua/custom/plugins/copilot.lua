@@ -12,6 +12,8 @@ return {
     },
     config = function()
       require("codecompanion").setup()
+      vim.keymap.set("n", "<leader>i", "<cmd>CodeCompanionActions<cr>",
+        { noremap = true, silent = true, desc = "CodeCompanion: Actions" })
     end,
   },
 }
