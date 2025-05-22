@@ -11,7 +11,6 @@ return {
       require("mini.bracketed").setup()
       require("mini.trailspace").setup()
       require("mini.splitjoin").setup()
-      require("mini.starter").setup()
       require("mini.statusline").setup()
       require("mini.align").setup()
       require("mini.jump").setup()
