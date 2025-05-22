@@ -11,7 +11,16 @@ return {
       "nvim-treesitter/nvim-treesitter",
     },
     config = function()
-      require("codecompanion").setup()
+      require("codecompanion").setup({
+        strategies = {
+          chat = {
+            adapter = "gemini",
+          },
+          inline = {
+            enabled = false
+          },
+        },
+      })
       vim.keymap.set("n", "<leader>i", "<cmd>CodeCompanionActions<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Actions" })
     end,
