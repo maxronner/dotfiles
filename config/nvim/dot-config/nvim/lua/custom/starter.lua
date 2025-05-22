@@ -49,6 +49,10 @@ local headers = {
   },
 }
 
+local header = headers[math.random(#headers)]
+table.insert(header, "")
+table.insert(header, [[ Have a great day! ]])
+
 local if_nil = vim.F.if_nil
 
 local default_terminal = {
@@ -64,7 +68,7 @@ local default_terminal = {
 
 local default_header = {
   type = "text",
-  val = headers[math.random(#headers)],
+  val = header,
   opts = {
     position = "center",
     hl = "Type",
