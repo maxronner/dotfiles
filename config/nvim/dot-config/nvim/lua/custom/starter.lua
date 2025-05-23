@@ -126,7 +126,7 @@ local buttons = {
   type = "group",
   val = {
     button("e", "  New file", "<cmd>ene <CR>"),
-    button("SPC f f", "󰈞  Find file"),
+    button("SPC f p", "󰈞  Find file"),
     button("SPC f o", "󰊄  Recently opened files"),
     button("SPC f r", "  Frecency/MRU"),
     button("SPC f t", "󰈬  Live grep"),

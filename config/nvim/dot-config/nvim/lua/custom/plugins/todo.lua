@@ -21,7 +21,7 @@ return {
         require("todo-comments").jump_prev()
       end, { desc = "Previous todo comment" })
 
-      vim.keymap.set("n", "<leader>fs", ":TodoTelescope<CR>", { desc = "Telescope: TODOs" })
+      vim.keymap.set("n", "<leader>fl", ":TodoTelescope<CR>", { desc = "Telescope: TODOs" })
     end,
   }
 }
