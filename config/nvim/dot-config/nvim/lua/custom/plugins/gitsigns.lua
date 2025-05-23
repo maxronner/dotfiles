@@ -62,9 +62,8 @@ return {
           map('n', '<leader>hq', gitsigns.setqflist, { desc = 'Set quickfix list' })
 
           -- Toggles
-          map('n', '<leader>htb', gitsigns.toggle_current_line_blame, { desc = 'Toggle current line blame' })
-          map('n', '<leader>htd', gitsigns.toggle_deleted, { desc = 'Toggle deleted lines' })
-          map('n', '<leader>hW', gitsigns.toggle_word_diff, { desc = 'Toggle word diff' })
+          map('n', '<leader>hl', gitsigns.toggle_current_line_blame, { desc = 'Toggle current line blame' })
+          map('n', '<leader>hw', gitsigns.toggle_word_diff, { desc = 'Toggle word diff' })
 
           -- Text object
           map({ 'o', 'x' }, 'ih', gitsigns.select_hunk, { desc = 'Select hunk' })
