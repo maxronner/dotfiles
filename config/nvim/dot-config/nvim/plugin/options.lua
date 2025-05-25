@@ -1,17 +1,16 @@
+-- General
+
+vim.opt.confirm = true
+vim.opt.updatetime = 50
+vim.opt.splitright = true
+vim.opt.isfname:append("@-@")
+
 -- UI
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
-vim.opt.isfname:append("@-@")
-
-vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
-
 vim.opt.relativenumber = true
 vim.opt.nu = true
-
-vim.opt.splitright = true
-
-vim.opt.confirm = true
 
 -- Indentation
 vim.opt.tabstop = 4
