@@ -22,6 +22,9 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 -- Alternate file (toggle between buffers)
 vim.keymap.set({ "n", "x" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" })
 
+-- Search within visual selection
+vim.keymap.set('x', '/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
+vim.keymap.set('x', '?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
 
 ---- Editing ----
 
@@ -50,6 +53,9 @@ vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "Format buffer" }
 -- Diagnostics to quickfix
 vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
+
+---- Search ----
+
 -- Search & replace word under cursor
 vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute word under cursor" })
@@ -57,6 +63,10 @@ vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left
 -- Search & replace text under cursor
 vim.keymap.set("n", "<C-t>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute text under cursor" })
+
+-- Clear search highlight
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
+
 
 ---- Files ----
 
