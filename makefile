@@ -94,7 +94,6 @@ AUR_PKGS := \
 
 WORKSPACE_PKGS := \
 	steam \
-	nvidia-open
 
 LAPTOP_PKGS := \
 	dhcpcd \
@@ -122,9 +121,9 @@ DEPS := \
 	stow_dotfiles \
 	enable_systemd_services \
 	setup_timesyncd \
-	ly-setup
+	ly_setup
 
-.PHONY: install_cli install_desktop install_aur ly-setup
+.PHONY: install_cli install_desktop install_aur ly_setup nvidia_setup
 
 # Default target
 all: $(DEPS)
@@ -152,7 +151,7 @@ install_aur:
 	@if ! command -v yay > /dev/null; then \
 		echo "yay not found. Installing yay..."; \
 		git clone https://aur.archlinux.org/yay.git $(HOME)/yay && cd $(HOME)/yay && makepkg -s --noconfirm; \
-		sudo pacman -U --noconfirm --needed $(find $(HOME)/yay -name "*.pkg.tar.zst" | head -n 1); \
+		sudo pacman -U --noconfirm --needed $$(find $(HOME)/yay -name "*.pkg.tar.zst" | head -n 1); \
 		rm -rf $(HOME)/yay; \
 	fi
 	@echo "Downloading AUR packages..."
@@ -196,35 +195,7 @@ setup_timesyncd:
 	@sudo systemctl restart systemd-timesyncd
 	@sudo timedatectl set-timezone $(TIMEZONE)
 
-setup_device_specifics:
-ifeq ($(strip $(env)),)
-	@echo "env is not set, nothing to do."
-endif
-ifeq ($(env), workstation)
-	@echo "Installing workstation specific packages..."
-	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
-
-	@echo "Disabling USB wakeup for microphone..."
-	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
-
-	@echo "Configuring sway for nvidia..."
-	@sudo sed -i '/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s/^\([[:space:]]*Exec=.*sway\)/\1 --unsupported-gpu/}' /usr/share/wayland-sessions/sway.desktop
-
-	@echo "Installing workstation specific dotfiles..."
-	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) workstation
-endif
-ifeq ($(env), laptop)
-	@echo "Installing laptop specific packages..."
-	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
-
-	@echo "Setting up dhcpcd..."
-	@sudo systemctl enable --now dhcpcd.service
-
-	@echo "Installing laptop specific dotfiles..."
-	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) laptop
-endif
-
-ly-setup:
+ly_setup:
 	@echo "Configuring ly..."; \
 	LY_CONFIG=/etc/ly/config.ini; \
 	sudo sed -i 's/^[[:space:]]*animation[[:space:]]*=.*/animation = matrix/' $$LY_CONFIG; \
@@ -243,3 +214,30 @@ ly-setup:
 	sudo systemctl enable --now ly.service; \
 	sudo systemctl disable --now getty@tty2.service
 
+setup_device_specifics:
+ifeq ($(strip $(env)),)
+	@echo "env is not set, nothing to do."
+else ifeq ($(env),workstation)
+	@echo "Installing workstation specific packages..."
+	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
+
+	@echo "Disabling USB wakeup for microphone..."
+	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
+
+	$(MAKE) nvidia_setup
+else ifeq ($(env),laptop)
+	@echo "Installing laptop specific packages..."
+	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
+
+	@echo "Setting up dhcpcd..."
+	@sudo systemctl enable --now dhcpcd.service
+else
+	@echo "Unknown env: $(env)"
+endif
+	@echo "Installing $(env) specific dotfiles..."
+	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) $(env)
+
+nvidia_setup:
+	@echo "Configuring nvidia..."
+	$(PACKAGE_MANAGER) $$(./nvidia-driver-picker.sh)
+	@sudo sed -i "/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s|\\(sway\\)\\([[:space:]]*['\"]\\)|\\1 --unsupported-gpu\\2|}" /usr/share/wayland-sessions/sway.desktop
