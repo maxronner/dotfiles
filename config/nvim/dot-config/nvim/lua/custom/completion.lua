@@ -7,10 +7,11 @@ local lspkind = require "lspkind"
 lspkind.init {
   symbol_map = {
     Copilot = "",
+    Supermaven = "",
   },
 }
-
 vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
+vim.api.nvim_set_hl(0, "CmpItemKindSupermaven", { fg = "#6CC644" })
 
 local kind_formatter = lspkind.cmp_format {
   mode = "symbol_text",
@@ -35,7 +36,7 @@ cmp.setup {
       -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
       group_index = 0,
     },
-    { name = "supermaven" },
+    -- { name = "supermaven" },
     { name = "luasnip" },
     { name = "nvim_lsp" },
     { name = "path" },
