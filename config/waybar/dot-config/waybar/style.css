@@ -43,7 +43,7 @@ tooltip label {
 }
 
 tooltip {
-    border: 1px solid @iris;
+    border: none;
 }
 
 tooltip label {

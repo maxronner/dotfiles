@@ -21,9 +21,9 @@
         "idle_inhibitor",
         "group/expand",
         "pulseaudio",
-        "bluetooth",
         "network",
         "power-profiles-daemon",
+        "bluetooth",
         "battery",
         "battery#bat2"
     ],
