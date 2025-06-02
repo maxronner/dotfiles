@@ -24,7 +24,7 @@ return {
             keymaps = {
               accept_suggestion = "<C-a>",
               clear_suggestion = "<C-]>",
-              accept_word = "<C-j>",
+              accept_word = "<C-n>",
             },
             disable_inline_completion = false,
           }
