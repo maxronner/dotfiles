@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# This script sets default applications for various MIME types using xdg-mime.
+# It allows setting default applications via command-line arguments specifying
+# .desktop files, or interactively using fzf to select from available
+# .desktop files.
+#
+# Dependencies:
+# - getopt: For parsing command-line options.
+# - fzf: For interactive selection of .desktop files (if interactive options are used).
+# - xdg-utils: Specifically xdg-mime for setting default applications.
+#
+# Usage examples:
+#   Set default image viewer to 'eog.desktop':
+#     ./set-defaults.sh --image-viewer eog.desktop
+#
+#   Interactively set default web browser:
+#     ./set-defaults.sh --interactive-web-browser
+#
+#   Set multiple defaults:
+#     ./set-defaults.sh -w firefox.desktop -t nvim.desktop -P
+
+
 set -euo pipefail
 
 usage() {
