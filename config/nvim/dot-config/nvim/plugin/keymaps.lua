@@ -45,7 +45,7 @@ vim.keymap.set("x", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 -- Delete word forward
 vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
 vim.keymap.set("n", "<C-Del>", "de", { desc = "Delete word (normal mode)" })
-vim.keymap.set("i", "<C-h>", "<C-o>dB", { desc = "Delete word (insert mode)" })
+vim.keymap.set("i", "<C-h>", "<C-o>dB", { desc = "Delete backwards (insert mode)" })
 
 -- LSP formatting
 vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "Format buffer" })
