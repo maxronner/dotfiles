@@ -12,10 +12,10 @@
     addEmptyPathspec = false
     statusHints = false
 
-[url "ssh://git@github.com:max-ronner/"]
+[url "git@github.com:maxronner/"]
     insteadOf = "mr:"
 
-[url "ssh://git@github.com:"]
+[url "git@github.com:"]
     insteadOf = "gh:"
 
 [pager]
