@@ -5,7 +5,6 @@ return {
     vim.keymap.set("n", "<leader>gb", ":Git blame<CR>", { desc = "Fugitive: Blame" })
 
     local maxronner_Fugitive = vim.api.nvim_create_augroup("maxronner_Fugitive", {})
-
     local autocmd = vim.api.nvim_create_autocmd
     autocmd("BufWinEnter", {
       group = maxronner_Fugitive,
@@ -15,10 +14,6 @@ return {
 
         local bufnr = vim.api.nvim_get_current_buf()
         local opts = { buffer = bufnr, remap = false }
-
-        vim.keymap.set("n", "<leader>c", function()
-          vim.cmd("CodeCompanion /commit")
-        end, vim.tbl_extend("force", opts, { desc = "Fugitive: Status" }))
 
         vim.keymap.set("n", "<leader>p", function()
           vim.cmd.Git('push')
