@@ -78,13 +78,13 @@ tooltip {
 }
 
 .modules-left {
-    margin: 10 0 5 10;
+    margin: 10px 0px 5px 10px;
 }
 .modules-right {
-    margin: 10 10 5 0;
+    margin: 10px 10px 5px 0px;
 }
 .modules-center {
-    margin: 10 0 5 0;
+    margin: 10px 0px 5px 0px;
 }
 
 #mode {
