@@ -129,6 +129,7 @@
 🙉 :hear-no-evil_monkey:
 🙊 :speak-no-evil_monkey:
 💌 :love_letter:
+❤️ :heart:
 💘 :heart_with_arrow:
 💝 :heart_with_ribbon:
 💖 :sparkling_heart:
