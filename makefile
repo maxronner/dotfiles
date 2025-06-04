@@ -16,6 +16,7 @@ CLI_PKGS := \
 	base-devel \
 	bash-completion \
 	bat \
+	bluetui \
 	btop \
 	dust \
 	eza \
