@@ -60,3 +60,5 @@ alias glg="git log --graph --decorate"
 
 alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
 
+alias bt="bluetui"
+alias pm="pulsemixer"
