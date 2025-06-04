@@ -39,8 +39,13 @@ telescope.setup({
       limit = 100,
     },
     mappings = {
+      i = {
+        ["<C-q>"] = function(prompt_bufnr)
+          delete_buffers(prompt_bufnr)
+        end,
+      },
       n = {
-        ["d"] = function(prompt_bufnr)
+        ["<C-q>"] = function(prompt_bufnr)
           delete_buffers(prompt_bufnr)
         end,
       },
