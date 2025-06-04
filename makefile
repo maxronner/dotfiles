@@ -67,6 +67,7 @@ CLI_PKGS := \
 # Pacman packages: Desktop Environment
 DESKTOP_PKGS := \
 	autotiling \
+	blueman \
 	chromium \
 	cmatrix \
 	firefox \
