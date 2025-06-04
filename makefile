@@ -46,6 +46,7 @@ CLI_PKGS := \
 	pass-otp \
 	passff-host \
 	pipewire-pulse \
+	pulsemixer \
 	ripgrep \
 	rsync \
 	starship \
