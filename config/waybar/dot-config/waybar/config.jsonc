@@ -153,7 +153,7 @@
         // }
     },
     "bluetooth": {
-        "format": " {status}",
+        "format": "",
         "format-on": "",
         "format-off": "󰂲",
         "format-connected": " {device_alias}",
