@@ -1,35 +1,6 @@
 local data = assert(vim.fn.stdpath "data") --[[@as string]]
 local telescope = require "telescope"
 local builtin = require "telescope.builtin"
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
-
-local function delete_buffers(prompt_bufnr)
-  local picker = action_state.get_current_picker(prompt_bufnr)
-  local selections = picker:get_multi_selection()
-  local bufnrs = {}
-
-  if #selections == 0 then
-    local selection = action_state.get_selected_entry()
-    table.insert(bufnrs, selection.bufnr)
-  else
-    for _, selection in ipairs(selections) do
-      table.insert(bufnrs, selection.bufnr)
-    end
-  end
-
-  actions.close(prompt_bufnr)
-
-  for _, bufnr in ipairs(bufnrs) do
-    if vim.api.nvim_buf_is_valid(bufnr) then
-      vim.api.nvim_buf_delete(bufnr, { force = true })
-    end
-  end
-
-  vim.schedule(function()
-    builtin.buffers()
-  end)
-end
 
 telescope.setup({
   defaults = {
@@ -40,14 +11,10 @@ telescope.setup({
     },
     mappings = {
       i = {
-        ["<C-q>"] = function(prompt_bufnr)
-          delete_buffers(prompt_bufnr)
-        end,
+        ["<C-q>"] = require('telescope.actions').delete_buffer
       },
       n = {
-        ["<C-q>"] = function(prompt_bufnr)
-          delete_buffers(prompt_bufnr)
-        end,
+        ["<C-q>"] = require('telescope.actions').delete_buffer
       },
     }
   },
