@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Directory containing wallpapers
+WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
 if ! command -v magick &>/dev/null; then
     echo "magick is required but not installed."
     exit 1
@@ -10,9 +13,6 @@ if ! command -v swaybg &>/dev/null; then
     exit 1
 fi
 
-# Directory containing wallpapers
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
-
 # Randomly select a wallpaper
 SELECTED_WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | shuf -n 1)
 
@@ -21,17 +21,10 @@ if [ -z "$SELECTED_WALLPAPER" ]; then
     exit 1
 fi
 
-# Create a blurred version for the lock screen
-LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
-
-# Ensure the directory exists
 mkdir -p "$(dirname "$LOCK_WALLPAPER_PATH")"
-
 # Blur the selected wallpaper and save it for the lock screen
 magick "$SELECTED_WALLPAPER" -blur 24x16 "$LOCK_WALLPAPER_PATH"
 
+# Kill any existing swaybg processes and start a new one
 pkill -x swaybg
-exec swaybg --color 000000 --image "$SELECTED_WALLPAPER" --mode fill & disown
-
-echo "Wallpaper set to: $SELECTED_WALLPAPER"
-
+exec swaybg --color 000000 --image "$SELECTED_WALLPAPER" --mode fill &> /dev/null & disown
