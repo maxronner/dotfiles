@@ -4,6 +4,7 @@
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 WALLPAPER_PATH="$HOME/.config/sway/1.wallpaper"
 LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
+
 if ! command -v magick &>/dev/null; then
     echo "magick is required but not installed."
     exit 1

@@ -10,6 +10,7 @@
         "custom/notification",
         "clock",
         "bluetooth",
+        "custom/wallpaper",
         "custom/pacman",
         "custom/dog",
         "sway/scratchpad",
@@ -60,6 +61,17 @@
         "signal": 8,
         "tooltip": true,
         "tooltip-format": "Install {} pending updates"
+    },
+    "custom/wallpaper": {
+        "format": "{icon}",
+        "format-icons": {
+            "default": ""
+        },
+        "interval": 3600,
+        "exec": "rnbg ; echo 'default'",
+        "on-click": "true",
+        "tooltip": true,
+        "tooltip-format": "Randomize wallpaper"
     },
     "custom/uptime": {
         "format": "{} {icon}",
