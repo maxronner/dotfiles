@@ -26,7 +26,7 @@ mkdir -p "$(dirname "$WALLPAPER_PATH")"
 cp "$SELECTED_WALLPAPER" "$WALLPAPER_PATH"
 
 # Blur the selected wallpaper and save it for the lock screen
-magick "$SELECTED_WALLPAPER" -blur 24x16 "$LOCK_WALLPAPER_PATH"
+magick "$SELECTED_WALLPAPER" -blur 0x48 "$LOCK_WALLPAPER_PATH"
 
 # Kill any existing swaybg processes and start a new one
 pkill -x swaybg
