@@ -62,6 +62,14 @@ M.setup = function()
           ["<leader>gF"] = "@class.outer",
         },
       },
+      select = {
+        enable = true,
+        keymaps = {
+          ["af"] = "@function.outer",
+          ["if"] = "@function.inner",
+          ["ac"] = "@class.outer",
+        },
+      },
       move = {
         enable              = true,
         set_to_root         = true,
