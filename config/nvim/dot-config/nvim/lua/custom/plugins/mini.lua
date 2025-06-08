@@ -4,6 +4,12 @@ return {
     config = function()
       require("mini.ai").setup()
       require("mini.surround").setup()
+      require("mini.indentscope").setup({
+        draw = {
+          delay = 0,
+          animation = require("mini.indentscope").gen_animation.none(),
+        }
+      })
       require("mini.pairs").setup()
       require("mini.comment").setup()
       require("mini.move").setup()
@@ -69,7 +75,7 @@ return {
       })
 
       local map = require("mini.map")
-      require("mini.map").setup({
+      map.setup({
         integrations = {
           map.gen_integration.builtin_search(),
           map.gen_integration.gitsigns(),
@@ -86,6 +92,7 @@ return {
         },
       })
       vim.keymap.set("n", "<leader>m", MiniMap.toggle, { desc = "Toggle MiniMap" })
+
       vim.keymap.set('n', '<leader>bd', function()
         require('mini.bufremove').delete(0, false)
       end, { desc = 'Delete buffer without closing window' })
