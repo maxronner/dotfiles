@@ -123,4 +123,3 @@ if [ -f ~/.config/environment/exports.sh ]; then
     . ~/.config/environment/exports.sh
 fi
 
-bind '"\C-f": "tmux-sessionizer\n"'
