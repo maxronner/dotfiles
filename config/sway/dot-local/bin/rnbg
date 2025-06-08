@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Directory containing wallpapers
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+WALLPAPER_DIR="$HOME/Sync/wallpapers"
 WALLPAPER_PATH="$HOME/.config/sway/1.wallpaper"
 LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
 
@@ -16,7 +16,7 @@ if ! command -v swaybg &>/dev/null; then
 fi
 
 # Randomly select a wallpaper
-SELECTED_WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | shuf -n 1)
+SELECTED_WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n 1)
 
 if [ -z "$SELECTED_WALLPAPER" ]; then
     echo "No wallpapers found in $WALLPAPER_DIR"
