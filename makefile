@@ -63,7 +63,6 @@ CLI_PKGS := \
 	zk \
 	zoxide \
 	zsh \
-	zsh-autosuggestions \
 
 # Pacman packages: Desktop Environment
 DESKTOP_PKGS := \

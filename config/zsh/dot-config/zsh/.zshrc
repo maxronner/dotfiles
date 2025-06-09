@@ -80,5 +80,3 @@ fi
 
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
