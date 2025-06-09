@@ -242,5 +242,5 @@ endif
 
 nvidia_setup:
 	@echo "Configuring nvidia..."
-	$(PACKAGE_MANAGER) $$(./nvidia-driver-picker.sh)
+	$(PACKAGE_MANAGER) $$(./scripts/nvidia-driver-picker.sh)
 	@sudo sed -i "/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s|\\(sway\\)\\([[:space:]]*['\"]\\)|\\1 --unsupported-gpu\\2|}" /usr/share/wayland-sessions/sway.desktop
