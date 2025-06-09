@@ -4,12 +4,6 @@ return {
     config = function()
       require("mini.ai").setup()
       require("mini.surround").setup()
-      require("mini.indentscope").setup({
-        draw = {
-          delay = 0,
-          animation = require("mini.indentscope").gen_animation.none(),
-        }
-      })
       require("mini.pairs").setup()
       require("mini.comment").setup()
       require("mini.move").setup()
@@ -21,6 +15,20 @@ return {
       require("mini.align").setup()
       require("mini.jump").setup()
       require("mini.cursorword").setup()
+      require("mini.indentscope").setup({
+        draw = {
+          delay = 0,
+          animation = require("mini.indentscope").gen_animation.none(),
+        }
+      })
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function()
+          local buftype = vim.bo.buftype
+          if buftype == nil or buftype == "" or buftype == "nofile" or buftype == "prompt" or buftype == "help" then
+            vim.b.miniindentscope_disable = true
+          end
+        end,
+      })
 
       local miniclue = require('mini.clue')
       miniclue.setup({
