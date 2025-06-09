@@ -280,8 +280,8 @@ bindsym $mod+Shift+e mode "$mode_system"
 # Media:
 #
     # Volume
-    bindsym XF86AudioRaiseVolume exec modify-volume "+"
-    bindsym XF86AudioLowerVolume exec modify-volume "-"
+    bindsym XF86AudioRaiseVolume exec ~/.config/sway/scripts/modify-volume.sh "+"
+    bindsym XF86AudioLowerVolume exec ~/.config/sway/scripts/modify-volume.sh "-"
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
     bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
