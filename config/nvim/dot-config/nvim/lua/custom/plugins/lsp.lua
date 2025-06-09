@@ -232,7 +232,8 @@ return {
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0, desc = "LSP: Hover documentation" })
           vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, { buffer = 0, desc = "LSP: Code actions" })
           vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { buffer = 0, desc = "LSP: Rename symbol" })
-          vim.keymap.set("n", "<C-h>", vim.lsp.buf.signature_help, { buffer = 0, desc = "LSP: Signature help" })
+          vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help({ border = "rounded" }) end,
+            { buffer = 0, desc = "LSP: Signature help" })
           vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float,
             { buffer = 0, desc = "LSP: Open diagnostics float" })
           vim.keymap.set("n", "[d", vim.diagnostic.get_next, { buffer = 0, desc = "Next diagnostic" })

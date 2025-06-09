@@ -11,7 +11,6 @@ vim.opt.signcolumn = "yes"
 vim.opt.colorcolumn = "80"
 vim.opt.relativenumber = true
 vim.opt.nu = true
-vim.opt.winborder = "rounded"
 
 -- Indentation
 vim.opt.tabstop = 4
