@@ -7,7 +7,7 @@ emojis=$(cat ~/.local/share/emoji.txt)
 # Run fzf in a subshell, capture output and exit code explicitly
 fzf_output=""
 fzf_exit=0
-if ! fzf_output=$(echo "$emojis" | fzf --query="$query" --multi --select-1 --exit-0); then
+if ! fzf_output=$(echo "$emojis" | fzf --tmux --border --query="$query" --multi --select-1 --exit-0); then
   fzf_exit=$?
 fi
 
