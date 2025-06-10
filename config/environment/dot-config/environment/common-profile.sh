@@ -19,7 +19,7 @@ export FZF_DEFAULT_OPTS="
     --color=spinner:#f6c177,info:#9ccfd8
     --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
     --bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
-export FZF_TMUX_PANE_OPTS="bottom,40% --border"
+export FZF_TMUX_PANE_OPTS="bottom,40%,border-native"
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 
 if [ -d "$HOME/.local/bin" ] ; then
