@@ -54,7 +54,6 @@ CLI_PKGS := \
 	syncthing \
 	tealdeer \
 	tgpt \
-	thefuck \
 	tmux \
 	ttf-hack-nerd \
 	unzip \

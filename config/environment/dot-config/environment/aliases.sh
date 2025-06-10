@@ -31,10 +31,6 @@ alias otp="pass fzf-otp"
 alias chat="tmux-sessionizer chat"
 alias cb="wl-copy"
 
-# --- thefuck ---
-eval $(thefuck --alias)
-eval $(thefuck --alias fk)
-
 # --- system ---
 alias bd='cd "$OLDPWD"'
 alias reboot="systemctl reboot"
