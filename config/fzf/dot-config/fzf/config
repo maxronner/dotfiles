@@ -8,11 +8,14 @@ export FZF_ALT_C_COMMAND="${FZF_DEFAULT_COMMAND/--type f/--type d}"
 export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
+alias fzf-nvim="fzf --multi --bind 'enter:become(nvim {+})'"
+
 if [[ "$SHELL" == *"bash"* ]]; then
     source /usr/share/fzf/key-bindings.bash
 elif [[ "$SHELL" == *"zsh"* ]]; then
     source /usr/share/fzf/key-bindings.zsh
     source /usr/share/fzf/completion.zsh
+    bindkey -s '^N' "fzf-nvim\n"
 fi
 
 # Find in manual
