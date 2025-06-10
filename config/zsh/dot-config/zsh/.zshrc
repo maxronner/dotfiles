@@ -83,5 +83,3 @@ eval "$(zoxide init --cmd cd zsh)"
 
 # Initalizes alias-finder
 zstyle ':omz:plugins:alias-finder' autoload yes
-
-bindkey -s '^S' "tmux-sessionizer\n"
