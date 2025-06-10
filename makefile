@@ -123,9 +123,9 @@ DEPS := \
 	stow_dotfiles \
 	enable_systemd_services \
 	setup_timesyncd \
-	ly_setup
+	setup_ly
 
-.PHONY: install_cli install_desktop install_aur ly_setup nvidia_setup
+.PHONY: install_cli install_desktop install_aur setup_ly setup_nvidia
 
 # Default target
 all: $(DEPS)
@@ -197,7 +197,7 @@ setup_timesyncd:
 	@sudo systemctl restart systemd-timesyncd
 	@sudo timedatectl set-timezone $(TIMEZONE)
 
-ly_setup:
+setup_ly:
 	@echo "Configuring ly..."; \
 	LY_CONFIG=/etc/ly/config.ini; \
 	sudo sed -i 's/^[[:space:]]*animation[[:space:]]*=.*/animation = matrix/' $$LY_CONFIG; \
@@ -225,7 +225,7 @@ else ifeq ($(env),workstation)
 	@echo "Disabling USB wakeup for microphone..."
 	echo "disabled" | sudo tee /sys/bus/usb/devices/5-2/power/wakeup
 
-	$(MAKE) nvidia_setup
+	$(MAKE) setup_nvidia
 else ifeq ($(env),laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
@@ -238,7 +238,7 @@ endif
 	@echo "Installing $(env) specific dotfiles..."
 	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) $(env)
 
-nvidia_setup:
+setup_nvidia:
 	@echo "Configuring nvidia..."
 	$(PACKAGE_MANAGER) $$(./scripts/nvidia-driver-picker.sh)
 	@sudo sed -i "/^[[:space:]]*Exec=.*sway/ {/--unsupported-gpu/! s|\\(sway\\)\\([[:space:]]*['\"]\\)|\\1 --unsupported-gpu\\2|}" /usr/share/wayland-sessions/sway.desktop
