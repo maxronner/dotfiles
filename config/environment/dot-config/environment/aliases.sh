@@ -62,3 +62,4 @@ alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~
 
 alias bt="bluetui"
 alias pm="pulsemixer"
+alias tt="taskwarrior-tui"
