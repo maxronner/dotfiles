@@ -202,7 +202,6 @@ ly_setup:
 	LY_CONFIG=/etc/ly/config.ini; \
 	sudo sed -i 's/^[[:space:]]*animation[[:space:]]*=.*/animation = matrix/' $$LY_CONFIG; \
 	sudo sed -i 's/^[[:space:]]*clock[[:space:]]*=.*/clock = %c/' $$LY_CONFIG; \
-	sudo sed -i 's/^[[:space:]]*bigclock[[:space:]]*=.*/bigclock = true/' $$LY_CONFIG; \
 	sudo sed -i 's/^[[:space:]]*vi_mode[[:space:]]*=.*/vi_mode = true/' $$LY_CONFIG; \
 	echo "Overriding ly service..."; \
 	LY_OVERRIDE_DIR=/etc/systemd/system/ly.service.d; \
