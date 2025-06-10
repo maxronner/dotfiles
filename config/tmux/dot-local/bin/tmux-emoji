@@ -17,15 +17,10 @@ copy_clipboard() {
   fi
 }
 
-if [[ "$mode" == "clipboard" ]]; then
-  emoji=$(fzf-emoji)
-  if [[ -n "$emoji" ]]; then
-    printf %s "$emoji" | copy_clipboard
-  fi
-else
-  tmux popup -E "
-    emoji=\$(fzf-emoji)
-    tmux send-keys -t \"${caller_pane}\" \"\$emoji\"
-  "
+emoji=$(fzf-emoji)
+if [[ -n "$emoji" ]] && [[ "$mode" == "clipboard" ]]; then
+  printf %s "$emoji" | copy_clipboard
+elif [[ -n "$emoji" ]]; then
+  tmux send-keys -t "$caller_pane" "$emoji"
 fi
 

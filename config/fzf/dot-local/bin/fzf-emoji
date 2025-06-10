@@ -3,5 +3,28 @@ set -euo pipefail
 
 query=${1:-}
 emojis=$(cat ~/.local/share/emoji.txt)
-selected_emoji=$(echo "$emojis" | fzf --query="$query" --multi --select-1 --exit-0 | awk '{print $1}' | paste -sd '' -)
+
+# Run fzf in a subshell, capture output and exit code explicitly
+fzf_output=""
+fzf_exit=0
+if ! fzf_output=$(echo "$emojis" | fzf --query="$query" --multi --select-1 --exit-0); then
+  fzf_exit=$?
+fi
+
+# Handle Ctrl+C or other non-zero exits
+if [[ $fzf_exit -eq 130 ]]; then
+  echo "Interrupted."
+  exit 130
+elif [[ $fzf_exit -ne 0 ]]; then
+  # Handle other non-zero exits if needed
+  exit $fzf_exit
+fi
+
+# Process and emit selected emoji
+selected_emoji=$(echo "$fzf_output" | awk '{print $1}' | paste -sd '' -)
+if [[ -z "$selected_emoji" ]]; then
+  exit 0
+fi
+
 echo "$selected_emoji"
+
