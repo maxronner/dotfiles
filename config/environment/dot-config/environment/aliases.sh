@@ -20,6 +20,7 @@ if command -v nvim &>/dev/null; then
     alias vim="nvim"
     alias nano="nvim"
     alias svim="sudo nvim"
+    alias v="nvim"
 fi
 
 if command -v bat &>/dev/null; then
@@ -30,6 +31,9 @@ alias pw="pass fzf"
 alias otp="pass fzf-otp"
 alias chat="tmux-sessionizer chat"
 alias cb="wl-copy"
+alias bt="bluetui"
+alias pm="pulsemixer"
+alias tt="taskwarrior-tui"
 
 # --- system ---
 alias bd='cd "$OLDPWD"'
@@ -55,7 +59,3 @@ alias gap="git add --patch"
 alias glg="git log --graph --decorate"
 
 alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
-
-alias bt="bluetui"
-alias pm="pulsemixer"
-alias tt="taskwarrior-tui"
