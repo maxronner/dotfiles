@@ -77,7 +77,7 @@ vim.keymap.set("n", "<leader>fi", builtin.git_files, { desc = "Telescope: Git fi
 vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { desc = "Telescope: Old files" })
 vim.keymap.set("n", "<leader>fr", frecency.frecency, { desc = "Telescope: Find frequent files" })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
-vim.keymap.set("n", "<leader>ft", builtin.live_grep, { desc = "Telescope: Live grep" })
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope: Live grep" })
 vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "Telescope: Grep selection" })
 vim.keymap.set("n", "<leader>fm", builtin.git_status, { desc = "Telescope: Git status" })
 
