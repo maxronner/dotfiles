@@ -52,7 +52,7 @@
             "default": "󰚰"
         },
         "interval": 300,
-        "exec": "updates=$(checkupdates | wc -l); if [ $? -eq 0 ]; then echo \"$updates\"; else echo '?'; fi",
+        "exec": "~/.config/waybar/scripts/pacman-updates.sh",
         "exec-if": "exit 0",
         "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
         "signal": 8,
