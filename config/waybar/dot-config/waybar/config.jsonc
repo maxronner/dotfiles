@@ -49,7 +49,7 @@
     "custom/pacman": {
         "format": "{} {icon}",
         "format-icons": {
-            "default": ""
+            "default": "󰚰"
         },
         "interval": 300,
         "exec": "updates=$(checkupdates | wc -l); if [ $? -eq 0 ]; then echo \"$updates\"; else echo '?'; fi",
