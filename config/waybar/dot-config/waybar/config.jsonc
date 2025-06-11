@@ -62,7 +62,7 @@
     "custom/wallpaper": {
         "format": "{icon}",
         "format-icons": {
-            "default": ""
+            "default": "󰝮"
         },
         "interval": 3600,
         "exec": "rnbg ; echo 'default'",
