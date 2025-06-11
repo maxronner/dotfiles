@@ -75,7 +75,7 @@
         "format-icons": {
             "default": "󱩌"
         },
-        "exec": "gammastep -m wayland",
+        "exec": "gammastep -m wayland & echo 'default'",
         "on-click": "gammastep-toggle.sh",
         "tooltip": true,
         "tooltip-format": "Toggle gammastep"
