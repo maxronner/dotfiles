@@ -9,9 +9,7 @@
     "modules-left": [
         "custom/notification",
         "clock",
-        "bluetooth",
-        "custom/wallpaper",
-        "custom/pacman",
+        "group/control",
         "custom/dog",
         "sway/scratchpad",
         "sway/mode"
@@ -21,9 +19,8 @@
     ],
     "modules-right": [
         "idle_inhibitor",
-        "group/expand",
+        "group/stats",
         "pulseaudio",
-        "network",
         "battery"
     ],
     "sway/workspaces": {
@@ -73,6 +70,15 @@
         "tooltip": true,
         "tooltip-format": "Randomize wallpaper"
     },
+    "custom/gammastep": {
+        "format": "{icon}",
+        "format-icons": {
+            "default": "󱩌"
+        },
+        "on-click": "gammastep-toggle.sh",
+        "tooltip": true,
+        "tooltip-format": "Toggle gammastep"
+    },
     "custom/uptime": {
         "format": "{} {icon}",
         "format-icons": {
@@ -83,7 +89,31 @@
         "tooltip": true,
         "tooltip-format": "Uptime"
     },
-    "group/expand": {
+    "group/control": {
+        "orientation": "horizontal",
+        "drawer": {
+            "children-class": "group-item",
+            "transition-duration": 600,
+            "transition-to-left": false,
+            "click-to-reveal": true
+        },
+        "modules": [
+            "custom/control-wrap",
+            "custom/pacman",
+            "custom/wallpaper",
+            "custom/gammastep",
+            "bluetooth",
+            "network"
+        ]
+    },
+    "custom/control-wrap": {
+	    "format": "{icon}",
+	    "format-icons": {
+		    "default": ""
+	    },
+	    "tooltip-format": "Control group"
+    },
+    "group/stats": {
         "orientation": "horizontal",
         "drawer": {
             "children-class": "group-item",
@@ -168,8 +198,8 @@
         "format": "",
         "format-on": "",
         "format-off": "󰂲",
-        "format-connected": " {device_alias}",
-        "format-connected-battery": " {device_alias} {device_battery_percentage}%",
+        "format-connected": "{device_alias} ",
+        "format-connected-battery": "{device_alias} {device_battery_percentage}% ",
         // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
         "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
@@ -225,7 +255,7 @@
         "on-failure": "ignore",
         "format": "{text} {icon}",
         "format-icons": [
-            ""
+            "󰏈"
         ]
     },
     "custom/dog": {
@@ -317,17 +347,5 @@
         },
         "on-click": "pavucontrol",
         "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-    },
-    "custom/media": {
-        "format": "{icon} {text}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
     }
 }
