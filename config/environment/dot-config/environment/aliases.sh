@@ -29,7 +29,7 @@ fi
 
 alias pw="pass fzf"
 alias otp="pass fzf-otp"
-alias chat="tmux-sessionizer chat"
+alias chat="tmux-chat"
 alias cb="wl-copy"
 alias bt="bluetui"
 alias pm="pulsemixer"
