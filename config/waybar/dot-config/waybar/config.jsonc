@@ -83,7 +83,7 @@
     "custom/uptime": {
         "format": "{} {icon}",
         "format-icons": {
-            "default": ""
+            "default": "󱎫"
         },
         "exec": "uptime -p | awk '{print $2, $3}' | tr -d ','",
         "interval": 60,
