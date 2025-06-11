@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+if pgrep -x rnbg &>/dev/null; then
+    exit 1
+fi
+
 # Directory containing wallpapers
 WALLPAPER_DIR="$HOME/Sync/wallpapers"
 WALLPAPER_PATH="$HOME/.config/sway/1.wallpaper"
@@ -24,7 +30,7 @@ if [ -z "$SELECTED_WALLPAPER" ]; then
 fi
 
 mkdir -p "$(dirname "$WALLPAPER_PATH")"
-cp "$SELECTED_WALLPAPER" "$WALLPAPER_PATH"
+ln -sf "$SELECTED_WALLPAPER" "$WALLPAPER_PATH"
 
 # Blur the selected wallpaper and save it for the lock screen
 magick "$SELECTED_WALLPAPER" -blur 0x48 "$LOCK_WALLPAPER_PATH"
