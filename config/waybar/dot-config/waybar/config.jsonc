@@ -234,7 +234,9 @@
         "tooltip": true
     },
     "memory": {
-        "format": "{used:0.1f}G/{total:0.1f}G "
+        "format": "{used:0.1f}G/{total:0.1f}G ",
+        "tooltip": true,
+        "tooltip-format": "Memory usage:\n{avail:0.1f}G free"
     },
     "temperature": {
         "thermal-zone": 2,
