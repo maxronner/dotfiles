@@ -18,7 +18,7 @@ export FZF_DEFAULT_OPTS="
     --color=border:#44415a,header:#3e8fb0,gutter:#232136
     --color=spinner:#f6c177,info:#9ccfd8
     --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa
-    --bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline)'"
+    --bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline),ctrl-d:preview-page-down,ctrl-u:preview-page-up,ctrl-y:preview-up,ctrl-e:preview-down,ctrl-b:preview-page-up,ctrl-f:preview-page-down,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down,shift-up:preview-top,shift-down:preview-bottom,alt-up:half-page-up,alt-down:half-page-down'"
 export FZF_TMUX_PANE_OPTS="bottom,40%,border-native"
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 
