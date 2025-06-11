@@ -118,17 +118,16 @@ input "type:touchpad" {
 #
 # Basics:
 #
-    # Start a terminal
     bindsym $mod+t exec $tmux
     bindsym $mod+Shift+t exec $term
 
-    # Kill focused window
     bindsym $mod+Shift+q kill
 
-    # Start your launcher
     bindsym $mod+d exec $menu
-
     bindsym $mod+u exec $browser
+
+    # Swap day/night mode gammastep
+    bindsym $mod+g exec kill -SIGUSR1 $(pidof gammastep)
     bindsym $mod+p exec pavucontrol
     bindsym $mod+Shift+w exec $lock
 
