@@ -18,6 +18,7 @@ CLI_PKGS := \
 	bat \
 	bluetui \
 	btop \
+	chafa \
 	dust \
 	eza \
 	fastfetch \
@@ -92,6 +93,7 @@ DESKTOP_PKGS := \
 AUR_PKGS := \
 	tofi \
 	rose-pine-cursor \
+	yt-x \
 	zen-browser-bin
 
 WORKSPACE_PKGS := \
