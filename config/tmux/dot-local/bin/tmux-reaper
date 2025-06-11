@@ -5,10 +5,9 @@ if [ -z "$sessions" ]; then
   exit $?
 fi
 
-for i in $sessions; do
+echo "$sessions" | while IFS= read -r i; do
   session_name="${i%%:*}"  # remove everything after the first colon
   if [ -n "$session_name" ]; then
-    echo "Killing $session_name"
     tmux kill-session -t "$session_name"
   fi
 done
