@@ -19,13 +19,15 @@ return {
         draw = {
           delay = 0,
           animation = require("mini.indentscope").gen_animation.none(),
-        }
+        },
       })
-      vim.api.nvim_create_autocmd("BufEnter", {
-        callback = function()
-          local buftype = vim.bo.buftype
-          if buftype == nil or buftype == "" or buftype == "nofile" or buftype == "prompt" or buftype == "help" then
+      vim.api.nvim_create_autocmd("Filetype", {
+        callback = function(args)
+          local buftype = vim.bo[args.buf].buftype
+          if buftype == "nofile" or buftype == "prompt" or buftype == "help" or buftype == "qf" then
             vim.b.miniindentscope_disable = true
+          else
+            vim.b.miniindentscope_disable = false
           end
         end,
       })
