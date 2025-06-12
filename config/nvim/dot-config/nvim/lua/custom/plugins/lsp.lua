@@ -223,8 +223,8 @@ return {
           local builtin = require "telescope.builtin"
 
           vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
-          vim.keymap.set("n", "<leader>gd", builtin.lsp_definitions, { buffer = 0, desc = "Telescope: LSP Definitions" })
-          vim.keymap.set("n", "<leader>gr", builtin.lsp_references, { buffer = 0, desc = "Telescope: LSP References" })
+          vim.keymap.set("n", "<leader>fd", builtin.lsp_definitions, { buffer = 0, desc = "Telescope: LSP Definitions" })
+          vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { buffer = 0, desc = "Telescope: LSP References" })
           vim.keymap.set("n", "<leader>ls", builtin.lsp_document_symbols,
             { buffer = 0, desc = "Telescope: LSP Document symbols" })
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "LSP: Declaration" })
