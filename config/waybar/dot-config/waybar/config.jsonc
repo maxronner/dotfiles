@@ -71,14 +71,18 @@
         "tooltip-format": "Randomize wallpaper"
     },
     "custom/gammastep": {
-        "format": "{icon}",
+        "format": "{text} {icon}",
         "format-icons": {
-            "default": "󱩌"
+            "off": "󰖨",
+            "on": "󱠩",
+            "auto": "󰔉"
         },
-        "exec": "gammastep -m wayland & echo 'default'",
-        "on-click": "gammastep-toggle.sh",
+        "exec": "~/.config/waybar/scripts/gammastep-status.sh",
+        "interval": 5,
+        "on-click": "~/.config/waybar/scripts/gammastep-toggle.sh",
         "tooltip": true,
-        "tooltip-format": "Toggle gammastep"
+        "tooltip-format": "Toggle gammastep",
+        "return-type": "json"
     },
     "custom/uptime": {
         "format": "{} {icon}",
