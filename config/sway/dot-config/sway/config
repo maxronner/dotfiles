@@ -126,8 +126,7 @@ input "type:touchpad" {
     bindsym $mod+d exec $menu
     bindsym $mod+u exec $browser
 
-    # Swap day/night mode gammastep
-    bindsym $mod+g exec kill -SIGUSR1 $(pidof gammastep)
+    bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
     bindsym $mod+Shift+w exec $lock
 

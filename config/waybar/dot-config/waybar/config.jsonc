@@ -79,7 +79,7 @@
         },
         "exec": "~/.config/waybar/scripts/gammastep-status.sh",
         "interval": 5,
-        "on-click": "~/.config/waybar/scripts/gammastep-toggle.sh",
+        "on-click": "gammastep-toggle.sh",
         "tooltip": true,
         "tooltip-format": "Toggle gammastep",
         "return-type": "json"
