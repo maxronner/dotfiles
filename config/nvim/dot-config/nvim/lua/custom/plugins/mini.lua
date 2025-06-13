@@ -13,6 +13,7 @@ return {
       require("mini.splitjoin").setup()
       require("mini.statusline").setup()
       require("mini.align").setup()
+      require("mini.icons").setup()
       require("mini.jump").setup()
       require("mini.cursorword").setup()
       require("mini.indentscope").setup({
