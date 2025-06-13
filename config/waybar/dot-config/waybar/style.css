@@ -59,7 +59,7 @@ tooltip label {
 }
 .module:hover {
     transition: all .3s ease;
-    color: @rose;
+    color: @iris;
 }
 
 .modules-left,
@@ -157,6 +157,9 @@ tooltip {
 #network {
     /* This is here because current wifi icon will be cut off otherwise */
     padding: 0px 8px 0px 0px;
+}
+#idle_inhibitor.activated {
+  color: @gold;
 }
 .group-item .module {
     padding: 0px 10px;
