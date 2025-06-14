@@ -78,6 +78,27 @@ return {
           },
         },
       },
+      mappings = {
+        ask = "<leader>ia",
+        new_ask = "<leader>in",
+        edit = "<leader>ie",
+        refresh = "<leader>ir",
+        focus = "<leader>if",
+        stop = "<leader>iS",
+        toggle = {
+          default = "<leader>it",
+          debug = "<leader>id",
+          hint = "<leader>ih",
+          suggestion = "<leader>is",
+          repomap = "<leader>iR",
+        },
+        files = {
+          add_current = "<leader>ic",     -- Add current buffer to selected files
+          add_all_buffers = "<leader>iB", -- Add all buffer files to selected files
+        },
+        select_model = "<leader>i?",      -- Select model command
+        select_history = "<leader>ih",    -- Select history command
+      },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
     build = "make",

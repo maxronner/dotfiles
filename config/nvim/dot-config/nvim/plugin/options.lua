@@ -1,5 +1,7 @@
 -- General
 
+vim.opt.timeout = true
+vim.opt.timeoutlen = 300
 vim.opt.confirm = true
 vim.opt.updatetime = 50
 vim.opt.splitright = true
