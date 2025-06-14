@@ -1,5 +1,9 @@
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    if test -r ~/.dircolors; then
+        eval "$(dircolors -b ~/.dircolors)"
+    else
+        eval "$(dircolors -b)"
+    fi
     alias ls='ls --color=auto'
     alias dir='dir --color=auto'
     alias vdir='vdir --color=auto'
@@ -33,11 +37,11 @@ alias chat="tmux-chat"
 alias cb="wl-copy"
 alias bt="bluetui"
 alias pm="pulsemixer"
-alias tt="taskwarrior-tui"
 
 # --- system ---
 alias bd='cd "$OLDPWD"'
 alias reboot="systemctl reboot"
+alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
 
 # --- cd backwards ---
 alias ..='cd ..'
@@ -58,4 +62,9 @@ alias gcl="git clone"
 alias gap="git add --patch"
 alias glg="git log --graph --decorate"
 
-alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
+alias t="task"
+alias tt="taskwarrior-tui"
+alias tad="task add project:dotfiles"
+alias tah="task add project:homelab"
+alias ta="task add"
+alias td="task done"
