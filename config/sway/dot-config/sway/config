@@ -297,8 +297,8 @@ bindsym $mod+Shift+e mode "$mode_system"
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-bar {
-    swaybar_command waybar
+# bar {
+#     swaybar_command waybar
 #    position bottom
 #    #mode hide
 #
@@ -312,7 +312,8 @@ bar {
 #        inactive_workspace $highlightlow $highlightlow #5c5c5c
 #        urgent_workspace $love $love $text
 #    }
-}
+# }
+exec_always ~/.config/sway/scripts/start-waybar.sh
 
 include /etc/sway/config.d/*
 
