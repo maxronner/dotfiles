@@ -65,3 +65,4 @@ end
 
 load_key("Credentials/keys/openai", "OPENAI_API_KEY")
 load_key("Credentials/keys/gemini", "GEMINI_API_KEY")
+load_key("Credentials/keys/tavily", "TAVILY_API_KEY")
