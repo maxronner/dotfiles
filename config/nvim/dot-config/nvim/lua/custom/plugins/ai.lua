@@ -41,8 +41,8 @@ return {
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Toggle" })
       vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Add" })
-      vim.keymap.set("n", "<leader>ic", ":CodeCompanion /commit<CR>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Commit" })
+      vim.keymap.set("n", "<leader>ig", ":CodeCompanion /commit<CR>",
+        { noremap = true, silent = true, desc = "CodeCompanion: Generate Git Commit" })
 
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
