@@ -30,7 +30,6 @@ CLI_PKGS := \
 	go \
 	htop \
 	inotify-tools \
-	iwd \
 	jq \
 	libnotify \
 	man-db \
