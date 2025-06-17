@@ -8,6 +8,14 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+if [ -f "$XDG_CONFIG_HOME/environment/base-xdg-paths.sh" ]; then
+    source "$XDG_CONFIG_HOME/environment/base-xdg-paths.sh"
+fi
+
+if [ -f "$XDG_CONFIG_HOME/environment/core-env-exports.sh" ]; then
+    source "$XDG_CONFIG_HOME/environment/core-env-exports.sh"
+fi
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -16,17 +24,10 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
+if [ -f "$XDG_CONFIG_HOME/environment/init-session.sh" ] ; then
+    source "$XDG_CONFIG_HOME/environment/init-session.sh"
 fi
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] ; then
-    export ELECTRON_OZONE_PLATFORM_HINT=auto
     exec sway --unsupported-gpu
 fi

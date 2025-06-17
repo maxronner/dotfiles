@@ -1,6 +1,3 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.local/share/oh-my-zsh"
 ZSH_CUSTOM=$ZSH/custom
@@ -66,10 +63,9 @@ HIST_STAMPS="yyyy-mm-dd"
 plugins=(git vi-mode alias-finder)
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-if [ -f ~/.config/environment/exports.sh ]; then
-    source ~/.config/environment/exports.sh
-fi
+# This need to be set after oh-my-zsh is sourced
+export HISTFILE="$XDG_DATA_HOME/zsh/history"
+export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -83,3 +79,5 @@ eval "$(zoxide init --cmd cd zsh)"
 
 # Initalizes alias-finder
 zstyle ':omz:plugins:alias-finder' autoload yes
+
+source "$XDG_CONFIG_HOME/environment/interactive-shell-configs.sh"

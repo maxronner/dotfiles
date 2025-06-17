@@ -1,5 +1,10 @@
-if [ -f $HOME/.config/environment/common-env.sh ]; then
-    source "$HOME/.config/environment/common-env.sh"
+if [ -f $HOME/.config/environment/base-xdg-paths.sh ]; then
+    source "$HOME/.config/environment/base-xdg-paths.sh"
+fi
+
+if [ -f $HOME/.config/environment/core-env-exports.sh ]; then
+    source "$HOME/.config/environment/core-env-exports.sh"
 fi
 
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export HISTFILE="$XDG_DATA_HOME/zsh/history"
