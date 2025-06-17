@@ -31,6 +31,9 @@ if command -v bat &>/dev/null; then
     alias cat="bat"
 fi
 
+fat() {
+  cat "$(fd "$@")"
+}
 alias pw="pass fzf"
 alias otp="pass fzf-otp"
 alias chat="tmux-chat"
