@@ -91,6 +91,7 @@ return {
         -- Examples:
         -- auto_approve_tool_permissions = true,                -- Auto-approve all tools (no prompts)
         -- auto_approve_tool_permissions = {"bash", "replace_in_file"}, -- Auto-approve specific tools only
+        enable_cursor_planning_mode = true, -- enable cursor planning mode!
       },
       mappings = {
         ask = "<leader>ia",
