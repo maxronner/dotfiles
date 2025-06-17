@@ -15,7 +15,3 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01:locus=01:quote=
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
-
-if [ -d "$HOME/appimages" ] ; then
-    PATH="$HOME/appimages:$PATH"
-fi
