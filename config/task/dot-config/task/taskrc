@@ -26,8 +26,8 @@ report.work.filter=status:pending +work
 report.work.sort=due+,priority-
 report.work.description=Pending work tasks
 
-report.next.columns=id,priority,due,urgency,project,description
-report.next.labels=ID,Prio,Due,Urg,Project,Task
+report.next.columns=id,priority,due,urgency,project,description.count,tags
+report.next.labels=ID,Prio,Due,Urg,Project,Task,tags
 report.next.filter=status:pending +READY
 report.next.sort=due+,priority-,urgency-
 report.next.description=Next actionable tasks
