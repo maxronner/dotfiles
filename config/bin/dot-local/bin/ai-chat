@@ -2,7 +2,7 @@
 tgpt \
   --preprompt "You are a helpful assistant. You answer questions based on the context provided. If you don't know the answer, say 'I don't know'. Use emojis." \
   --provider gemini \
-  --key $(pass Credentials/keys/gemini) \
+  --key "$(pass Credentials/keys/gemini)" \
   --model gemini-2.0-flash \
   "$@"
 
