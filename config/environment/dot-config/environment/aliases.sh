@@ -37,6 +37,7 @@ alias chat="tmux-chat"
 alias cb="wl-copy"
 alias bt="bluetui"
 alias pm="pulsemixer"
+alias zi="zoxide query --interactive"
 
 # --- system ---
 alias bd='cd "$OLDPWD"'
