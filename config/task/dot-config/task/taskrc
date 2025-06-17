@@ -19,3 +19,27 @@ hooks.location=~/.config/task/hooks
 include solarized-dark-256.theme
 #include solarized-light-256.theme
 #include no-color.theme
+
+report.work.columns=id,project,due,priority,description
+report.work.labels=ID,Project,Due,Prio,Task
+report.work.filter=status:pending +work
+report.work.sort=due+,priority-
+report.work.description=Pending work tasks
+
+report.next.columns=id,priority,due,urgency,project,description
+report.next.labels=ID,Prio,Due,Urg,Project,Task
+report.next.filter=status:pending +READY
+report.next.sort=due+,priority-,urgency-
+report.next.description=Next actionable tasks
+
+report.waiting.columns=id,project,description,wait
+report.waiting.labels=ID,Project,Task,Waiting
+report.waiting.filter=status:pending +WAITING
+report.waiting.sort=wait-
+report.waiting.description=Tasks waiting on something
+
+urgency.due.coefficient=10
+urgency.priority.coefficient=8
+urgency.project.coefficient=2
+urgency.tag.coefficient=1
+
