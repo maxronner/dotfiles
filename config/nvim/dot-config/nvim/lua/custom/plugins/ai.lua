@@ -53,9 +53,9 @@ return {
     event = "VeryLazy",
     version = false, -- Never set this value to "*"! Never!
     opts = {
-      -- add any opts here
-      -- for example
       provider = "gemini",
+      cursor_applying_provider = "gemini",
+
       providers = {
         provider = "gemini",
         gemini = {
