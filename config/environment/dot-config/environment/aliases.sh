@@ -34,6 +34,7 @@ fi
 fat() {
   cat "$(fd "$@")"
 }
+
 alias pw="pass fzf"
 alias otp="pass fzf-otp"
 alias chat="tmux-chat"
@@ -45,7 +46,6 @@ alias zi="zoxide query --interactive"
 # --- system ---
 alias bd='cd "$OLDPWD"'
 alias reboot="systemctl reboot"
-alias ssh-copy-id-clipboard="wl-copy 'echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> ~/.ssh/authorized_keys'"
 
 # --- cd backwards ---
 alias ..='cd ..'
