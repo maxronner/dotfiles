@@ -1,7 +1,7 @@
 fat() {
   local result
   # Use --color=never to ensure wc -l counts actual lines, not ANSI escape codes
-  result="$(fd --absolute-path --color=never --type file --hidden "$@" .)"
+  result="$(fd --absolute-path --exclude .git --color=never --type file --hidden "$@" .)"
   local line_count
   line_count=$(echo "$result" | wc -l)
 
