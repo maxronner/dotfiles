@@ -67,3 +67,6 @@ vim.keymap.set("n", "<leader>fH", builtin.search_history, { desc = "Telescope: S
 vim.keymap.set("n", "<leader>vv", function()
   builtin.find_files { cwd = vim.fn.stdpath "config", prompt_title = "Nvim Config" }
 end, { desc = "Telescope: Find files in config" })
+vim.keymap.set("n", "<leader>vl", function()
+  builtin.find_files { cwd = vim.fn.stdpath "data" .. "/lazy", prompt_title = "Nvim Plugins" }
+end, { desc = "Telescope: Find files in plugins" })

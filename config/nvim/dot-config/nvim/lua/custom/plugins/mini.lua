@@ -77,7 +77,7 @@ return {
           miniclue.gen_clues.z(),
         },
         window = {
-          delay = 1000,
+          delay = 200,
           config = {
             width = 'auto',
             border = 'double',
