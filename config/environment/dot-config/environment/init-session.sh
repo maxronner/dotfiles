@@ -5,3 +5,7 @@ fi
 if [ -f "$HOME/.config/environment/device-exports.sh" ]; then
     source "$HOME/.config/environment/device-exports.sh"
 fi
+
+if [ -f "$HOME/.config/environment/shell-functions.sh" ]; then
+    source "$HOME/.config/environment/shell-functions.sh"
+fi
