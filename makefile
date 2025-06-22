@@ -13,6 +13,7 @@ STOW_DIR := $(BASE_DIR)config
 # Pacman packages: CLI/Environment Tools
 CLI_PKGS := \
 	7zip \
+	atac \
 	base-devel \
 	bash-completion \
 	bat \
