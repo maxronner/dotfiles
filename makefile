@@ -20,6 +20,7 @@ CLI_PKGS := \
 	bluetui \
 	btop \
 	chafa \
+	duf \
 	dust \
 	eza \
 	fastfetch \
