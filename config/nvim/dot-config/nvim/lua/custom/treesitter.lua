@@ -108,6 +108,15 @@ M.setup = function()
         goto_previous       = {
           ["[d"] = "@conditional.outer",
         }
+      },
+      swap = {
+        enable = true,
+        swap_next = {
+          ["<leader>ww"] = "@parameter.inner",
+        },
+        swap_previous = {
+          ["<leader>ws"] = "@parameter.inner",
+        },
       }
     },
   })
