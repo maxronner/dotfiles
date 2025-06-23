@@ -155,10 +155,22 @@ install_aur:
 stow_dotfiles:
 	@echo "Stowing dotfiles from $(STOW_DIR) to $(HOME)..."
 	@bash build/stow-dotfiles.sh
+ifeq ($(env),)
+	@echo "env is not set, nothing to do."
+else
+	@echo "Installing $(env) specific dotfiles..."
+	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) $(env)
+endif
 
 unstow_dotfiles:
 	@echo "Unstowing dotfiles from $(HOME)..."
 	@bash build/unstow-dotfiles.sh
+ifeq ($(env),)
+	@echo "env is not set, nothing to do."
+else
+	@echo "Unstowing $(env) specific dotfiles..."
+	@stow --dotfiles --delete -d $(BASE_DIR)devices -t $(HOME) $(env)
+endif
 
 enable_systemd_services:
 	@echo "Enabling generic systemd services..."
@@ -180,14 +192,10 @@ else ifeq ($(env),workstation)
 	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
 	@bash build/setup-workstation.sh
 	$(MAKE) setup_nvidia
-	@echo "Installing $(env) specific dotfiles..."
-	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) $(env)
 else ifeq ($(env),laptop)
 	@echo "Installing laptop specific packages..."
 	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
 	@bash build/setup-laptop.sh
-	@echo "Installing $(env) specific dotfiles..."
-	@stow --dotfiles -d $(BASE_DIR)devices -t $(HOME) $(env)
 else
 	@echo "Unknown env: $(env)"
 endif
