@@ -28,9 +28,6 @@ vim.keymap.set('x', '?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within 
 
 ---- Editing ----
 
--- Replay last macro
-vim.keymap.set("n", "Q", "@@", { desc = "Replay last macro" })
-
 -- Wrap selection in quotes
 vim.keymap.set('x', '<leader>"', 'c"<C-r>"\"<Esc>', { desc = "Wrap selection in double quotes" })
 vim.keymap.set('x', '<leader>\'', 'c\'<C-r>"\'<Esc>', { desc = "Wrap selection in single quotes" })
