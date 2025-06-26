@@ -116,9 +116,9 @@ return {
     },
     config = function(_, opts)
       local keys = require("custom.passloader")
-      keys.export_var("GEMINI_API_KEY")
-      keys.export_var("OPENAI_API_KEY")
-      keys.export_var("TAVILY_API_KEY")
+      keys.export_var_async("GEMINI_API_KEY", function() end)
+      keys.export_var_async("OPENAI_API_KEY", function() end)
+      keys.export_var_async("TAVILY_API_KEY", function() end)
 
       require("avante").setup(opts)
     end,
