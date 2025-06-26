@@ -35,13 +35,6 @@ return {
             adapter = "gemini",
           },
         },
-        extensions = {
-          vectorcode = {
-            opts = {
-              add_tool = true,
-            }
-          }
-        },
         adapters = {
           gemini = function()
             return require("codecompanion.adapters").extend("gemini", {
