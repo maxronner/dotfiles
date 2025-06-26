@@ -5,6 +5,7 @@ set -euo pipefail
 MARKER="scratch"
 POS=""
 COMMAND=()
+POPUP=0
 KILL=0
 
 print_help() {
@@ -18,6 +19,7 @@ Options:
   -p, --position POS     Pane position specifier: 'bottom|b' or 'right|r'
                          (default: right)
   -k, --kill             Kill the pane after running the command
+  -P, --popup            Use a popup window instead of a split pane
   -h, --help             Show this help message and exit
 
 Everything after the '--' is treated as the COMMAND to run in your pane;
@@ -29,8 +31,8 @@ EOF
 
 #–– Use GNU getopt to support long options and `--`
 OPTS=$(getopt \
-  --options m:p:hk \
-  --longoptions marker:,position:,help,kill \
+  --options m:p:hkP \
+  --longoptions marker:,position:,help,kill,popup \
   --name "$(basename "$0")" \
   -- "$@"
 ) || exit 1
@@ -50,6 +52,10 @@ while true; do
       ;;
     -k|--kill)
       KILL=1
+      shift
+        ;;
+    -P|--popup)
+      POPUP=1
       shift
       ;;
     -h|--help)
@@ -79,10 +85,10 @@ fi
 #–– Normalize POS into the tmux args you want
 case "$POS" in
   bottom|b)
-    POS_ARGS="-f -l 12"
+    POS_ARGS=(-f -l 12)
     ;;
   right|r|"" )
-    POS_ARGS="-fh -l 80"
+    POS_ARGS=(-fh -l 80)
     ;;
   *)
     echo "Unknown position: '$POS'" >&2
@@ -91,6 +97,11 @@ case "$POS" in
 esac
 
 exec &>/dev/null # Hide output
+
+if [ "$POPUP" -eq 1 ]; then
+  tmux display-popup -w 80% -h 80% -E "$(getent passwd "$USER" | cut -d: -f7)" || true
+  exit 0
+fi
 
 #–– Configuration & discovery
 SESSION="$(tmux display-message -p '#S')"
@@ -105,7 +116,6 @@ PANE_INFO=$(
 )
 
 LAST_PANE_INDEX=$(tmux list-panes -t "$SESSION:$SRC_IDX" | wc -l)
-
 if [[ -n "$PANE_INFO" ]]; then
   echo "Found helper pane: $PANE_INFO"
   # –– We found our helper pane… let’s parse out its ID and owning window
@@ -127,7 +137,7 @@ if [[ -n "$PANE_INFO" ]]; then
     tmux select-window -t "$SESSION:$SRC_IDX"
   else
     echo "It’s somewhere else → moving it back to source"
-    tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" $POS_ARGS
+    tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" "${POS_ARGS[@]}"
     echo "Selecting window"
     tmux select-window -t "$SESSION:$SRC_IDX"
   fi
@@ -145,7 +155,7 @@ else
     tmux split-window -P -F '#{pane_id}' \
       -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
       -c "$CURRENT_DIR" \
-      $POS_ARGS \
+      "${POS_ARGS[@]}" \
       ${COMMAND_STRING:+ "$COMMAND_STRING"}
   )
   tmux select-pane -t "$NEW_PANE" -T "$MARKER"
