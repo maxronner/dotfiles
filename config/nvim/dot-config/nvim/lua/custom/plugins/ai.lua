@@ -19,6 +19,7 @@ return {
     "olimorris/codecompanion.nvim",
     opts = {},
     enabled = true,
+    event = "VeryLazy",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -34,6 +35,29 @@ return {
             adapter = "gemini",
           },
         },
+        extensions = {
+          vectorcode = {
+            opts = {
+              add_tool = true,
+            }
+          }
+        },
+        adapters = {
+          gemini = function()
+            return require("codecompanion.adapters").extend("gemini", {
+              env = {
+                api_key = require("custom.passloader").get_var("GEMINI_API_KEY")
+              }
+            })
+          end,
+          openai = function()
+            return require("codecompanion.adapters").extend("openai", {
+              env = {
+                api_key = require("custom.passloader").get_var("OPENAI_API_KEY")
+              }
+            })
+          end
+        }
       })
       vim.keymap.set({ "n", "v" }, "<leader>o", "<cmd>CodeCompanionActions<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Actions" })
@@ -90,6 +114,14 @@ return {
         ft = { "markdown", "Avante" },
       },
     },
+    config = function(_, opts)
+      local keys = require("custom.passloader")
+      keys.export_var("GEMINI_API_KEY")
+      keys.export_var("OPENAI_API_KEY")
+      keys.export_var("TAVILY_API_KEY")
+
+      require("avante").setup(opts)
+    end,
     opts = {
       provider = "gemini",
       cursor_applying_provider = "gemini",
