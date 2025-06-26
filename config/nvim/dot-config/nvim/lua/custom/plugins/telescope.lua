@@ -14,6 +14,9 @@ return {
 
     -- Sets vim.ui.select to telescope.
     "nvim-telescope/telescope-ui-select.nvim",
+
+    -- Icons for telescope.
+    "nvim-tree/nvim-web-devicons",
   },
 
   config = function()
