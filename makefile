@@ -53,6 +53,7 @@ CLI_PKGS := \
 	rsync \
 	starship \
 	stow \
+	sqlite \
 	syncthing \
 	tealdeer \
 	tgpt \
