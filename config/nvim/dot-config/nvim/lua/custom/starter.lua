@@ -130,8 +130,8 @@ local buttons = {
     button("SPC f o", "󰊄  Recently opened files"),
     button("SPC f f", "  Frecency/MRU"),
     button("SPC f g", "󰈬  Live grep"),
-    button("SPC b s", "  Scratch"),
     button("SPC f l", "  Find leftovers"),
+    button("SPC b s", "  Scratch"),
     button("q", "X  Quit", "<cmd>qa <CR>"),
   },
   opts = {
