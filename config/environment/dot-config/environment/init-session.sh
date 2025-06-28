@@ -1,11 +1,7 @@
-if [ -f "$HOME/.config/environment/app-configs.sh" ]; then
-    source "$HOME/.config/environment/app-configs.sh"
-fi
+[ -f "$XDG_CONFIG_HOME/environment/app-configs.sh" ] && \
+    source "$XDG_CONFIG_HOME/environment/app-configs.sh"
 
-if [ -f "$HOME/.config/environment/device-exports.sh" ]; then
-    source "$HOME/.config/environment/device-exports.sh"
-fi
+[ -f "$XDG_CONFIG_HOME/environment/device-exports.sh" ] && \
+    source "$XDG_CONFIG_HOME/environment/device-exports.sh"
 
-if [ -f "$HOME/.config/environment/shell-functions.sh" ]; then
-    source "$HOME/.config/environment/shell-functions.sh"
-fi
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
