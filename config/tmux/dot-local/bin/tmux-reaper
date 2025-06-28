@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sessions=$(tmux ls | fzf --exit-0 --multi --tmux $FZF_TMUX_PANE_OPTS)
+sessions=$(tmux ls | fzf --exit-0 --multi --tmux "$FZF_TMUX_PANE_OPTS")
 if [ -z "$sessions" ]; then
   exit $?
 fi

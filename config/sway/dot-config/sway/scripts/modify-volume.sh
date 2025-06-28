@@ -18,5 +18,4 @@ elif [[ "$1" == "-" ]]; then
 fi
 
 # Set the volume
-pactl set-sink-volume @DEFAULT_SINK@ ${new_volume}%
-
+pactl set-sink-volume @DEFAULT_SINK@ "${new_volume}"%
