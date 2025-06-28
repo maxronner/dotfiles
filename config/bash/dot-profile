@@ -16,16 +16,16 @@ if [ -f "$XDG_CONFIG_HOME/environment/core-env-exports.sh" ]; then
     source "$XDG_CONFIG_HOME/environment/core-env-exports.sh"
 fi
 
+if [ -f "$XDG_CONFIG_HOME/environment/init-session.sh" ] ; then
+    source "$XDG_CONFIG_HOME/environment/init-session.sh"
+fi
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
 	. "$HOME/.bashrc"
     fi
-fi
-
-if [ -f "$XDG_CONFIG_HOME/environment/init-session.sh" ] ; then
-    source "$XDG_CONFIG_HOME/environment/init-session.sh"
 fi
 
 if [ -z "$WAYLAND_DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] ; then
