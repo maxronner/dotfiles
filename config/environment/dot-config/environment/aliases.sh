@@ -50,6 +50,7 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 # --- Git ---
+alias g="git"
 alias gs="git status --short"
 alias gc="git commit"
 alias gd="git diff"
