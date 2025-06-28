@@ -111,12 +111,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Ignore case on auto-completion
-# Note: bind used instead of sticking these in .inputrc
-if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
+# Enable case-insensitive tab completion
+[[ $- == *i* ]] && bind "set completion-ignore-case on"
 
-# Show auto-completion list automatically, without double tab
-if [[ $iatest -gt 0 ]]; then bind "set show-all-if-ambiguous On"; fi
+# Show completion list on ambiguous input without needing double Tab
+[[ $- == *i* ]] && bind "set show-all-if-ambiguous on"
 
 [ -f "$XDG_CONFIG_HOME/environment/interactive-shell-configs.sh" ] && \
     source "$XDG_CONFIG_HOME/environment/interactive-shell-configs.sh"
