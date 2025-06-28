@@ -67,6 +67,7 @@ CLI_PKGS := \
 	zoxide \
 	zsh \
 	zsh-autosuggestions \
+	zsh-history-substring-search \
 	zsh-syntax-highlighting \
 
 # Pacman packages: Desktop Environment
