@@ -24,5 +24,5 @@ zstyle ':custom:plugins:alias-finder' cheaper yes
     source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 [ -f /usr/share/zsh/plugins/zsh-completions/zsh-completions.zsh ] && \
     source /usr/share/zsh/plugins/zsh-completions/zsh-completions.zsh
-[ -f/usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ] && \
+[ -f /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ] && \
     source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
