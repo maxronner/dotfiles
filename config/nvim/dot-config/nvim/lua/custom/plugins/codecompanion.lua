@@ -36,9 +36,9 @@ return {
           end
         }
       })
-      vim.keymap.set({ "n", "v" }, "<leader>oo", "<cmd>CodeCompanionActions<cr>",
+      vim.keymap.set({ "n", "v" }, "<leader>ia", "<cmd>CodeCompanionActions<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Actions" })
-      vim.keymap.set({ "n", "v" }, "<leader>ii", "<cmd>CodeCompanionChat Toggle<cr>",
+      vim.keymap.set({ "n", "v" }, "<leader>ic", "<cmd>CodeCompanionChat Toggle<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Toggle" })
       vim.keymap.set("v", "ia", "<cmd>CodeCompanionChat Add<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Add" })
