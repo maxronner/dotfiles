@@ -3,7 +3,8 @@
 set -euo pipefail
 
 if pgrep -x rnbg &>/dev/null; then
-    exit 1
+  echo "rnbg is already running."
+  exit 1
 fi
 
 # Directory containing wallpapers
@@ -12,21 +13,21 @@ WALLPAPER_PATH="$HOME/.config/sway/1.wallpaper"
 LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
 
 if ! command -v magick &>/dev/null; then
-    echo "magick is required but not installed."
-    exit 1
+  echo "magick is required but not installed."
+  exit 1
 fi
 
 if ! command -v swaybg &>/dev/null; then
-    echo "swaybg is required but not installed."
-    exit 1
+  echo "swaybg is required but not installed."
+  exit 1
 fi
 
 # Randomly select a wallpaper
 SELECTED_WALLPAPER=$(fd -e jpg -e png -e jpeg -e gif -e bmp . "$WALLPAPER_DIR" | shuf -n 1)
 
 if [ -z "$SELECTED_WALLPAPER" ]; then
-    echo "No wallpapers found in $WALLPAPER_DIR"
-    exit 1
+  echo "No wallpapers found in $WALLPAPER_DIR"
+  exit 1
 fi
 
 mkdir -p "$(dirname "$WALLPAPER_PATH")"
