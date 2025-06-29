@@ -1,44 +1,38 @@
-#!/usr/bin/env bash
-
-show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
+_show_preview='
+  if [[ -d {} ]]; then
+    eza --tree --color=always {} | head -200
+  else
+    bat -n --color=always --line-range :500 {}
+  fi
+'
 
 export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND/--type f/}"
 export FZF_ALT_C_COMMAND="${FZF_DEFAULT_COMMAND/--type f/--type d}"
-export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
+export FZF_CTRL_T_OPTS="--preview '$_show_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-source "$HOME/.config/fzf/scripts/fzf-git.sh"
+[ -f "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh" ] && \
+  source "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh"
 
-if [[ "$SHELL" == *"bash"* ]]; then
+# Load keybindings & completions per shell
+case "$SHELL" in
+  */bash)
     source /usr/share/fzf/key-bindings.bash
-elif [[ "$SHELL" == *"zsh"* ]]; then
+    ;;
+  */zsh)
     source /usr/share/fzf/key-bindings.zsh
     source /usr/share/fzf/completion.zsh
     bindkey -s '^N' "fzf-nvim\n"
     bindkey -s '^S' "fzf-rg\n"
     bindkey -s '^F' "fat\n"
-else
+    ;;
+  *)
     echo "Unsupported shell for FZF: $SHELL"
-fi
+    ;;
+esac
 
 fat() {
-  local result
-  # Use --color=never to ensure wc -l counts actual lines, not ANSI escape codes
-  result="$(fd --absolute-path --exclude .git --color=never --type file --hidden "$@" .)"
-  local line_count
-  line_count=$(echo "$result" | wc -l)
-
-  if [ -z "$result" ]; then
-    echo "No files found."
-  elif [ "$line_count" -gt 1 ]; then
-    local selected_file
-    selected_file=$(echo "$result" | fzf)
-    if [ -n "$selected_file" ]; then
-      bat "$selected_file"
-    fi
-  else # line_count is 1
-    bat "$result"
-  fi
+  fzf -q "$1" --select-1 --exit-0 --preview='bat -n --color=always --line-range :500 {}' --bind 'enter:become(bat {+})'
 }
 
 # Find in manual
@@ -84,9 +78,20 @@ _fzf_comprun() {
 
   case "$command" in
     cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
-    export|unset) fzf --preview "eval 'echo \${}'"         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                   "$@" ;;
-    *)            fzf --preview "$show_file_or_dir_preview" "$@" ;;
+    export|unset) fzf --preview "eval 'echo \${}'"                         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                                   "$@" ;;
+    *)            fzf --preview "$_show_preview"                           "$@" ;;
   esac
 }
 
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}

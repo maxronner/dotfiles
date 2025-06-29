@@ -1,5 +1,9 @@
+# Enable completion system
 autoload -Uz compinit
 compinit
+
+# Disables XON/XOFF flow control, freeing up Ctrl+S and Ctrl+Q for use
+stty -ixon
 
 setopt globdots
 
