@@ -64,7 +64,7 @@
         "format-icons": {
             "default": "󰝮"
         },
-        "interval": 3600,
+        "interval": 86400,
         "exec": "rnbg ; echo 'default'",
         "on-click": "true",
         "tooltip": true,
