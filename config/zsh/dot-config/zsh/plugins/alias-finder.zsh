@@ -1,3 +1,6 @@
+# Source: https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/alias-finder/alias-finder.plugin.zsh
+# License: MIT (c) Robby Russell et al.
+
 alias-finder() {
     local cmd="$@" exact="" longer="" cheaper="" wordEnd="'{0,1}$" finder="" filter=""
 
