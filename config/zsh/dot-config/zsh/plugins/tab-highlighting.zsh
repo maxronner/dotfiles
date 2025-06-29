@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 autoload -Uz compinit && compinit
 
 # Use menu selection with highlighted items

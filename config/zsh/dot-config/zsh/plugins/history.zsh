@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 HISTFILE="$XDG_DATA_HOME/zsh/history"
 HIST_STAMPS="yyyy-mm-dd"
 HISTSIZE=100000

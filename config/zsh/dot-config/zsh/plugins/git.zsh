@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+#
 # Source: https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
 # License: MIT (c) Robby Russell et al.
 
