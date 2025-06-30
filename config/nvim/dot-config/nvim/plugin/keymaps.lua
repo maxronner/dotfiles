@@ -10,9 +10,6 @@ vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev match, center screen" })
 -- Terminal mode
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Escape terminal mode" })
 
--- Escape insert mode
-vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Escape insert mode" })
-
 -- Quickfix / location list navigation
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
 vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
@@ -96,20 +93,6 @@ vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
 
 
 ---- Logic ----
-
--- Increment/decrement numbers
-vim.keymap.set({ "n", "v" }, "<C-c>", "<C-a>", { desc = "Increment number" })
-vim.keymap.set({ "n", "v" }, "<C-x>", "<C-x>", { desc = "Decrement number" })
-
--- Swap true/false
-vim.keymap.set("n", "<leader>bb", function()
-  local word = vim.fn.expand("<cword>")
-  if word == "true" then
-    vim.cmd("normal! ciwfalse")
-  elseif word == "false" then
-    vim.cmd("normal! ciwtrue")
-  end
-end, { silent = true, desc = "Toggle true/false" })
 
 vim.keymap.set("n", "<leader>lf", "<cmd>!find . | wc -l<CR>", { desc = "Count files in directory" })
 vim.keymap.set("n", "<leader>ll",
