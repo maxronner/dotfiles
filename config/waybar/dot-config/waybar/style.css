@@ -30,10 +30,6 @@ window#waybar {
     color: @text;
 }
 
-.module {
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, .6);
-}
-
 tooltip,
 tooltip label {
     color: @text;
@@ -97,12 +93,13 @@ tooltip {
 #workspaces button {
     all:unset;
     padding: 0px 5px;
-    color: alpha(@text,.4);
+    color: shade(@iris,.9);
     transition: all .2s ease;
 }
 /* This is here to make the buttons align with border, they are right aligned
 * by default, so we need to add some padding to the right to make it look nice */
 #workspaces button:last-child {
+    transition: all .5s ease;
     padding: 0px 8px 0px 5px;
 }
 #workspaces button:hover {
@@ -122,7 +119,7 @@ tooltip {
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
 }
 #workspaces button.empty {
-    color: @muted;
+    color: shade(@iris,.8);
     border: none;
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
 }
