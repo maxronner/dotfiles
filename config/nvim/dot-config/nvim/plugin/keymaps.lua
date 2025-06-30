@@ -98,8 +98,8 @@ vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
 ---- Logic ----
 
 -- Increment/decrement numbers
-vim.keymap.set({ "n", "v" }, "<C-c>", "<C-a>gv=gv", { desc = "Increment number" })
-vim.keymap.set({ "n", "v" }, "<C-x>", "<C-x>gv=gv", { desc = "Decrement number" })
+vim.keymap.set({ "n", "v" }, "<C-c>", "<C-a>", { desc = "Increment number" })
+vim.keymap.set({ "n", "v" }, "<C-x>", "<C-x>", { desc = "Decrement number" })
 
 -- Swap true/false
 vim.keymap.set("n", "<leader>bb", function()
