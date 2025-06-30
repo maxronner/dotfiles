@@ -279,7 +279,7 @@ return {
         },
       })
 
-      vim.keymap.set("", "<leader>l", function()
+      vim.keymap.set("", "<leader>ll", function()
         local config = vim.diagnostic.config() or {}
         if config.virtual_text then
           vim.diagnostic.config { virtual_text = false, virtual_lines = true }

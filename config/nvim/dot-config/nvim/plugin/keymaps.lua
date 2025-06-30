@@ -94,7 +94,7 @@ vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
 
 ---- Logic ----
 
-vim.keymap.set("n", "<leader>lf", "<cmd>!find . | wc -l<CR>", { desc = "Count files in directory" })
-vim.keymap.set("n", "<leader>ll",
+vim.keymap.set("n", "<leader>cf", "<cmd>!find . | wc -l<CR>", { desc = "Count files in directory" })
+vim.keymap.set("n", "<leader>cd",
   "<cmd>!find . -type f -not -path '*/.git/*' -exec wc -l {} \\; | awk '{ total += $1 } END { print \"Lines in workspace: \" total }'<CR>",
   { desc = "Count lines in all files of current directory" })
