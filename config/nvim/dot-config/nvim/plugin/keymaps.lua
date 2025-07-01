@@ -17,24 +17,17 @@ vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
 vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
 -- Alternate file (toggle between buffers)
-vim.keymap.set({ "n", "x" }, "<leader>e", "<C-6>", { desc = "Alternate buffer" })
+vim.keymap.set("n", "<leader>e", "<C-6>", { desc = "Alternate buffer" })
 
 -- Search within visual selection
 vim.keymap.set('x', '/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
 vim.keymap.set('x', '?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
 
----- Editing ----
 
--- Wrap selection in quotes
-vim.keymap.set('x', '<leader>"', 'c"<C-r>"\"<Esc>', { desc = "Wrap selection in double quotes" })
-vim.keymap.set('x', '<leader>\'', 'c\'<C-r>"\'<Esc>', { desc = "Wrap selection in single quotes" })
+---- Editing ----
 
 -- Split line at midpoint
 vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
-
--- Move visual selection up/down
-vim.keymap.set("x", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-vim.keymap.set("x", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 -- Delete word forward
 vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
@@ -74,19 +67,9 @@ vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source current 
 
 ---- Clipboard ----
 
--- Copy diagnostic message to clipboard
-vim.keymap.set('n', '<leader>yd', function()
-  local diagnostics = vim.diagnostic.get(0, { lnum = vim.fn.line('.') - 1 })
-  local json = vim.json.encode(diagnostics)
-  vim.fn.system("echo '" .. json .. "' | jq -r 'map(.message) | join(\", \")' | wl-copy")
-end, { noremap = true, silent = true, desc = "Copy diagnostics to clipboard" })
-
 -- System clipboard
 vim.keymap.set({ "n", "x" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
-
--- Paste over without yanking
-vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over (no yank)" })
 
 -- Delete without yanking
 vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
