@@ -6,7 +6,7 @@ background-blur = true
 cursor-style = block
 cursor-style-blink = false
 shell-integration-features= no-cursor
-adjust-cell-height = 20%
+adjust-cell-height = 10%
 
 # Window options
 window-padding-x = 4
