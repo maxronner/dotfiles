@@ -57,6 +57,7 @@ CLI_PKGS := \
 	stow \
 	sqlite \
 	syncthing \
+	taskwarrior-tui \
 	tealdeer \
 	tgpt \
 	tmux \
