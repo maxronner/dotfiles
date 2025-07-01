@@ -28,6 +28,7 @@ CLI_PKGS := \
 	fd \
 	fzf \
 	gammastep \
+	ghostty \
 	git \
 	git-delta \
 	go \
