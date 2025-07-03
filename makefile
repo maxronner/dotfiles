@@ -63,7 +63,6 @@ CLI_PKGS := \
 	tmux \
 	ttf-hack-nerd \
 	unzip \
-	yazi \
 	zig \
 	zk \
 	zoxide \
