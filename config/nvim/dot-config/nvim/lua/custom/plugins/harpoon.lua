@@ -18,15 +18,21 @@ return {
 
       vim.keymap.set("n", "<leader>t", function() harpoon:list():select(1) end,
         { desc = "Harpoon: Jump to mark 1" })
-
       vim.keymap.set("n", "<leader>s", function() harpoon:list():select(2) end,
         { desc = "Harpoon: Jump to mark 2" })
-
       vim.keymap.set("n", "<leader>r", function() harpoon:list():select(3) end,
         { desc = "Harpoon: Jump to mark 3" })
-
       vim.keymap.set("n", "<leader>a", function() harpoon:list():select(4) end,
         { desc = "Harpoon: Jump to mark 4" })
+
+      vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end,
+        { desc = "Harpoon: Jump to mark 1 (alternate)" })
+      vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end,
+        { desc = "Harpoon: Jump to mark 2 (alternate)" })
+      vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end,
+        { desc = "Harpoon: Jump to mark 3 (alternate)" })
+      vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end,
+        { desc = "Harpoon: Jump to mark 4 (alternate)" })
 
       vim.keymap.set("n", "<leader>p", function() harpoon:list():prev() end,
         { desc = "Harpoon: Previous mark" })
