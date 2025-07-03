@@ -51,17 +51,15 @@ pcall(telescope.load_extension, "frecency")
 local frecency = telescope.extensions.frecency
 vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, { desc = "Telescope: Fuzzy find in current buffer" })
 vim.keymap.set("n", "<leader>fp", builtin.find_files, { desc = "Telescope: Find files" })
-vim.keymap.set("n", "<leader>fi", builtin.git_files, { desc = "Telescope: Git files" })
 vim.keymap.set("n", "<leader>fo", builtin.oldfiles, { desc = "Telescope: Old files" })
 vim.keymap.set("n", "<leader>ff", frecency.frecency, { desc = "Telescope: Find frequent files" })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
 vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope: Live grep" })
 vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "Telescope: Grep selection" })
-vim.keymap.set("n", "<leader>fm", builtin.git_status, { desc = "Telescope: Git status" })
 
 vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Telescope: Keymaps" })
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope: Help tags" })
-vim.keymap.set("n", "<leader>fc", builtin.command_history, { desc = "Telescope: Command history" })
+vim.keymap.set("n", "<leader>:", builtin.command_history, { desc = "Telescope: Command history" })
 vim.keymap.set("n", "<leader>fH", builtin.search_history, { desc = "Telescope: Search history" })
 
 vim.keymap.set("n", "<leader>vv", function()
@@ -70,3 +68,7 @@ end, { desc = "Telescope: Find files in config" })
 vim.keymap.set("n", "<leader>vl", function()
   builtin.find_files { cwd = vim.fn.stdpath "data" .. "/lazy", prompt_title = "Nvim Plugins" }
 end, { desc = "Telescope: Find files in plugins" })
+
+vim.keymap.set("n", "<leader>fi", builtin.git_files, { desc = "Telescope: Git files" })
+vim.keymap.set('n', '<leader>fc', builtin.git_branches, { desc = 'Telescope: Git Branch Checkout' })
+vim.keymap.set("n", "<leader>fm", builtin.git_status, { desc = "Telescope: Git status" })
