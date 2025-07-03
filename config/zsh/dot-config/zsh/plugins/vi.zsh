@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 bindkey -v
 
 bindkey -M viins "${terminfo[khome]}" beginning-of-line
