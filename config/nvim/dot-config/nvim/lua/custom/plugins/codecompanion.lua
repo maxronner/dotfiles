@@ -18,12 +18,21 @@ return {
           inline = {
             adapter = "gemini",
           },
+          cmd = {
+            adapter = "gemini",
+            model = "gemini-2.5-flash",
+          },
         },
         adapters = {
           gemini = function()
             return require("codecompanion.adapters").extend("gemini", {
               env = {
                 api_key = require("custom.passloader").get_var("GEMINI_API_KEY")
+              },
+              schema = {
+                model = {
+                  default = "gemini-2.5-pro",
+                }
               }
             })
           end,
