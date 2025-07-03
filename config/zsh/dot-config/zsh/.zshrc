@@ -8,11 +8,6 @@ stty -ixon
 setopt globdots
 
 # Enable vi-mode
-bindkey -v
-bindkey "${terminfo[khome]}" beginning-of-line
-bindkey "${terminfo[kend]}"  end-of-line
-bindkey -M vicmd "${terminfo[khome]}" beginning-of-line
-bindkey -M vicmd "${terminfo[kend]}"  end-of-line
 
 # External tools
 eval "$(starship init zsh)"
