@@ -40,10 +40,10 @@ alias pm="pulsemixer"
 alias zi="zoxide query --interactive"
 
 # --- system ---
-alias bd='cd "$OLDPWD"'
 alias reboot="systemctl reboot"
 
 # --- cd backwards ---
+alias bd='cd "$OLDPWD"'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -51,21 +51,65 @@ alias .....='cd ../../../..'
 
 # --- Git ---
 alias g="git"
+
+alias ga="git add"
+alias gaa="git add --all"
+alias gap="git add --patch"
+
+alias gb='git branch'
+alias gba='git branch --all'
+alias gbd='git branch --delete'
+alias gbD='git branch --delete --force'
+
 alias gs="git status --short"
 alias gc="git commit"
-alias gd="git diff"
+alias gca="git commit --amend"
+alias gca!='git commit --verbose --all --amend'
+alias gcan!='git commit --verbose --all --no-edit --amend'
+alias gc!='git commit --verbose --amend'
+alias gcn='git commit --verbose --no-edit'
+alias gcn!='git commit --verbose --no-edit --amend'
+
+alias gm='git merge'
+alias gma='git merge --abort'
+alias gmc='git merge --continue'
+alias gms="git merge --squash"
+alias gmff="git merge --ff-only"
+
+alias gd='git diff'
+alias gdca='git diff --cached'
+alias gdcw='git diff --cached --word-diff'
+alias gds='git diff --staged'
+alias gdw='git diff --word-diff'
+
 alias gp="git push"
 alias gu="git pull"
-alias gl="git log --pretty=format:'%C(yellow)%h%Creset %C(green)%<(12,trunc)%ar%Creset %C(red)•%Creset %s %C(bold blue)<%an>%Creset'"
 alias gb="git branch"
 alias gi="git init"
 alias gcl="git clone"
-alias gap="git add --patch"
-alias glg="git log --graph --decorate"
-alias gco="git checkout"
-alias gcb="git checkout -b"
-alias gca="git commit --amend"
 
+alias glgg='git log --graph'
+alias glgga='git log --graph --decorate --all'
+alias glgm='git log --graph --max-count=10'
+alias glods='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset" --date=short'
+alias glod='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset"'
+alias glola='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --all'
+alias glols='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'
+alias glol='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset"'
+alias glo='git log --oneline --decorate'
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
+
+alias gco='git checkout'
+alias gcor='git checkout --recurse-submodules'
+alias gcb='git checkout -b'
+alias gcB='git checkout -B'
+
+alias gcp='git cherry-pick'
+alias gcpa='git cherry-pick --abort'
+alias gcpc='git cherry-pick --continue'
+
+# --- Taskwarrior ---
 alias t="task"
 alias tt="taskwarrior-tui"
 alias tan="task annotate"
