@@ -1,4 +1,5 @@
 bindkey -v
+
 bindkey -M viins "${terminfo[khome]}" beginning-of-line
 bindkey -M viins "${terminfo[kend]}"  end-of-line
 

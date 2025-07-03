@@ -2,6 +2,9 @@
 
 autoload -Uz compinit && compinit
 
+bindkey '^[[Z' reverse-menu-complete
+bindkey '^I'   menu-complete
+
 # Use menu selection with highlighted items
 zstyle ':completion:*' menu select
 
