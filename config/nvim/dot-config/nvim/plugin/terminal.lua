@@ -17,11 +17,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 vim.keymap.set("n", "<leader>z", function()
-  -- Check if tmux-scratch is available
   if vim.fn.executable("tmux-scratch") == 1 then
-    vim.cmd("silent !tmux-scratch -p b")
+    vim.cmd("silent !tmux-scratch -P")
   else
-    -- Fallback to opening a terminal in a split
     open_terminal_bottom_split()
     vim.notify("tmux-scratch not found, opening regular terminal.", vim.log.levels.WARN)
   end
