@@ -46,6 +46,7 @@ include /etc/sway/config-vars.d/*
 #client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
 font $font 12
 exec_always --no-startup-id swaymsg seat seat0 xcursor_theme BreezeX-RosePine-Linux
+exec_always autotiling
 
 # Configure the default border:
 default_border pixel 2
@@ -323,5 +324,3 @@ include /etc/sway/config.d/*
 #
 exec $tmux
 exec $browser
-exec autotiling
-
