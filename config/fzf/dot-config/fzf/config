@@ -1,9 +1,13 @@
 _show_preview='
-  if [[ -d {} ]]; then
+if [[ -d {} ]]; then
     eza --tree --color=always {} | head -200
-  else
+elif file --mime-type {} | grep -qF image; then
+    chafa --size 30 --passthrough none -d 2 {}
+elif file --mime-type {} | grep -aF -e text -e json; then
+    bat --color=always --style=numbers,grid --line-range :500 {};
+else
     bat -n --color=always --line-range :500 {}
-  fi
+fi
 '
 
 export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND/--type f/}"
@@ -12,27 +16,27 @@ export FZF_CTRL_T_OPTS="--preview '$_show_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 [ -f "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh" ] && \
-  source "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh"
+    source "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh"
 
 # Load keybindings & completions per shell
 case "$SHELL" in
-  */bash)
-    source /usr/share/fzf/key-bindings.bash
-    ;;
-  */zsh)
-    source /usr/share/fzf/key-bindings.zsh
-    source /usr/share/fzf/completion.zsh
-    bindkey -s '^N' "fzf-nvim\n"
-    bindkey -s '^S' "fzf-rg\n"
-    bindkey -s '^F' "fat\n"
-    ;;
-  *)
-    echo "Unsupported shell for FZF: $SHELL"
-    ;;
+    */bash)
+        source /usr/share/fzf/key-bindings.bash
+        ;;
+    */zsh)
+        source /usr/share/fzf/key-bindings.zsh
+        source /usr/share/fzf/completion.zsh
+        bindkey -s '^N' "fzf-nvim\n"
+        bindkey -s '^S' "fzf-rg\n"
+        bindkey -s '^F' "fat\n"
+        ;;
+    *)
+        echo "Unsupported shell for FZF: $SHELL"
+        ;;
 esac
 
 fat() {
-  fzf -q "$1" --select-1 --exit-0 --preview='bat -n --color=always --line-range :500 {}' --bind 'enter:become(bat {+})'
+    fzf -q "$1" --select-1 --exit-0 --preview='bat -n --color=always --line-range :500 {}' --bind 'enter:become(bat {+})'
 }
 
 # Find in manual
@@ -51,7 +55,7 @@ rem() {
 
 # Open nvim with fzf
 fzf-nvim() {
-  fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt='nvim> ' --multi --bind 'enter:become(nvim {+})'
+    fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt='nvim> ' --multi --bind 'enter:become(nvim {+})'
 }
 
 # Ripgrep current directory with fzf
@@ -66,32 +70,32 @@ fzf-rg() {
         --preview 'bat --color=always {1} --highlight-line {2}' \
         --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
         --bind 'enter:become(nvim {1} +{2})'
-}
+    }
 
 # Advanced customization of fzf options via _fzf_comprun function
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
 _fzf_comprun() {
-  echo "Command: $command" >&2  # Debug output
-  local command=$1
-  shift
+    echo "Command: $command" >&2  # Debug output
+    local command=$1
+    shift
 
-  case "$command" in
-    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
-    export|unset) fzf --preview "eval 'echo \${}'"                         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                                   "$@" ;;
-    *)            fzf --preview "$_show_preview"                           "$@" ;;
-  esac
+    case "$command" in
+        cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+        export|unset) fzf --preview "eval 'echo \${}'"                         "$@" ;;
+        ssh)          fzf --preview 'dig {}'                                   "$@" ;;
+        *)            fzf --preview "$_show_preview"                           "$@" ;;
+    esac
 }
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
 _fzf_compgen_path() {
-  fd --hidden --follow --exclude ".git" . "$1"
+    fd --hidden --follow --exclude ".git" . "$1"
 }
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-  fd --type d --hidden --follow --exclude ".git" . "$1"
+    fd --type d --hidden --follow --exclude ".git" . "$1"
 }

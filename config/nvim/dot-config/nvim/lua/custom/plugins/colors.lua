@@ -10,7 +10,6 @@ return {
   {
     "erikbackman/brightburn.vim",
   },
-
   {
     "ellisonleao/gruvbox.nvim",
     name = "gruvbox",
@@ -41,7 +40,6 @@ return {
       })
     end,
   },
-
   {
     "rose-pine/neovim",
     name = "rose-pine",
@@ -59,7 +57,6 @@ return {
       ColorMyPencils();
     end
   },
-
   {
     "catgoose/nvim-colorizer.lua",
     config = function()
@@ -120,7 +117,6 @@ return {
       })
     end,
   },
-
   {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
