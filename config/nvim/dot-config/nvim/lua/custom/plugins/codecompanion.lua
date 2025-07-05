@@ -58,7 +58,7 @@ return {
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Toggle" })
       vim.keymap.set({ "n", "v" }, "<leader>in", "<cmd>CodeCompanionChat<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Chat New" })
-      vim.keymap.set("v", "ia", "<cmd>CodeCompanionChat Add<cr>",
+      vim.keymap.set("v", "<leader>ic", "<cmd>CodeCompanionChat Add<cr>",
         { noremap = true, silent = true, desc = "CodeCompanion: Chat Add" })
 
       vim.keymap.set("n", "<leader>ig", ":CodeCompanion /commit<CR>",
