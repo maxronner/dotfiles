@@ -5,6 +5,7 @@ vim.opt.confirm = true
 vim.opt.updatetime = 50
 vim.opt.splitright = true
 vim.opt.isfname:append("@-@")
+vim.opt.virtualedit = "block"
 
 -- UI
 vim.opt.scrolloff = 8
