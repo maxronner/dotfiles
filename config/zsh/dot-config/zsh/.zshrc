@@ -24,8 +24,14 @@ zstyle ':custom:plugins:alias-finder' cheaper yes
 # Extras
 [ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
     source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
+if [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
     source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+    zle-autosuggest-accept-partial-and-forward-word() {
+        zle forward-word
+    }
+    zle -N zle-autosuggest-accept-partial-and-forward-word
+    bindkey '^F' zle-autosuggest-accept-partial-and-forward-word
+fi
 [ -f /usr/share/zsh/plugins/zsh-completions/zsh-completions.zsh ] && \
     source /usr/share/zsh/plugins/zsh-completions/zsh-completions.zsh
 [ -f /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ] && \

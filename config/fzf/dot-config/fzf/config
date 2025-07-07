@@ -28,7 +28,7 @@ case "$SHELL" in
         source /usr/share/fzf/completion.zsh
         bindkey -s '^N' "fzf-nvim\n"
         bindkey -s '^S' "fzf-rg\n"
-        bindkey -s '^F' "fat\n"
+        bindkey -s '^G' "fat\n"
         ;;
     *)
         echo "Unsupported shell for FZF: $SHELL"
