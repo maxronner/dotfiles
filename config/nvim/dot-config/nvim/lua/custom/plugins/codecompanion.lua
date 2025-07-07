@@ -15,6 +15,11 @@ return {
         },
         ft = { "markdown", "codecompanion" },
       },
+      {
+        "franco-ruggeri/codecompanion-spinner.nvim",
+        commit = "ce2bb2d",
+        opts = {},
+      }
     },
     config = function()
       require("codecompanion").setup({
