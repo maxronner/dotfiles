@@ -213,12 +213,13 @@ return {
             { buffer = 0, desc = "Telescope: LSP Document symbols" })
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "LSP: Declaration" })
           vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0, desc = "LSP: Type definition" })
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0, desc = "LSP: Hover documentation" })
+          vim.keymap.set("n", "K", function() vim.lsp.buf.hover({ border = "rounded" }) end,
+            { buffer = 0, desc = "LSP: Hover documentation" })
           vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, { buffer = 0, desc = "LSP: Code actions" })
           vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { buffer = 0, desc = "LSP: Rename symbol" })
           vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help({ border = "rounded" }) end,
             { buffer = 0, desc = "LSP: Signature help" })
-          vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float,
+          vim.keymap.set("n", "<leader>lf", vim.diagnostic.open_float,
             { buffer = 0, desc = "LSP: Open diagnostics float" })
           vim.keymap.set("n", "[d", vim.diagnostic.get_next, { buffer = 0, desc = "Next diagnostic" })
           vim.keymap.set("n", "]d", vim.diagnostic.get_prev, { buffer = 0, desc = "Previous diagnostic" })
