@@ -27,36 +27,23 @@ return {
       "b0o/SchemaStore.nvim",
 
       -- LSP progress messages
-      "j-hui/fidget.nvim",
+      {
+        "j-hui/fidget.nvim",
+        opts = {
+          notification = {
+            window = {
+              normal_hl = "Normal",
+              winblend = 0,
+              y_padding = 1,
+            }
+          }
+        }
+      },
     },
 
     config = function()
-      -- TODO: Don't do LSP stuff if we're in notetaking mode
-      if vim.o.filetype == "markdown" then
+      if vim.o.filetype == "markdown" or vim.o.filetype == "codecompanion" then
         return
-      end
-
-      local extend = function(name, key, values)
-        local mod = require(string.format("lspconfig.configs.%s", name))
-        local default = mod.default_config
-        local keys = vim.split(key, ".", { plain = true })
-        while #keys > 0 do
-          local item = table.remove(keys, 1)
-          default = default[item]
-        end
-
-        if vim.islist(default) then
-          for _, value in ipairs(default) do
-            table.insert(values, value)
-          end
-        else
-          for item, value in pairs(default) do
-            if not vim.tbl_contains(values, item) then
-              values[item] = value
-            end
-          end
-        end
-        return values
       end
 
       local capabilities = nil
@@ -166,10 +153,7 @@ return {
 
         clangd = {
           -- cmd = { "clangd", unpack(require("custom.clangd").flags) },
-          -- TODO: Could include cmd, but not sure those were all relevant flags.
-          --    looks like something i would have added while i was floundering
           init_options = { clangdFileStatus = true },
-
           filetypes = { "c" },
         },
       }
