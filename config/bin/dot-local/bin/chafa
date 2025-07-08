@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # description: Chafa wrapper for ghostty inside tmux
 
-if [[ -n "TMUX" ]]; then
+if [[ -n "$TMUX" ]]; then
     TERM_PROGRAM=ghostty exec /usr/bin/chafa "$@"
 else
     exec /usr/bin/chafa "$@"
