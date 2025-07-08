@@ -19,6 +19,7 @@ return {
       -- Tooling package management
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      "WhoIsSethDaniel/mason-tool-installer.nvim",
 
       -- Autoformatting and linting
       "stevearc/conform.nvim",
@@ -71,11 +72,7 @@ return {
             },
           },
         },
-        lua_ls = {
-          server_capabilities = {
-            semanticTokensProvider = vim.NIL,
-          },
-        },
+        lua_ls = true,
         rust_analyzer = true,
         svelte = true,
         templ = true,
@@ -130,9 +127,7 @@ return {
           },
         },
 
-        ols = {},
-        racket_langserver = { manual_install = true },
-        roc_ls = { manual_install = true },
+        ols = { manual_install = true },
 
         ocamllsp = {
           manual_install = true,
@@ -169,15 +164,12 @@ return {
 
       require("mason").setup()
       local ensure_installed = {
-        "gopls",
-        "bashls",
         "lua_ls",
         "delve",
-        -- "tailwind-language-server",
       }
 
       vim.list_extend(ensure_installed, servers_to_install)
-      -- require("mason-tool-installer").setup { ensure_installed = ensure_installed }
+      require("mason-tool-installer").setup { ensure_installed = ensure_installed }
 
       for name, config in pairs(servers) do
         if config == true then
