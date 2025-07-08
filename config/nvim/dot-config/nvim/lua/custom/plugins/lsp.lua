@@ -32,7 +32,7 @@ return {
         opts = {
           notification = {
             window = {
-              normal_hl = "Pmenu",
+              normal_hl = "Normal",
               winblend = 0,
               y_padding = 1,
             }
