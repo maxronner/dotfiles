@@ -1,6 +1,8 @@
 # Disables XON/XOFF flow control, freeing up Ctrl+S and Ctrl+Q for use
 stty -ixon
 
+WORDCHARS=${WORDCHARS/\/}
+
 setopt globdots
 
 # External tools
