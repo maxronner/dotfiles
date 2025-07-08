@@ -65,6 +65,7 @@ for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
 for_window [workspace=4] inhibit_idle fullscreen
 for_window [class="Godot"] floating enable
+for_window [title="^btop-float$"] floating enable
 assign [class="steam"] workspace 4
 assign [app_id="gamemoderun"] workspace 4
 assign [app_id="gamescope"]  workspace 4
@@ -128,6 +129,7 @@ input "type:touchpad" {
     bindsym $mod+u exec $browser
 
     bindsym $mod+m exec rnbg
+    bindsym $mod+Escape exec ~/.config/sway/scripts/btop-toggle.sh
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
     bindsym $mod+Shift+w exec $lock
