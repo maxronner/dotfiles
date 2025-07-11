@@ -4,4 +4,7 @@
 [ -f "$XDG_CONFIG_HOME/environment/device-exports.sh" ] && \
     source "$XDG_CONFIG_HOME/environment/device-exports.sh"
 
-[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+# Add ~/.local/bin to PATH if not already present
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && [ -d "$HOME/.local/bin" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
