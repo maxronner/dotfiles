@@ -4,7 +4,6 @@ set.colorcolumn = "0"
 set.wrap = true
 set.linebreak = true
 set.breakindent = true
-set.textwidth = 80
 
 -- Add the key mappings only for Markdown files in a zk notebook.
 if require("zk.util").notebook_root(vim.fn.expand('%:p')) ~= nil then
