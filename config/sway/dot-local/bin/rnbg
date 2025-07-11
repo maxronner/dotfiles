@@ -23,7 +23,7 @@ if ! command -v swaybg &>/dev/null; then
 fi
 
 # Randomly select a wallpaper
-SELECTED_WALLPAPER=$(fd -e jpg -e png -e jpeg -e gif -e bmp . "$WALLPAPER_DIR" | shuf -n 1)
+SELECTED_WALLPAPER=$(fd -e jpg -e png -e jpeg -e gif -e bmp -d 1 . "$WALLPAPER_DIR" | shuf -n 1)
 
 if [ -z "$SELECTED_WALLPAPER" ]; then
   echo "No wallpapers found in $WALLPAPER_DIR"
