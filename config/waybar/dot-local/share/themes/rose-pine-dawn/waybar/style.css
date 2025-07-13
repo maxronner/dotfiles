@@ -35,7 +35,7 @@ tooltip label {
     color: @text;
     padding: 0px;
     margin: 0px;
-    background: alpha(@base,.8);
+    background: alpha(@base,.95);
 }
 
 tooltip {
@@ -70,7 +70,7 @@ tooltip {
 .modules-left,
 .modules-right,
 .modules-center {
-    background: alpha(@base,.6);
+    background: alpha(@base,.9);
 }
 
 .modules-left {
