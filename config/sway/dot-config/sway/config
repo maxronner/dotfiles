@@ -151,6 +151,12 @@ input "type:touchpad" {
     bindsym $mod+Shift+x exec pkill -SIGUSR2 waybar
 
 #
+# Themes:
+#
+    bindsym $mod+Mod1+1 exec ~/.config/sway/scripts/theme-manager/main.py set rose-pine-moon
+    bindsym $mod+Mod1+2 exec ~/.config/sway/scripts/theme-manager/main.py set rose-pine-dawn
+
+#
 # Moving around:
 #
     # Move your focus around
