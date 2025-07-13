@@ -12,18 +12,7 @@ $go\
 $python\
 $character"""
 
-palette = "rose-pine-moon"
-
-[palettes.rose-pine-moon]
-overlay = '#393552'
-love = '#eb6f92'
-gold = '#f6c177'
-rose = '#ea9a97'
-pine = '#3e8fb0'
-foam = '#9ccfd8'
-iris = '#c4a7e7'
-subtle = '#908caa'
-muted = '#6e6a86'
+palette = "rose-pine-dawn"
 
 [palettes.rose-pine-dawn]
 overlay = '#f2e9e1'

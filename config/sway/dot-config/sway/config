@@ -155,6 +155,7 @@ input "type:touchpad" {
 #
     bindsym $mod+Mod1+1 exec ~/.config/sway/scripts/theme-manager/main.py set rose-pine-moon
     bindsym $mod+Mod1+2 exec ~/.config/sway/scripts/theme-manager/main.py set rose-pine-dawn
+    bindsym $mod+Mod1+3 exec ~/.config/sway/scripts/theme-manager/main.py set gruvbox
 
 #
 # Moving around:

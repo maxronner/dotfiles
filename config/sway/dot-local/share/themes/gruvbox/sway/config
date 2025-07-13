@@ -1,0 +1,32 @@
+# set primary Gruvbox Dark colorscheme colors
+set $base           #282828
+set $surface        #3c3836
+set $overlay        #504945
+set $muted          #928374
+set $subtle         #a89984
+set $text           #ebdbb2
+set $love           #fb4934
+set $gold           #fabd2f
+set $rose           #fe8019
+set $pine           #83a598
+set $foam           #8ec07c
+set $iris           #d3869b
+set $highlightlow   #3c3836
+set $highlightmed   #504945
+set $highlighthigh  #665c54
+
+set $hll $highlightlow
+set $hlm $highlightmed
+set $hlh $highlighthigh
+set $indicator      #a89984
+
+# Theming border and Windows --------------
+#target                  border     bg         text      indicator   child-border
+client.focused           $muted     $muted     $text     $muted      $muted
+client.focused_tab_title $muted     $muted     $text
+client.focused_inactive  $hll       $surface   $text     $hll        $hll
+client.unfocused         $hll       $surface   $text     $hll        $hll
+client.urgent            $love      $love      $text     $love       $love
+client.placeholder       $base      $base      $text     $base       $base
+client.background        $base
+

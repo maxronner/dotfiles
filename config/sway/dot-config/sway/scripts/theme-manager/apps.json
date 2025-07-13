@@ -66,6 +66,10 @@
   "gtk4": {
     "type": "inline",
     "path": "~/.config/gtk-4.0/settings.ini"
+  },
+  "tmux-plugins": {
+    "type": "tmux-plugins",
+    "path": "~/.config/tmux/tmux.conf"
   }
 }
 

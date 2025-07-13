@@ -141,6 +141,8 @@ class ThemeManager:
                 self._apply_symlink_dir(app, config, theme_path)
             elif t == "inline":
                 self._apply_inline(app, config, theme_config)
+            elif t == "tmux-plugins":
+                self._apply_tmux_plugins(app, config, theme_config)
             else:
                 logger.warning(f"Unknown type '{t}' for app '{app}'")
 
@@ -232,6 +234,63 @@ class ThemeManager:
                 logger.debug(f"No changes needed for {app} inline config.")
         except Exception as e:
             logger.error(f"Error applying inline theme for {app}: {e}")
+
+    def _apply_tmux_plugins(self, app, config, theme_config):
+        """Manage a block of plugins in the tmux config file."""
+        if not theme_config.has_section(app) or not theme_config.has_option(
+            app, "plugins"
+        ):
+            logger.debug(f"Skipping {app}: No 'plugins' option in theme.ini.")
+            return
+
+        tmux_conf_path = config["path"]
+        plugins_str = theme_config.get(app, "plugins", fallback="")
+        plugins = [p.strip() for p in plugins_str.split(",") if p.strip()]
+
+        start_marker = "# THEME-MANAGED-PLUGINS-START"
+        end_marker = "# THEME-MANAGED-PLUGINS-END"
+        replacement_block = (
+            start_marker
+            + "\n"
+            + "\n".join(f"set -g @plugin '{p}'" for p in plugins)
+            + "\n"
+            + end_marker
+        )
+
+        content = tmux_conf_path.read_text() if tmux_conf_path.exists() else ""
+        original_content = content
+
+        pattern = re.compile(
+            rf"{re.escape(start_marker)}.*?{re.escape(end_marker)}",
+            re.DOTALL | re.MULTILINE,
+        )
+
+        if pattern.search(content):
+            content = pattern.sub(replacement_block, content)
+        else:
+            tpm_run_re = re.compile(r"^\s*run\s+['\"].*?tpm/tpm['\"]\s*$", re.MULTILINE)
+            match = tpm_run_re.search(content)
+            if match:
+                insert_pos = match.start()
+                content = (
+                    content[:insert_pos]
+                    + replacement_block
+                    + "\n\n"
+                    + content[insert_pos:]
+                )
+            else:
+                content = content.rstrip() + "\n\n" + replacement_block + "\n"
+
+        if content != original_content:
+            if self.dry_run:
+                logger.info(
+                    f"[dry-run] Would update {tmux_conf_path} with new plugins."
+                )
+            else:
+                tmux_conf_path.write_text(content)
+                logger.info(f"Applied {app} theme plugins.")
+        else:
+            logger.debug(f"No plugin changes needed for {app}.")
 
     def _reload_apps(self):
         """Reload applications that support theme hot-reloading."""
