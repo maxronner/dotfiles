@@ -32,7 +32,6 @@ return {
           },
           cmd = {
             adapter = "gemini",
-            model = "gemini-2.5-flash",
           },
         },
         adapters = {
@@ -41,11 +40,6 @@ return {
               env = {
                 api_key = require("custom.passloader").get_var("GEMINI_API_KEY")
               },
-              schema = {
-                model = {
-                  default = "gemini-2.5-pro",
-                }
-              }
             })
           end,
           openai = function()
