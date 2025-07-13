@@ -1,8 +1,5 @@
 return {
   {
-    "erikbackman/brightburn.vim",
-  },
-  {
     "ellisonleao/gruvbox.nvim",
     name = "gruvbox",
     config = function()
