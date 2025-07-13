@@ -25,6 +25,15 @@ iris = '#c4a7e7'
 subtle = '#908caa'
 muted = '#6e6a86'
 
+[palettes.rose-pine-dawn]
+overlay = '#f2e9e1'
+love = '#b4637a'
+gold = '#ea9d34'
+rose = '#d7827e'
+pine = '#286983'
+foam = '#56949f'
+iris = '#907aa9'
+
 [directory]
 style = "bold pine"
 

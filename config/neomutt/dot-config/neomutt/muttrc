@@ -1,5 +1,5 @@
 # Load color scheme
-source ~/.config/neomutt/colors/rose-pine-moon.muttrc
+source ~/.config/neomutt/theme.muttrc
 
 # Load account settings (non-secret)
 source ~/.config/neomutt/accounts/gmail.muttrc

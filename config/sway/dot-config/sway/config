@@ -1,5 +1,5 @@
 # Read `man 5 sway` for a complete reference.
-include $HOME/.local/share/themes/rose-pine/sway/rose-pine
+include $HOME/.config/sway/theme.config
 set $font "pango:Jetbrains Mono Nerd Font"
 
 ### Variables
@@ -13,7 +13,7 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term ghostty
-set $tmux $term -e tmux-default
+set $tmux $term -e zsh -lic tmux-default
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -23,8 +23,7 @@ set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "
 set $menu wofi --show drun --prompt "Search applications..." | xargs -r swaymsg exec --
 set $menu tofi-drun --font /usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf | xargs -r swaymsg exec --
 
-set $lock swaylock -f -e -C $HOME/.local/share/themes/rose-pine/swaylock/rose-pine \
-    -i $HOME/.config/sway/lock.wallpaper
+set $lock swaylock -f -e -i $HOME/.config/sway/lock.wallpaper
 
 set $browser zen-browser
 include /etc/sway/config-vars.d/*
@@ -89,7 +88,7 @@ include $HOME/.config/sway/device.config
 #
 #
 exec swayidle -w \
-	timeout 600 '$lock' \
+	timeout 300 '$lock' \
 	timeout 605 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
 	timeout 900 'systemctl suspend' \

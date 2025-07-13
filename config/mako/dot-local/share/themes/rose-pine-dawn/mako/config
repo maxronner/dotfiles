@@ -8,17 +8,19 @@ default-timeout=10000
 ignore-timeout=1
 font=JetbrainsMonoNerdFont 12
 anchor=top-left
-background-color=#393552cc
-text-color=#e0def4
-border-color=#56526e
-progress-color=over #3e8fb0
+
+background-color=#f2e9e1
+text-color=#575279
+border-color=#cecacd
+progress-color=over #286983
 
 [urgency=low]
-border-color=#cccccc
+border-color=#dfdad9
 
 [urgency=normal]
-border-color=#c4a7e7
+border-color=#907aa9
 
 [urgency=critical]
 default-timeout=0
-border-color=#eb6f92
+border-color=#b4637a
+

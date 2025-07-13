@@ -1,0 +1,301 @@
+#!/usr/bin/env python3
+"""
+A script to manage themes for various applications.
+
+This script supports two methods for applying themes:
+1. `symlink`: Symlinks a complete configuration file from the theme directory.
+2. `inline`: Modifies key-value pairs directly within an application's main
+   config file, based on settings in a `theme.ini` file within the theme directory.
+
+Setup:
+1. Place this script in your PATH (e.g., ~/.local/bin/theme-manager).
+2. Make it executable: `chmod +x theme-manager`.
+3. Create the base directory: `mkdir -p ~/.config/theme_manager/themes`.
+
+Example for a "gruvbox" theme:
+- Dir: `~/.config/theme_manager/themes/gruvbox/`
+- Symlink config for Neovim: `.../gruvbox/neovim.lua`
+- Inline config for Ghostty: Create `.../gruvbox/theme.ini` with:
+  [ghostty]
+  theme = gruvbox
+
+Usage:
+- `theme-manager list`: List available themes.
+- `theme-manager get`: Show the current theme.
+- `theme-manager set <theme_name>`: Switch to a new theme.
+- `theme-manager -v set <theme_name>`: Set theme with debug logging.
+"""
+
+import argparse
+import configparser
+import json
+import logging
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+# Configure logging (default level INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
+
+# Define base paths
+HOME = Path.home()
+THEME_MANAGER_DIR = Path(
+    os.environ.get("THEME_MANAGER_DIR", HOME / ".config" / "theme-manager")
+)
+THEMES_DIR = Path(os.environ.get("THEMES_DIR", HOME / ".local" / "share" / "themes"))
+CONFIG_FILE = THEME_MANAGER_DIR / "config.ini"
+APP_CONFIG_FILE = THEME_MANAGER_DIR / "apps.json"
+
+
+class ThemeManager:
+    """Manages theme application and configuration."""
+
+    def __init__(self, dry_run=False):
+        self.dry_run = dry_run
+        self._setup_directories()
+        self.app_configs = self._load_app_configs()
+        self.config = configparser.ConfigParser()
+        self.config.read(CONFIG_FILE)
+
+    def _setup_directories(self):
+        """Ensure necessary directories and config files exist."""
+        THEME_MANAGER_DIR.mkdir(parents=True, exist_ok=True)
+        THEMES_DIR.mkdir(parents=True, exist_ok=True)
+        if not CONFIG_FILE.is_file():
+            default_config = configparser.ConfigParser()
+            default_config["theme"] = {"current": "none"}
+            with open(CONFIG_FILE, "w") as f:
+                default_config.write(f)
+            logger.debug(f"Created default config file at {CONFIG_FILE}")
+
+    def _load_app_configs(self):
+        app_config = APP_CONFIG_FILE
+        if not app_config.is_file():
+            app_config = Path(__file__).parent / "apps.json"
+            if not app_config.is_file():
+                logger.error(f"Missing app config file at '{app_config}'")
+                sys.exit(1)
+
+        try:
+            with open(app_config, "r") as f:
+                raw = json.load(f)
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in '{app_config}': {e}")
+            sys.exit(1)
+
+        configs = {}
+        for app, conf in raw.items():
+            c = conf.copy()
+            for key in ("path", "source", "target"):
+                if key in c:
+                    c[key] = Path(os.path.expanduser(c[key]))
+            configs[app] = c
+        logger.debug(f"Loaded app configs: {list(configs.keys())}")
+        return configs
+
+    def list_themes(self):
+        """Return a list of available theme names."""
+        if not THEMES_DIR.is_dir():
+            return []
+        themes = sorted([d.name for d in THEMES_DIR.iterdir() if d.is_dir()])
+        logger.debug(f"Found themes: {themes}")
+        return themes
+
+    def get_current_theme(self):
+        """Return the name of the currently active theme."""
+        current = self.config.get("theme", "current", fallback="none")
+        logger.debug(f"Current theme: {current}")
+        return current
+
+    def set_theme(self, theme_name):
+        """Set the system-wide theme to the one specified."""
+        if self.dry_run:
+            logger.info("Dry-run mode enabled — no changes will be written.")
+
+        theme_path = THEMES_DIR / theme_name
+        if not theme_path.is_dir():
+            logger.error(f"Theme '{theme_name}' not found at '{theme_path}'")
+            return
+
+        logger.info(f"Setting theme to '{theme_name}'...")
+        theme_config = configparser.RawConfigParser()
+        theme_ini_path = theme_path / "theme.ini"
+        if theme_ini_path.is_file():
+            theme_config.read(theme_ini_path)
+            logger.debug(f"Loaded theme.ini from {theme_ini_path}")
+        else:
+            logger.debug(f"No theme.ini found for theme '{theme_name}'")
+
+        for app, config in self.app_configs.items():
+            t = config.get("type")
+            if t == "symlink":
+                self._apply_symlink(app, config, theme_path)
+            elif t == "symlink-dir":
+                self._apply_symlink_dir(app, config, theme_path)
+            elif t == "inline":
+                self._apply_inline(app, config, theme_config)
+            else:
+                logger.warning(f"Unknown type '{t}' for app '{app}'")
+
+        self.config["theme"] = {"current": theme_name}
+        with open(CONFIG_FILE, "w") as f:
+            self.config.write(f)
+
+        self._reload_apps()
+
+        logger.info(f"Successfully switched to theme '{theme_name}'.")
+        logger.info("Please restart or reload applications for changes to take effect.")
+
+    def _apply_symlink(self, app, config, theme_path):
+        source_path = theme_path / config["source"]
+        dest_path = config["target"]
+
+        if not source_path.exists():
+            logger.warning(f"Skipping {app}: '{config['source']}' not found in theme.")
+            return
+
+        if self.dry_run:
+            logger.info(f"[dry-run] Would symlink {source_path} → {dest_path}")
+        else:
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            dest_path.unlink(missing_ok=True)
+            os.symlink(source_path, dest_path)
+            logger.info(f"Applied {app} theme via symlink: {source_path} → {dest_path}")
+
+    def _apply_symlink_dir(self, app, config, theme_path):
+        """Symlink all children in a directory from theme source to target dir."""
+        source_dir = theme_path / config["source"]
+        target_dir = config["target"]
+
+        if not source_dir.is_dir():
+            logger.warning(f"Skipping {app}: Source dir '{source_dir}' not found.")
+            return
+
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        for src_file in source_dir.iterdir():
+            if src_file.is_file():
+                dest_file = target_dir / src_file.name
+                if self.dry_run:
+                    logger.info(f"[dry-run] Would symlink {src_file} → {dest_file}")
+                else:
+                    dest_file.unlink(missing_ok=True)
+                    os.symlink(src_file, dest_file)
+                    logger.info(f"{app}: {src_file.name} → {dest_file}")
+            else:
+                logger.debug(f"{app}: Skipping non-file '{src_file.name}'")
+
+        logger.info(f"Applied {app} theme via directory symlink.")
+
+    def _apply_inline(self, app, config, theme_config):
+        if not theme_config.has_section(app):
+            logger.warning(f"Skipping {app}: No section in theme.ini.")
+            return
+
+        target_path = config["path"]
+        if not target_path.is_file():
+            logger.warning(f"Skipping {app}: Config file not found at '{target_path}'.")
+            return
+
+        try:
+            content = target_path.read_text()
+            original_content = content
+
+            for key, value in theme_config.items(app):
+                pattern = re.compile(
+                    rf"^(\s*{re.escape(key)}\s*[:=]\s*).*", re.MULTILINE | re.IGNORECASE
+                )
+
+                def repl(match):
+                    return match.group(1) + value
+
+                content, num_subs = pattern.subn(repl, content)
+                if num_subs == 0:
+                    # Append key if not found
+                    content = f"{content.rstrip()}\n{key}: {value}\n"
+            if content != original_content:
+                if self.dry_run:
+                    logger.info(
+                        f"[dry-run] Would write inline changes to {target_path}"
+                    )
+                else:
+                    target_path.write_text(content)
+                    logger.info(f"Applied {app} theme via inline modification.")
+            else:
+                logger.debug(f"No changes needed for {app} inline config.")
+        except Exception as e:
+            logger.error(f"Error applying inline theme for {app}: {e}")
+
+    def _reload_apps(self):
+        """Reload applications that support theme hot-reloading."""
+        logger.info("Reloading apps that support it...")
+        for app, conf in self.app_configs.items():
+            reload_cmd = conf.get("reload")
+            if not reload_cmd:
+                continue
+            try:
+                if self.dry_run:
+                    logger.info(f"[dry-run] Would run: {reload_cmd}")
+                else:
+                    subprocess.run(reload_cmd, shell=True, check=True)
+                    logger.info(f"Reloaded {app}")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Failed to reload {app}: {e}")
+
+
+def main():
+    """Parse command-line arguments and execute the corresponding action."""
+    parser = argparse.ArgumentParser(description="Manage application themes.")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity (use -v, -vv for more)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making any changes.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("list", help="List all available themes.")
+    subparsers.add_parser("get", help="Get the current theme name.")
+    set_parser = subparsers.add_parser("set", help="Set the active theme.")
+    set_parser.add_argument("theme", help="The name of the theme to set.")
+
+    args = parser.parse_args()
+
+    # Adjust logging level based on verbosity
+    if args.verbose == 1:
+        logger.setLevel(logging.DEBUG)
+    elif args.verbose >= 2:
+        logger.setLevel(logging.NOTSET)
+    else:
+        logger.setLevel(logging.INFO)
+
+    manager = ThemeManager(dry_run=args.dry_run)
+
+    if args.command == "list":
+        themes = manager.list_themes()
+        if themes:
+            for t in themes:
+                print(t)
+        else:
+            logger.warning(f"No themes found in '{THEMES_DIR}'")
+    elif args.command == "get":
+        print(manager.get_current_theme())
+    elif args.command == "set":
+        manager.set_theme(args.theme)
+
+
+if __name__ == "__main__":
+    main()

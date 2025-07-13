@@ -1,0 +1,71 @@
+{
+  "ghostty": {
+    "type": "inline",
+    "path": "~/.config/ghostty/config"
+  },
+  "neovim": {
+    "type": "inline",
+    "path": "~/.config/nvim/plugin/colors.lua"
+  },
+  "tmux": {
+    "type": "symlink",
+    "source": "tmux/tmux.conf",
+    "target": "~/.config/tmux/theme.conf",
+    "reload": "tmux source-file ~/.config/tmux/tmux.conf"
+  },
+  "sway": {
+    "type": "symlink",
+    "source": "sway/config",
+    "target": "~/.config/sway/theme.config",
+    "reload": "swaymsg reload"
+  },
+  "starship": {
+    "type": "symlink",
+    "source": "starship/starship.toml",
+    "target": "~/.config/starship.toml"
+  },
+  "btop": {
+    "type": "inline",
+    "path": "~/.config/btop/btop.conf"
+  },
+  "neomutt": {
+    "type": "symlink",
+    "source": "neomutt/theme.muttrc",
+    "target": "~/.config/neomutt/theme.muttrc"
+  },
+  "waybar": {
+    "type": "symlink",
+    "source": "waybar/style.css",
+    "target": "~/.config/waybar/style.css"
+  },
+  "swaylock": {
+    "type": "symlink",
+    "source": "swaylock/config",
+    "target": "~/.config/swaylock/config"
+  },
+  "bat": {
+    "type": "inline",
+    "path": "~/.config/bat/config"
+  },
+  "fzf": {
+    "type": "symlink",
+    "source": "fzf/profile.sh",
+    "target": "~/.config/fzf/profile.sh",
+    "reload": "tmux set-environment -g FZF_DEFAULT_OPTS \"$(bash -c 'source ~/.config/fzf/profile.sh && echo -n \"$FZF_COLOR_OPTS $FZF_BIND_OPTS\"')\" ; tmux refresh-client -S"
+  },
+  "mako": {
+    "type": "symlink",
+    "source": "mako/config",
+    "target": "~/.config/mako/config",
+    "reload": "makoctl reload"
+  },
+  "gtk3": {
+    "type": "inline",
+    "path": "~/.config/gtk-3.0/settings.ini"
+  },
+  "gtk4": {
+    "type": "inline",
+    "path": "~/.config/gtk-4.0/settings.ini"
+  }
+}
+

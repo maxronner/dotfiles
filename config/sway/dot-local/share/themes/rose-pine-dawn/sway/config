@@ -1,0 +1,29 @@
+set $base           #faf4ed
+set $surface        #fffaf3
+set $overlay        #f2e9e1
+set $muted          #9893a5
+set $subtle         #797593
+set $text           #575279
+set $love           #b4637a
+set $gold           #ea9d34
+set $rose           #d7827e
+set $pine           #286983
+set $foam           #56949f
+set $iris           #907aa9
+set $highlightlow   #f4ede8
+set $highlightmed   #dfdad9
+set $highlighthigh  #cecacd
+
+set $hll $highlightlow
+set $hlm $highlightmed
+set $hlh $highlighthigh
+
+# Teming border and Windows --------------
+#target                  border     bg         text      indicator   child-border
+client.focused           $muted     $muted     $text     $muted      $muted
+client.focused_tab_title $muted     $muted     $text
+client.focused_inactive  $hll       $surface   $text     $hll        $hll
+client.unfocused         $hll       $surface   $text     $hll        $hll
+client.urgent            $love      $love      $text     $love       $love
+client.placeholder       $base      $base      $text     $base       $base
+client.background        $base
