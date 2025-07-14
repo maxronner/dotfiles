@@ -71,6 +71,7 @@ assign [app_id="gamescope"]  workspace 4
 assign [app_id="vesktop"] workspace 3
 assign [class="Spotify"] workspace 3
 assign [app_id="zen"] workspace 2
+assign [app_id="com.mitchellh.ghostty"] workspace 1
 
 ### Output configuration
 #
