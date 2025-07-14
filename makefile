@@ -132,6 +132,7 @@ DEPS := \
 	install_aur \
 	setup_device_specifics \
 	stow_dotfiles \
+	stow_scripts \
 	enable_systemd_services \
 	setup_timesyncd \
 	setup_ly
@@ -179,6 +180,10 @@ else
 	@echo "Unstowing $(env) specific dotfiles..."
 	@stow --dotfiles --delete -d $(BASE_DIR)devices -t $(HOME) $(env)
 endif
+
+stow_scripts:
+	@echo "Stowing scripts from $(BASE_DIR)scripts to $(HOME)/.local/bin..."
+	@stow -t $(HOME)/.local/bin scripts
 
 enable_systemd_services:
 	@echo "Enabling generic systemd services..."

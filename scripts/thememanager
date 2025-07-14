@@ -8,8 +8,8 @@ This script supports two methods for applying themes:
    config file, based on settings in a `theme.ini` file within the theme directory.
 
 Setup:
-1. Place this script in your PATH (e.g., ~/.local/bin/theme-manager).
-2. Make it executable: `chmod +x theme-manager`.
+1. Place this script in your PATH (e.g., ~/.local/bin/thememanager).
+2. Make it executable: `chmod +x thememanager`.
 3. Create the base directory: `mkdir -p ~/.config/theme_manager/themes`.
 
 Example for a "gruvbox" theme:
@@ -20,10 +20,10 @@ Example for a "gruvbox" theme:
   theme = gruvbox
 
 Usage:
-- `theme-manager list`: List available themes.
-- `theme-manager get`: Show the current theme.
-- `theme-manager set <theme_name>`: Switch to a new theme.
-- `theme-manager -v set <theme_name>`: Set theme with debug logging.
+- `thememanager list`: List available themes.
+- `thememanager get`: Show the current theme.
+- `thememanager set <theme_name>`: Switch to a new theme.
+- `thememanager -v set <theme_name>`: Set theme with debug logging.
 """
 
 import argparse
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 # Define base paths
 HOME = Path.home()
 THEME_MANAGER_DIR = Path(
-    os.environ.get("THEME_MANAGER_DIR", HOME / ".config" / "theme-manager")
+    os.environ.get("THEME_MANAGER_DIR", HOME / ".config" / "thememanager")
 )
 THEMES_DIR = Path(os.environ.get("THEMES_DIR", HOME / ".local" / "share" / "themes"))
 CONFIG_FILE = THEME_MANAGER_DIR / "config.ini"
