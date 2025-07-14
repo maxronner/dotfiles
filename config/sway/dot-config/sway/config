@@ -72,6 +72,7 @@ assign [app_id="vesktop"] workspace 3
 assign [class="Spotify"] workspace 3
 assign [app_id="zen"] workspace 2
 assign [app_id="com.mitchellh.ghostty"] workspace 1
+assign [app_id="foot"] workspace 1
 
 ### Output configuration
 #
