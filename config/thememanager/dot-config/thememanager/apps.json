@@ -67,6 +67,11 @@
     "type": "inline",
     "path": "~/.config/gtk-4.0/settings.ini"
   },
+  "pinentry-gtk": {
+    "type": "inline",
+    "path": "~/.config/environment.d/gtk.conf",
+    "reload": "bash -c ~/.config/thememanager/reload-pinentry-gtk.sh"
+  },
   "tmux-plugins": {
     "type": "tmux-plugins",
     "path": "~/.config/tmux/tmux.conf"
