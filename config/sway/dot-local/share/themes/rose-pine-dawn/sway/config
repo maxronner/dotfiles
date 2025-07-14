@@ -20,8 +20,8 @@ set $hlh $highlighthigh
 
 # Teming border and Windows --------------
 #target                  border     bg         text      indicator   child-border
-client.focused           $muted     $muted     $text     $muted      $muted
-client.focused_tab_title $muted     $muted     $text
+client.focused           $rose      $rose      $text     $rose       $rose
+client.focused_tab_title $rose      $rose      $text
 client.focused_inactive  $hll       $surface   $text     $hll        $hll
 client.unfocused         $hll       $surface   $text     $hll        $hll
 client.urgent            $love      $love      $text     $love       $love
