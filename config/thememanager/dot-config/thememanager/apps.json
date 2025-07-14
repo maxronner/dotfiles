@@ -1,11 +1,13 @@
 {
   "ghostty": {
     "type": "inline",
-    "path": "~/.config/ghostty/config"
+    "path": "~/.config/ghostty/config",
+    "reload": "~/.config/thememanager/reload-ghostty.sh"
   },
   "neovim": {
     "type": "inline",
-    "path": "~/.config/nvim/plugin/colors.lua"
+    "path": "~/.config/nvim/plugin/colors.lua",
+    "reload": "nvim --server /tmp/nvim.sock --remote-expr 'execute(\"ReloadTheme\")'"
   },
   "tmux": {
     "type": "symlink",

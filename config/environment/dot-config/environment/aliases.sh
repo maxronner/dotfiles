@@ -21,10 +21,10 @@ if command -v eza &>/dev/null; then
 fi
 
 if command -v nvim &>/dev/null; then
-    alias vim="nvim"
-    alias nano="nvim"
+    alias vim="NVIM_LISTEN_ADDRESS=/tmp/nvim.sock nvim"
+    alias nano="NVIM_LISTEN_ADDRESS=/tmp/nvim.sock nvim"
+    alias v="NVIM_LISTEN_ADDRESS=/tmp/nvim.sock nvim"
     alias svim="sudo nvim"
-    alias v="nvim"
 fi
 
 if command -v bat &>/dev/null; then

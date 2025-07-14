@@ -1,9 +1,17 @@
 #!/bin/bash
-export XDG_CONFIG_HOME="$HOME/.config"
 
-SESSION_NAME="default"
+SESSION_NAME="${1:-$(basename "$PWD")}"
 
-# Check if tmux session already exists
+if ! command -v tmux &> /dev/null; then
+    echo "Error: tmux is not installed or not in PATH." >&2
+    exit 1
+fi
+
+if tmux ls >/dev/null 2>&1 ; then
+    echo "tmux is running. Attaching..."
+    tmux attach
+fi
+
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
     echo "Session '$SESSION_NAME' already exists. Attaching..."
 else

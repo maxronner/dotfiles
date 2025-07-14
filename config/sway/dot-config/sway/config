@@ -13,7 +13,7 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term ghostty
-set $tmux $term -e zsh -lic tmux-default
+set $tmux $term -e zsh -lic tmux-launcher
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
