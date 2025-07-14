@@ -101,7 +101,6 @@ DESKTOP_PKGS := \
 AUR_PKGS := \
 	tofi \
 	rose-pine-cursor \
-	rose-pine-gtk-theme-full \
 	yt-x \
 	zen-browser-bin
 
