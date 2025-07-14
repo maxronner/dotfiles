@@ -1,7 +1,11 @@
 return {
   {
     "olimorris/codecompanion.nvim",
-    opts = {},
+    opts = {
+      extensions = {
+        spinner = {}
+      }
+    },
     enabled = true,
     event = "VeryLazy",
     dependencies = {
@@ -17,7 +21,7 @@ return {
       },
       {
         "franco-ruggeri/codecompanion-spinner.nvim",
-        commit = "ce2bb2d",
+        commit = "af0dd1a",
         opts = {},
       }
     },
@@ -65,6 +69,8 @@ return {
 
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
+
+      require("custom.codecompanion").spinner:init()
     end,
   },
 }
