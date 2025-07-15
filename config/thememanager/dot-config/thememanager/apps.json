@@ -7,7 +7,7 @@
   "neovim": {
     "type": "inline",
     "path": "~/.config/nvim/plugin/colors.lua",
-    "reload": "nvim --server /tmp/nvim.sock --remote-expr 'execute(\"ReloadTheme\")'"
+    "reload": "~/.config/thememanager/reload-nvim.sh"
   },
   "tmux": {
     "type": "symlink",
