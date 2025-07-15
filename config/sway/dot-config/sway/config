@@ -14,7 +14,7 @@ set $up k
 set $right l
 
 set $term ghostty
-set $tmux $term -e zsh -lic tmux-launcher
+set $tmux $term --title=terminal -e zsh -lic tmux-launcher
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -66,7 +66,7 @@ for_window [app_id="gamescope"] inhibit_idle open
 for_window [workspace=4] inhibit_idle fullscreen
 for_window [class="Godot"] floating enable
 for_window [title="^btop-float$"] floating enable
-for_window [title="^terminal$"] workspace 1
+assign [title="^terminal$"] workspace 1
 assign [class="steam"] workspace 4
 assign [app_id="gamemoderun"] workspace 4
 assign [app_id="gamescope"]  workspace 4
