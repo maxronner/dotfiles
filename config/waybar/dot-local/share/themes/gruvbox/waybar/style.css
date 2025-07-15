@@ -163,6 +163,9 @@ tooltip {
 #custom-dog.warning {
     color: @gold;
 }
+#custom-dog.critical {
+    color: @love;
+}
 .group-item .module {
     padding: 0px 10px;
 }

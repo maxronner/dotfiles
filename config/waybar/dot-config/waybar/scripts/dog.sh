@@ -21,7 +21,9 @@ fi
 IFS=':' read -r hours minutes <<< "$walk"
 total_minutes=$((10#$hours * 60 + 10#$minutes))
 
-if (( total_minutes > WALK_THRESHOLD )); then
+if (( total_minutes > WALK_THRESHOLD * 3 / 2 )); then
+    echo "{\"text\": \"$walk\", \"tooltip\": \"Time since last walk\", \"class\": \"critical\"}"
+elif (( total_minutes > WALK_THRESHOLD )); then
     echo "{\"text\": \"$walk\", \"tooltip\": \"Time since last walk\", \"class\": \"warning\"}"
 else
     echo "{\"text\": \"$walk\", \"tooltip\": \"Time since last walk\", \"class\": \"default\"}"
