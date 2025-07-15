@@ -1,23 +1,36 @@
 #!/bin/sh
-# Toggle a btop Ghostty scratchpad window in Sway.
-
 TITLE="btop-float"
 TERMINAL_CMD="ghostty --title=$TITLE -e btop"
 
-is_focused() {
-    swaymsg -t get_tree | jq -e --arg title "$TITLE" \
-        '.. | select(.focused? == true and .name? == $title)' > /dev/null
-}
+# Query Sway tree for matching window
+window_info=$(swaymsg -t get_tree | jq --arg title "$TITLE" '
+  recurse(.nodes[]?, .floating_nodes[]?)
+  | select(.name? == $title)
+  | {id, focused, visible, scratchpad_state}')
 
-window_exists() {
-    swaymsg -t get_tree | jq -e --arg title "$TITLE" \
-        '.. | select(.name? == $title)' > /dev/null
-}
-
-if is_focused; then
-    swaymsg "[title=\"$TITLE\"] move scratchpad"
-elif window_exists; then
-    swaymsg "[title=\"$TITLE\"] scratchpad show"
-else
-    eval "$TERMINAL_CMD" &
+# No such window found → launch new
+if [ -z "$window_info" ]; then
+  exec $TERMINAL_CMD &
+  exit
 fi
+
+# Extract values
+id=$(echo "$window_info" | jq -r '.id // empty')
+focused=$(echo "$window_info" | jq -r '.focused // false')
+scratchpad_state=$(echo "$window_info" | jq -r '.scratchpad_state // "none"')
+
+# Sanity check for id
+if [ -z "$id" ]; then
+  echo "Error: Found window without con_id." >&2
+  exit 1
+fi
+
+# Apply logic
+if [ "$focused" = "true" ]; then
+  swaymsg "[con_id=$id] move scratchpad"
+elif [ "$scratchpad_state" != "none" ]; then
+  swaymsg "[con_id=$id] scratchpad show"
+else
+  swaymsg "[con_id=$id] move to workspace current; [con_id=$id] focus"
+fi
+
