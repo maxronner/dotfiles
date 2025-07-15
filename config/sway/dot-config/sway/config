@@ -6,12 +6,13 @@ set $font "pango:Jetbrains Mono Nerd Font"
 #
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
+
 # Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
-# Your preferred terminal emulator
+
 set $term ghostty
 set $tmux $term -e zsh -lic tmux-launcher
 
@@ -90,9 +91,9 @@ include $HOME/.config/sway/device.config
 #
 exec swayidle -w \
 	timeout 300 '$lock' \
-	timeout 605 'swaymsg "output * dpms off"' \
+	timeout 420 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
-	timeout 900 'systemctl suspend' \
+	timeout 600 'systemctl suspend' \
 	before-sleep 'playerctl pause; $lock'
 
 ### Input configuration
