@@ -160,6 +160,9 @@ tooltip {
 #idle_inhibitor.activated {
     color: @gold;
 }
+#custom-dog.warning {
+    color: @gold;
+}
 .group-item .module {
     padding: 0px 10px;
 }
