@@ -1,0 +1,9 @@
+[Unit]
+Description=Persistent swaybg wallpaper service
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/rnbg
+Restart=on-failure
+

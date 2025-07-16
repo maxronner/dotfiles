@@ -64,9 +64,7 @@
         "format-icons": {
             "default": "󰝮"
         },
-        "interval": 86400,
-        "exec": "rnbg ; echo 'default'",
-        "on-click": "true",
+        "on-click": "systemctl --user restart sway-wallpaper",
         "tooltip": true,
         "tooltip-format": "Randomize wallpaper"
     },

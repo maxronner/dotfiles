@@ -1,0 +1,9 @@
+[Unit]
+Description=Run wallpaper changer every 10 minutes
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

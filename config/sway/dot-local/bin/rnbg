@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export WAYLAND_DISPLAY="wayland-1"
+
 if pgrep -x rnbg &>/dev/null; then
   echo "rnbg is already running."
   exit 1
@@ -35,5 +38,5 @@ ln -sf "$SELECTED_WALLPAPER" "$WALLPAPER_PATH"
 
 magick "$SELECTED_WALLPAPER" -blur 0x48 "$LOCK_WALLPAPER_PATH"
 
-pkill -x swaybg
-exec swaybg --color 000000 --image "$SELECTED_WALLPAPER" --mode fill &> /dev/null & disown
+pkill -x swaybg || true
+exec swaybg --color 000000 --image "$SELECTED_WALLPAPER" --mode fill
