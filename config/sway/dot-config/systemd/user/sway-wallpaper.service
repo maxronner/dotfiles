@@ -7,3 +7,6 @@ Type=simple
 ExecStart=%h/.local/bin/rnbg
 Restart=on-failure
 
+[Install]
+WantedBy=default.target
+
