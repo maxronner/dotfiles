@@ -3,6 +3,5 @@ Description=Update wallpaper and restart swaybg
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/change-wallpaper.sh
-ExecStartPost=/bin/systemctl --user restart sway-wallpaper.service
+ExecStart=/bin/systemctl --user restart sway-wallpaper.service
 
