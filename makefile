@@ -106,13 +106,15 @@ AUR_PKGS := \
 
 WORKSPACE_PKGS := \
 	steam \
+	swayfx \
 
 LAPTOP_PKGS := \
 	dhcpcd \
 	kmonad \
 	iwd \
 	bluez \
-	bluez-utils
+	bluez-utils \
+	sway
 
 SYSTEM_SERVICES := \
 	avahi-daemon.service \
@@ -201,11 +203,11 @@ ifeq ($(strip $(env)),)
 	@echo "env is not set, nothing to do."
 else ifeq ($(env),workstation)
 	@echo "Installing workstation specific packages..."
-	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
+	$(AUR_HELPER) $(WORKSPACE_PKGS)
 	$(MAKE) setup_nvidia
 else ifeq ($(env),laptop)
 	@echo "Installing laptop specific packages..."
-	$(PACKAGE_MANAGER) $(LAPTOP_PKGS)
+	$(AUR_HELPER) $(LAPTOP_PKGS)
 	@bash build/setup-laptop.sh
 else
 	@echo "Unknown env: $(env)"
