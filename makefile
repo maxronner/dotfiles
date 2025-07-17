@@ -202,7 +202,6 @@ ifeq ($(strip $(env)),)
 else ifeq ($(env),workstation)
 	@echo "Installing workstation specific packages..."
 	$(PACKAGE_MANAGER) $(WORKSPACE_PKGS)
-	@bash build/setup-workstation.sh
 	$(MAKE) setup_nvidia
 else ifeq ($(env),laptop)
 	@echo "Installing laptop specific packages..."
