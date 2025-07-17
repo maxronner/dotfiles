@@ -30,6 +30,7 @@ CLI_PKGS := \
 	gammastep \
 	ghostty \
 	git \
+	gitui \
 	git-delta \
 	go \
 	htop \
