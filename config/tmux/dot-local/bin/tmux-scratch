@@ -101,10 +101,10 @@ exec &>/dev/null # Hide output
 if [ "$POPUP" -eq 1 ]; then
   COMMAND_STRING="${COMMAND[*]}"
   if (( ${#COMMAND[@]} )); then
-    tmux display-popup -w 80% -h 80% -E -- "${COMMAND_STRING:+ "$COMMAND_STRING"}"|| true
+    tmux display-popup -w 80% -h 80% -E "${COMMAND_STRING:+ "$COMMAND_STRING"}"|| true
   else
     shell=$(getent passwd "$USER" | cut -d: -f7)
-    tmux display-popup -w 80% -h 80% -E -- "$shell" || true
+    tmux display-popup -w 80% -h 80% -E "$shell" || true
   fi
   exit 0
 fi
