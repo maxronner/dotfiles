@@ -135,7 +135,7 @@ input "type:touchpad" {
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
     bindsym $mod+Shift+w exec $lock
 
-    bindsym $mod+Shift+Print exec flameshot gui
+    bindsym $mod+Shift+Print exec screenshot selection
     bindsym $mod+Print exec screenshot focused
     bindsym Print exec screenshot full
 

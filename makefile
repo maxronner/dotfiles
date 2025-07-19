@@ -80,7 +80,6 @@ DESKTOP_PKGS := \
 	chromium \
 	cmatrix \
 	firefox \
-	flameshot \
 	flatpak \
 	foot \
 	gimp \
@@ -88,7 +87,7 @@ DESKTOP_PKGS := \
 	ly \
 	mako \
 	pavucontrol \
-	sway \
+	slurp \
 	swaybg \
 	swayidle \
 	swaylock \
