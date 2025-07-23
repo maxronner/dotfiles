@@ -1,5 +1,7 @@
 news.version=3.4.1
 
+include ~/.config/task/taskrc.secret
+
 data.location=~/.local/share/task
 hooks.location=~/.config/task/hooks
 
