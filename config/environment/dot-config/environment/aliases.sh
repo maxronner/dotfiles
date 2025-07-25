@@ -85,6 +85,7 @@ alias gcpc='git cherry-pick --continue'
 
 # --- Taskwarrior ---
 alias t="task"
+alias ts="task sync"
 alias tt="taskwarrior-tui"
 alias tan="task annotate"
 alias ta="task add"
