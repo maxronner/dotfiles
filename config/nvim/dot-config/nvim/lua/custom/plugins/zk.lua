@@ -24,6 +24,23 @@ return {
     })
     local opts = { noremap = true, silent = false }
 
+    vim.api.nvim_create_user_command("ZkDaily", function()
+      require("zk.commands").get("ZkNew")({
+        dir = "journal/daily",
+        no_input = true,
+      })
+    end, {})
+
+    vim.api.nvim_create_user_command("ZkWeekly", function()
+      require("zk.commands").get("ZkNew")({
+        dir = "journal/weekly",
+        no_input = true,
+      })
+    end, {})
+
+    vim.api.nvim_set_keymap("n", "<leader>zd", "<Cmd>ZkDaily<CR>",
+      vim.tbl_extend("force", opts or {}, { desc = "Zettelkasten: Daily Note" }))
+
     vim.api.nvim_set_keymap("n", "<leader>zn", "<Cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>",
       vim.tbl_extend("force", opts or {}, { desc = "Zettelkasten: New Note" }))
 

@@ -1,5 +1,5 @@
 [notebook]
-dir = "~/notebook"
+dir = "~/personal/notebook"
 
 [note]
 # This is used to generate slugs or with date formats.
@@ -49,7 +49,6 @@ recent = "zk edit --sort created- --created-after 'last two weeks' --interactive
 lucky = "zk list --quiet --format full --sort random --limit 1"
 ls = "zk edit --interactive"
 t = "zk edit --interactive --tag $@"
-config = 'nvim "$XDG_CONFIG_HOME/zk/config.toml"'
 daily = 'zk new --no-input "$ZK_NOTEBOOK_DIR/journal/daily"'
 ne = 'zk new --no-input "$ZK_NOTEBOOK_DIR/ideas" --title $@'
 journal = "zk edit --sort created- $ZK_NOTEBOOK_DIR/journal --interactive"
