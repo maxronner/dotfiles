@@ -1,13 +1,20 @@
 # {{format-date now 'long'}}
 
-## Goal of the Day
+## Key Insight or Lesson
+*What did I learn today—about myself, others, or the world?*
 
+
+## Affirmations
+*1 to 3 statements that reflect your personal values and beliefs.*
+
+1. 
 
 ## Gratitudes
+*3 to 5 things that you are grateful for.*
 
-1.
-2.
-3.
+1. 
+2. 
+3. 
 
 ## Thoughts
 
