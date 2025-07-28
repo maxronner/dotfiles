@@ -20,6 +20,15 @@ return {
       {
         "supermaven-inc/supermaven-nvim",
         config = function()
+          local function is_zk_lsp_attached()
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            for _, client in ipairs(clients) do
+              if client.name == "zk" then
+                return true
+              end
+            end
+            return false
+          end
           require("supermaven-nvim").setup {
             keymaps = {
               accept_suggestion = "<C-a>",
@@ -27,6 +36,13 @@ return {
               accept_word = "<C-f>",
             },
             disable_inline_completion = false,
+            condition = function()
+              -- disable supermaven if zk LSP is attached
+              if is_zk_lsp_attached() then
+                return true
+              end
+              return false
+            end
           }
         end,
       },

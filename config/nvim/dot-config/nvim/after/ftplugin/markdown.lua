@@ -5,33 +5,34 @@ set.wrap = true
 set.linebreak = true
 set.breakindent = true
 
--- Add the key mappings only for Markdown files in a zk notebook.
 if require("zk.util").notebook_root(vim.fn.expand('%:p')) ~= nil then
-  local function map(...) vim.api.nvim_buf_set_keymap(0, ...) end
-  local opts = { noremap = true, silent = false }
+  local map = vim.keymap.set
+  local opts = { noremap = true, silent = false, buffer = 0 }
+  local current_dir = vim.fn.expand('%:p:h')
 
-  -- Open the link under the caret.
-  map("n", "<CR>", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
+  -- Open the link under cursor (LSP definition)
+  map("n", "<CR>", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Open the link under cursor" }))
 
-  -- Create a new note after asking for its title.
-  -- This overrides the global `<leader>zn` mapping to create the note in the same directory as the current buffer.
-  map("n", "<leader>zn", "<Cmd>ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }<CR>", opts)
-  -- Create a new note in the same directory as the current buffer, using the current selection for title.
-  map("v", "<leader>znt", ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand('%:p:h') }<CR>", opts)
-  -- Create a new note in the same directory as the current buffer, using the current selection for note content and asking for its title.
+  -- Create a new note in current directory, prompting for title
+  map("n", "<leader>zn", function()
+    local title = vim.fn.input("Title: ")
+    vim.cmd(string.format("ZkNew { dir = '%s', title = '%s' }", current_dir, title))
+  end, vim.tbl_extend("force", opts, { desc = "New note in current dir" }))
+
+  map("v", "<leader>znt",
+    string.format(":'<,'>ZkNewFromTitleSelection { dir = '%s' }<CR>", current_dir),
+    vim.tbl_extend("force", opts, { desc = "New note from title selection" }))
+
   map("v", "<leader>znc",
-    ":'<,'>ZkNewFromContentSelection { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }<CR>", opts)
+    string.format(":'<,'>ZkNewFromContentSelection { dir = '%s', title = vim.fn.input('Title: ') }<CR>", current_dir),
+    vim.tbl_extend("force", opts, { desc = "New note from content selection" }))
 
-  -- Open notes linking to the current buffer.
-  map("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", opts)
-  -- Alternative for backlinks using pure LSP and showing the source context.
-  --map('n', '<leader>zb', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-  -- Open notes linked by the current buffer.
-  map("n", "<leader>zl", "<Cmd>ZkLinks<CR>", opts)
+  -- Open notes linking to current buffer (backlinks)
+  map("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", vim.tbl_extend("force", opts, { desc = "Show backlinks" }))
 
-  -- Preview a linked note.
-  map("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
-  -- Open the code actions for a visual selection.
-  map("v", "<leader>za", ":'<,'>lua vim.lsp.buf.range_code_action()<CR>", opts)
-  map("n", "q", ":w | bd<CR>", opts)
+  -- Open notes linked by current buffer (links)
+  map("n", "<leader>zl", "<Cmd>ZkLinks<CR>", vim.tbl_extend("force", opts, { desc = "Show links" }))
+
+  -- Preview linked note (LSP hover)
+  map("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover info" }))
 end
