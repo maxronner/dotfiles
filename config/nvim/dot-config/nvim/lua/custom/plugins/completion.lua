@@ -27,15 +27,8 @@ return {
               accept_word = "<C-f>",
             },
             disable_inline_completion = false,
-            condition = function()
-              local notebook = vim.env.ZK_NOTEBOOK_DIR
-              local bufname = vim.api.nvim_buf_get_name(0)
-              if notebook and bufname:find(notebook, 1, true) then
-                return true
-              end
-              return false
-            end
           }
+          vim.keymap.set("n", "<leader>qq", "<cmd>SupermavenToggle<CR>", { noremap = true, silent = true })
         end,
       },
     },

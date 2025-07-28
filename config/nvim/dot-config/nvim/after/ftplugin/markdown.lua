@@ -4,6 +4,8 @@ set.colorcolumn = "0"
 set.wrap = true
 set.linebreak = true
 set.breakindent = true
+set.spell = true
+set.spelllang = "en"
 
 if require("zk.util").notebook_root(vim.fn.expand('%:p')) ~= nil then
   local map = vim.keymap.set
