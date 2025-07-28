@@ -28,7 +28,7 @@ return {
             },
             disable_inline_completion = false,
           }
-          vim.keymap.set("n", "<leader>qq", "<cmd>SupermavenToggle<CR>", { noremap = true, silent = true })
+          vim.keymap.set("n", "<leader>iq", "<cmd>SupermavenToggle<CR>", { noremap = true, silent = true })
         end,
       },
     },
