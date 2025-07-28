@@ -1,7 +1,7 @@
 # {{format-date now 'long'}}
 
 ## Key Insight or Lesson
-*What did I learn today—about myself, others, or the world?*
+*What did I learn today — about myself, others, or the world?*
 
 
 ## Affirmations
@@ -16,5 +16,8 @@
 2.
 3.
 
-## Thoughts
+## Accomplishments
+*At least one feat you are proud of.*
+
+1.
 
