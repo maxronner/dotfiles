@@ -21,7 +21,8 @@ author = "Max Ronner"
 paths = ["journal/weekly"]
 
 [group.weekly.note]
-filename = "{{format-date now}}"
+filename = "{{format-date now '%Y-%U'}}"
+template = "weekly.md"
 
 [group.daily]
 paths = ["journal/daily"]
