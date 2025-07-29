@@ -10,6 +10,7 @@ fi
 if tmux ls >/dev/null 2>&1 ; then
     echo "tmux is running. Attaching..."
     tmux attach
+    exit 0
 fi
 
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
