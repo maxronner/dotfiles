@@ -28,6 +28,7 @@ return {
       ["<leader>zt"] = { "<Cmd>ZkTags<CR>", "Zettelkasten: Show Tags" },
       ["<leader>zf"] = { "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", "Zettelkasten: Search Notes" },
       ["<leader>zs"] = { "<Cmd>ZkSync<CR>", "Zettelkasten: Git Sync" },
+      ["<leader>zi"] = { "<Cmd>ZkInsertLink<CR>", "Zettelkasten: Insert Link" },
       -- Visual mode search for selection
       ["<leader>zf_v"] = { ":'<,'>ZkMatch<CR>", "Zettelkasten: Search for Selection", mode = "v" },
     }
