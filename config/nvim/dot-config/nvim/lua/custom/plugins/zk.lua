@@ -2,7 +2,7 @@ return {
   "zk-org/zk-nvim",
   config = function()
     require("zk").setup({
-      picker = "select",
+      picker = "telescope",
       lsp = {
         -- `config` is passed to `vim.lsp.start(config)`
         config = {
@@ -38,6 +38,14 @@ return {
       local keymap = key:gsub("_v$", "")
       vim.keymap.set(mode, keymap, map[1], vim.tbl_extend("force", opts, { desc = map[2] }))
     end
+
+
+    vim.api.nvim_create_user_command("ZkNew", function()
+      require("zk.commands").get("ZkNew")({
+        dir = "notes",
+        no_input = true,
+      })
+    end, {})
 
     vim.api.nvim_create_user_command("ZkDaily", function()
       require("zk.commands").get("ZkNew")({
