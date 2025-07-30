@@ -23,7 +23,7 @@ return {
     local global_leader_maps = {
       ["<leader>zd"] = { "<Cmd>ZkDaily<CR>", "Zettelkasten: Daily Note" },
       ["<leader>zD"] = { "<Cmd>ZkYesterday<CR>", "Zettelkasten: Yesterday" },
-      ["<leader>zn"] = { "<Cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>", "Zettelkasten: New Note" },
+      ["<leader>zn"] = { "<Cmd>ZkNew<CR>", "Zettelkasten: New Note" },
       ["<leader>zo"] = { "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", "Zettelkasten: Open Note" },
       ["<leader>zt"] = { "<Cmd>ZkTags<CR>", "Zettelkasten: Show Tags" },
       ["<leader>zf"] = { "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", "Zettelkasten: Search Notes" },
