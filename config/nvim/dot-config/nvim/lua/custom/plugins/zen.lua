@@ -2,7 +2,15 @@ return {
   {
     "folke/zen-mode.nvim",
     dependencies = {
-      "folke/twilight.nvim",
+      {
+        "folke/twilight.nvim",
+        opts = {
+          exclude = {
+            "markdown",
+            "help",
+          }
+        }
+      }
     },
     opts = {
       window = {
@@ -22,7 +30,7 @@ return {
           showcmd = false,
           laststatus = 0,
         },
-        twilight = { enabled = true }, -- optional: dims inactive code
+        twilight = { enabled = true },
         gitsigns = { enabled = false },
         tmux = { enabled = true },
       },
