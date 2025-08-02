@@ -15,6 +15,7 @@ for archive in "$@"; do
       *.Z) uncompress "$archive";;
       *.7z) 7z x "$archive";;
       *.tar.xz) tar xvJf "$archive" ;;
+      *.xz) unxz "$archive";;
       *) echo "don't know how to extract '$archive'..." ;;
     esac
   else
