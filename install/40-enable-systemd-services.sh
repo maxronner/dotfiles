@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SYSTEM_SERVICES="$1"
-USER_SERVICES="$2"
+SYSTEM_SERVICES=(
+    avahi-daemon.service
+	bluetooth.service
+	sshd.service
+	systemd-resolved.service
+	systemd-timesyncd.service
+)
+
+USER_SERVICES=(
+    mako.service
+	syncthing.service
+)
+
 HOME_DIR="${HOME:-/home/$(whoami)}"
 
 echo "Enabling generic systemd system services..."
-sudo systemctl enable --now $SYSTEM_SERVICES
+sudo systemctl enable --now "${SYSTEM_SERVICES[@]}"
 
 echo "Enabling specific user systemd services..."
-systemctl --user enable --now $USER_SERVICES
+systemctl --user enable --now "${USER_SERVICES[@]}"
 
 echo "Enabling all user services in ${HOME_DIR}/.config/systemd/user..."
 # Use array to handle service files with spaces safely
