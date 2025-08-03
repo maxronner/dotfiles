@@ -1,5 +1,5 @@
 export MANPATH="/usr/local/man:$MANPATH"
-export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
+export MANPAGER='nvim +Man!'
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01:locus=01:quote=01'
 
 tty=$(tty 2>/dev/null) && export GPG_TTY=$tty
