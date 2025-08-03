@@ -32,7 +32,6 @@ vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoi
 -- Delete word forward
 vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
 vim.keymap.set("n", "<C-Del>", "de", { desc = "Delete word (normal mode)" })
-vim.keymap.set("i", "<C-h>", "<C-o>dB", { desc = "Delete backwards (insert mode)" })
 
 -- LSP formatting
 vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "Format buffer" })
