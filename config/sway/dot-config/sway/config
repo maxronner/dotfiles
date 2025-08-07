@@ -305,6 +305,8 @@ bindsym $mod+Shift+e mode "$mode_system"
 #
     bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym XF86MonBrightnessUp exec brightnessctl set 5%+
+    # bindsym XF86ScreenSaver exec $lock
+    bindcode 160 exec $lock
 #
 # Status Bar:
 #
