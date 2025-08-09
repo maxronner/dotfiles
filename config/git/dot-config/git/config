@@ -1,6 +1,7 @@
 [user]
 	email = max@ronner.dev
 	name = Max Ronner
+    signingkey = 14CEF13FD4CEAE7F4C2B9BDCBB24FC512EC460C0
 
 [core]
     editor = nvim
@@ -26,6 +27,7 @@
     sort = -committerdate
 
 [commit]
+    gpgsign = true
     verbose = true
     template = ~/.config/git/commit-template
 

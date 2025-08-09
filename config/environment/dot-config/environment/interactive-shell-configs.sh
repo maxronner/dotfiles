@@ -2,6 +2,7 @@ export MANPATH="/usr/local/man:$MANPATH"
 export MANPAGER='nvim +Man!'
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01:locus=01:quote=01'
 
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 tty=$(tty 2>/dev/null) && export GPG_TTY=$tty
 
 [ -f "$XDG_CONFIG_HOME/environment/aliases.sh" ] && \
