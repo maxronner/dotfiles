@@ -6,7 +6,6 @@
 [core]
     editor = nvim
     whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-    sshCommand = ssh -i ~/.ssh/id_ed25519 -F /dev/null
     preloadindex = true
 
 [advice]

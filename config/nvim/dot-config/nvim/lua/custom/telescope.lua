@@ -4,7 +4,7 @@ local builtin = require "telescope.builtin"
 
 telescope.setup({
   defaults = {
-    file_ignore_patterns = { ".git/", ".git/*", ".DS_Store", "node_modules" },
+    file_ignore_patterns = { "%.git/", "%.git/*", "%.DS_Store", "node_modules" },
     history = {
       path = vim.fs.joinpath(data, "telescope_history.sqlite3"),
       limit = 100,
