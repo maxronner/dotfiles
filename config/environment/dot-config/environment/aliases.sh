@@ -60,6 +60,8 @@ alias gba='git branch --all'
 alias gbd='git branch --delete'
 alias gbD='git branch --delete --force'
 
+alias gsw='git switch'
+
 alias gc="git commit"
 alias gca="git commit --amend"
 
