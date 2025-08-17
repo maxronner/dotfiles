@@ -3,6 +3,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 CLI_PKGS=(
   7zip
+  age
+  alsa-utils
   astroterm
   atac
   base-devel
@@ -11,11 +13,13 @@ CLI_PKGS=(
   bluetui
   btop
   chafa
+  dosfstools
   duf
   dust
   eza
   fastfetch
   fd
+  feh
   fzf
   gammastep
   ghostty
@@ -23,6 +27,7 @@ CLI_PKGS=(
   gitui
   git-delta
   go
+  grim
   htop
   inotify-tools
   jq
@@ -31,6 +36,7 @@ CLI_PKGS=(
   nano
   neomutt
   neovim
+  nmap
   noto-fonts
   noto-fonts-emoji
   npm
@@ -54,6 +60,8 @@ CLI_PKGS=(
   tgpt
   tmux
   ttf-hack-nerd
+  wget
+  wireguard-tools
   unzip
   zig
   zk
