@@ -9,7 +9,8 @@ DEPS := \
 	setup_device_specifics \
 	stow_dotfiles \
 	stow_scripts \
-	setup_services
+	setup_services \
+	set_theme
 
 .PHONY: all $(DEPS) unstow_dotfiles
 
@@ -53,6 +54,9 @@ setup_device_specifics:
 		echo "Unknown env: $(env)"; \
 	fi
 	bash install/60-configure-sway-desktop.sh
+
+set_theme:
+	python3 scripts/thememanager set rose-pine-moon
 
 unstow_dotfiles:
 	@bash install/extras/unstow-dotfiles.sh
