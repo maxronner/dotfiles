@@ -1,5 +1,5 @@
 [Unit]
-Description=Run wallpaper changer every 10 minutes
+Description=Run wallpaper changer every day
 
 [Timer]
 OnCalendar=daily
