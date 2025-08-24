@@ -11,7 +11,7 @@ if pgrep -x rnbg &>/dev/null; then
 fi
 
 # Directory containing wallpapers
-WALLPAPER_DIR="$HOME/Sync/wallpapers"
+WALLPAPER_DIR="$HOME/personal/wallpapers"
 WALLPAPER_PATH="$HOME/.config/sway/1.wallpaper"
 LOCK_WALLPAPER_PATH="$HOME/.config/sway/lock.wallpaper"
 

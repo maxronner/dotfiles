@@ -29,7 +29,9 @@ CLI_PKGS=(
   go
   grim
   htop
+  inetutils
   inotify-tools
+  imagemagick
   jq
   libnotify
   man-db

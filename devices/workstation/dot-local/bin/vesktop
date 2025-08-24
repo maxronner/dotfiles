@@ -1,2 +1,2 @@
 #!/bin/bash
-exec /usr/bin/flatpak run dev.vencord.Vesktop --disable-gpu-compositing -- "$@"
+exec /usr/bin/vesktop --disable-gpu-compositing -- "$@"
