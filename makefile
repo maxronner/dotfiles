@@ -21,7 +21,6 @@ all: $(DEPS)
 install_cli:
 	@bash install/10-install-cli.sh
 	@bash install/11-install-tpm.sh
-	@bash install/12-setup-pass-store-sudo.sh
 
 install_desktop:
 	@bash install/20-install-desktop.sh
