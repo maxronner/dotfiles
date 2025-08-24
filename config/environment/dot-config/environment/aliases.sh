@@ -31,7 +31,7 @@ if command -v bat &>/dev/null; then
 fi
 
 alias pw="pass fzf"
-alias otp="pass fzf-otp"
+alias otp="pass fzf-otp -c"
 alias chat="tmux-chat"
 alias cb="wl-copy"
 alias bt="bluetui"

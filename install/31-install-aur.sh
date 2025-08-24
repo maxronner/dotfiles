@@ -9,5 +9,5 @@ AUR_PKGS=(
 )
 
 echo "Installing AUR packages..."
-$AUR_HELPER "${AUR_PKGS[@]}"
+"${AUR_HELPER[@]}" "${AUR_PKGS[@]}"
 

@@ -10,7 +10,8 @@ DEPS := \
 	stow_dotfiles \
 	stow_scripts \
 	setup_services \
-	set_theme
+	set_theme \
+	setup_password_store
 
 .PHONY: all $(DEPS) unstow_dotfiles
 
@@ -57,6 +58,9 @@ setup_device_specifics:
 
 set_theme:
 	@python3 scripts/thememanager set rose-pine-moon
+
+setup_password_store:
+	@bash install/70-setup-pass-store-chmod.sh
 
 unstow_dotfiles:
 	@bash install/extras/unstow-dotfiles.sh

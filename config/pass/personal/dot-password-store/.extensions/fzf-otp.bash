@@ -1,40 +1,52 @@
 #!/bin/bash
 
-function candidates() {
-    find "$PREFIX" -name '*.gpg' | sed -e "s:$PREFIX/::gi" -e 's:.gpg$::gi'
+set -euo pipefail
+
+PREFIX="${PREFIX:-$HOME/.password-store}"
+
+candidates() {
+    find "$PREFIX" -name '*.gpg' \
+        | sed -e "s:$PREFIX/::gi" -e 's:.gpg$::gi'
 }
 
-function candidate_selector_fzf() {
-    query=$1
+candidate_selector_fzf() {
+    local query=$1
     candidates | fzf -q "$query" --select-1
 }
 
-function usage() {
-    echo "Usage: $0 [-s] [query]"
+usage() {
+    echo "Usage: $0 [-s] [-c] [query]"
+    echo
+    echo "  -s   only select and print the entry name"
+    echo "  -c   copy OTP to clipboard instead of showing"
     exit 1
 }
 
 select_only=0
+copy=0
 
-while getopts "s" o
-do
+while getopts "sc" o; do
     case "${o}" in
-        s)
-            select_only=1
-            ;;
-        *)
-            usage
-            ;;
+        s) select_only=1 ;;
+        c) copy=1 ;;
+        *) usage ;;
     esac
 done
-
 shift $((OPTIND-1))
-query="$@"
 
+query="$*"
 res=$(candidate_selector_fzf "$query")
+
 if [ -n "$res" ]; then
-    [ $select_only -ne 0 ] && echo "$res" && exit 0
-    pass otp -c "$res"
+    if [ $select_only -ne 0 ]; then
+        echo "$res"
+        exit 0
+    fi
+    if [ $copy -ne 0 ]; then
+        pass otp -c "$res"
+    else
+        pass otp "$res"
+    fi
 else
     exit 1
 fi
