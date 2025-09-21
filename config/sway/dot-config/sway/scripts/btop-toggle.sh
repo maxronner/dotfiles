@@ -1,6 +1,6 @@
 #!/bin/sh
 TITLE="btop-float"
-TERMINAL_CMD="ghostty --title=$TITLE -e btop"
+TERMINAL_CMD="foot --title=$TITLE -e btop"
 
 # Query Sway tree for matching window
 window_info=$(swaymsg -t get_tree | jq --arg title "$TITLE" '
