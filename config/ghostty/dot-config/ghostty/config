@@ -1,5 +1,5 @@
 # Appearance options
-theme = rose-pine-moon
+theme = "Rose Pine Moon"
 font-family = "Hack Nerd Font Mono"
 background-opacity = 0.9
 background-blur = true
