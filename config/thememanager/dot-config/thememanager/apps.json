@@ -72,7 +72,7 @@
   "pinentry-gtk": {
     "type": "inline",
     "path": "~/.config/environment.d/gtk.conf",
-    "reload": "bash -c ~/.config/thememanager/reload-pinentry-gtk.sh"
+    "reload": "~/.config/thememanager/reload-pinentry-gtk.sh"
   },
   "tmux-plugins": {
     "type": "tmux-plugins",
