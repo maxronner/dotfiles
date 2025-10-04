@@ -16,3 +16,12 @@ echo "Installing laptop specific packages..."
 
 echo "Setting up dhcpcd..."
 sudo systemctl enable --now dhcpcd.service
+
+# Allow uinput access
+sudo tee /etc/udev/rules.d/90-uinput.rules <<'EOF'
+KERNEL=="uinput", GROUP="input", MODE="0660"
+EOF
+
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
