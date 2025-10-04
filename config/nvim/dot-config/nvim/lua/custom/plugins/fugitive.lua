@@ -39,8 +39,5 @@ return {
         end
       end,
     })
-
-    vim.keymap.set("n", "gu", "<cmd>diffget //2<CR>", { desc = "Git: Diff from left side" })
-    vim.keymap.set("n", "gh", "<cmd>diffget //3<CR>", { desc = "Git: Diff from right side" })
   end
 }
