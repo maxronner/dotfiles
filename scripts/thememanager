@@ -141,6 +141,8 @@ class ThemeManager:
                 self._apply_symlink_dir(app, config, theme_path)
             elif t == "inline":
                 self._apply_inline(app, config, theme_config)
+            elif t == "cmd":
+                self._apply_cmd(app, config, theme_config)
             elif t == "tmux-plugins":
                 self._apply_tmux_plugins(app, config, theme_config)
             else:
@@ -234,6 +236,20 @@ class ThemeManager:
                 logger.debug(f"No changes needed for {app} inline config.")
         except Exception as e:
             logger.error(f"Error applying inline theme for {app}: {e}")
+
+    def _apply_cmd(self, app, config, theme_config):
+        if not theme_config.has_section(app):
+            logger.warning(f"Skipping {app}: No section in theme.ini.")
+            return
+        cmd = theme_config.get(app, "cmd", fallback="")
+        try:
+            if self.dry_run:
+                logger.info(f"[dry-run] Would run: {cmd}")
+            else:
+                subprocess.run(cmd, shell=True, check=True)
+                logger.info(f"Applied {app} theme via command.")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to run {app} command: {e}")
 
     def _apply_tmux_plugins(self, app, config, theme_config):
         """Manage a block of plugins in the tmux config file."""
