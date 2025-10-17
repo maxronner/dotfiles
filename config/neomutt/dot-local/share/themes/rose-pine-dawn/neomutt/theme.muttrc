@@ -1,0 +1,81 @@
+# ========== Base: Primary background ==========
+color normal        color240 default
+color tree          color240 default
+color tilde         color247 default
+color markers       color240 default
+
+# ========== Surface: Secondary background ==========
+color status        color240 color255
+color signature     color247 default
+
+# ========== Overlay: Tertiary background ==========
+color indicator     color240 color254
+color search        color240 color254 # For search bar/input area
+color attachment    color240 default
+
+# ========== Muted: Low contrast foreground ==========
+color error         color168 default
+color quoted9       color247 default
+color index_date    color247 default
+color index_size    color247 default
+
+# ========== Subtle: Medium contrast foreground ==========
+color quoted1       color244 default
+color quoted2       color244 default
+color quoted3       color244 default
+
+# ========== Text: High contrast foreground ==========
+color quoted        color240 default
+color body          color30  default "[-a-z_0-9.+]+@[-a-z_0-9.]+"
+color body          color98  default "((ftp|http|https)://|news:)[^ >)\"\t]+"
+color body          color240 default "\\[[0-9]+\\]"
+color body          color240 default "\\[\\.\\.\\.?\\]"
+
+# ========== Love: Diagnostic errors, builtins ==========
+color header        color168 default '^From:'
+color index_flags   color168 default ~D
+color quoted6       color168 default
+
+# ========== Gold: Warnings, strings ==========
+color header        color214 default '^Subject:'
+color index_flags   color214 default ~N
+color quoted4       color214 default
+
+# ========== Rose: Search highlight, functions ==========
+color search        color210 color255 # For actual search highlights
+color quoted7       color210 default
+color header        color210 default '^User-Agent:.*Mutt'
+
+# ========== Pine: Keywords, conditionals ==========
+color index_number  color24  default
+color quoted5       color24  default
+color header        color24  default '^User-Agent: Mozilla/5.0.*Linux'
+
+# ========== Foam: Information, types ==========
+color index_author  color30  default ~F
+color index_flags   color30  default ~g
+color quoted8       color30  default
+
+# ========== Iris: Hints, links, parameters ==========
+color index_author  color98  default ~P
+color quoted        color98  default
+color quoted3       color98  default
+
+# ========== Highlight Levels ==========
+# Low highlight — e.g., cursorline
+color tilde         color247 default
+
+# Medium highlight — e.g., selection, status
+color status        color240 color255
+
+# High contrast — e.g., cursor itself
+color indicator     color240 color254
+
+# ========== Misc Index ==========
+color index_author  color240 default ~l
+color index_flags   color240 default ~l
+color index_flags   color24  default ~G
+
+# ========== Pager / Header ==========
+color bold          color240 default
+color underline     color240 default
