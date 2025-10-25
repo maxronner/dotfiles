@@ -1,0 +1,11 @@
+[Unit]
+Description=Inhibit sway idle while media is playing
+
+[Service]
+ExecStart=%h/.local/bin/inhibit-on-playback.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
+
