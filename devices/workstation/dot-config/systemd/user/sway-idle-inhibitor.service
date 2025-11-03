@@ -1,11 +1,12 @@
 [Unit]
 Description=Inhibit sway idle while media is playing
+PartOf=sway-session.target
+After=sway-session.target
 
 [Service]
 ExecStart=%h/.local/bin/inhibit-on-playback.sh
-Restart=always
-RestartSec=2
+Restart=on-failure
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=sway-session.target
 

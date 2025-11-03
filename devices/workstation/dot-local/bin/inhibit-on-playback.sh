@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
-active_inhibit=false
 
+active_inhibit=false
 echo "Starting playback monitor..."
 
-playerctl --follow status 2>/dev/null | while read -r status; do
+while read -r status; do
     echo "Status change: $status"
     case "$status" in
         Playing)
@@ -22,5 +22,5 @@ playerctl --follow status 2>/dev/null | while read -r status; do
             fi
             ;;
     esac
-done
+done < <(playerctl --follow status 2>/dev/null)
 

@@ -1,0 +1,4 @@
+[Unit]
+Description=Sway-specific session setup
+Wants=graphical-session.target
+After=graphical-session.target
