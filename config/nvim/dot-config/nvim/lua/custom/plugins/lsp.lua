@@ -171,16 +171,13 @@ return {
       vim.list_extend(ensure_installed, servers_to_install)
       require("mason-tool-installer").setup { ensure_installed = ensure_installed }
 
-      for name, config in pairs(servers) do
-        if config == true then
-          config = {}
-        end
-        config = vim.tbl_deep_extend("force", {}, {
-          capabilities = capabilities,
-        }, config)
-
-        lspconfig[name].setup(config)
+      for name, cfg in pairs(servers) do
+        if cfg == true then cfg = {} end
+        local config = vim.tbl_deep_extend("force", { capabilities = capabilities }, cfg)
+        vim.lsp.config(name, config)
+        vim.lsp.enable(name)
       end
+
 
       local disable_semantic_tokens = {
         lua = true,
