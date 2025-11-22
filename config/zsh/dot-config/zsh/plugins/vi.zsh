@@ -32,3 +32,5 @@ bindkey -M vicmd '\e[4~' end-of-line          # End in normal mode
 bindkey -M viins '^A' beginning-of-line
 bindkey -M viins '^E' end-of-line
 bindkey -M viins '^U' kill-whole-line
+
+bindkey -M viins '^[.' insert-last-word
