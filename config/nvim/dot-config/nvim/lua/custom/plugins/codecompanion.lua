@@ -7,6 +7,7 @@ return {
       }
     },
     enabled = true,
+    version = "17.33.0",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",

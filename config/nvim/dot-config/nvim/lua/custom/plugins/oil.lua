@@ -78,6 +78,10 @@ return {
         end,
       },
 
+      confirmation = {
+        border = "rounded",
+      },
+
       vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
     })
   end
