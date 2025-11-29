@@ -9,5 +9,5 @@ WORKSPACE_PKGS=(
   swayfx
 )
 
-echo "Installing workstation specific packages..."
+info "Installing workstation specific packages..."
 "${AUR_HELPER[@]}" "${WORKSPACE_PKGS[@]}"

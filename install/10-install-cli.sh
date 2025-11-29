@@ -74,7 +74,7 @@ CLI_PKGS=(
   zsh-syntax-highlighting
 )
 
-echo "Installing CLI/Environment packages..."
+info "Installing CLI/Environment packages..."
 "${PACKAGE_MANAGER[@]}" "${CLI_PKGS[@]}"
 
 bash "$(dirname "${BASH_SOURCE[0]}")/11-install-tpm.sh"

@@ -11,13 +11,13 @@ LAPTOP_PKGS=(
   sway
 )
 
-echo "Installing laptop specific packages..."
+info "Installing laptop specific packages..."
 "${AUR_HELPER[@]}" "${LAPTOP_PKGS[@]}"
 
-echo "Setting up dhcpcd..."
+info "Setting up dhcpcd..."
 sudo systemctl enable --now dhcpcd.service
 
-# Allow uinput access
+info "Allow uinput access for kmonad"
 sudo tee /etc/udev/rules.d/90-uinput.rules <<'EOF'
 KERNEL=="uinput", GROUP="input", MODE="0660"
 EOF

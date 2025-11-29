@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# Detect NVIDIA GPU PCI device string (multiple NVIDIA GPUs possible)
-mapfile -t NVIDIA_GPUS < <(lspci -Dnn | awk '/VGA.*NVIDIA/ { match($0, /\[10de:[0-9a-fA-F]{4}\]/, a); if (a[0]) print a[0]; }')
+NVIDIA_GPUS=($(lspci -nn | grep -i nvidia | grep -oP '\[10de:\K[0-9a-fA-F]{4}'))
 
 if [ ${#NVIDIA_GPUS[@]} -eq 0 ]; then
-    echo "No NVIDIA GPU found, skipping driver installation."
+    warn "No NVIDIA GPU found, skipping driver installation."
     exit 0
 fi
 
-# Use the first NVIDIA device ID found
-DEVICE_ID=$(echo "${NVIDIA_GPUS[0]#\[10de:}" | tr 'A-F' 'a-f')
+DEVICE_ID="${NVIDIA_GPUS[0],,}"
 
 get_generation() {
     case "$1" in
@@ -38,11 +35,11 @@ case "$GEN" in
         "${PACKAGE_MANAGER[@]}" "nvidia-open"
         ;;
     unknown)
-        echo "Unknown NVIDIA GPU device ID: $DEVICE_ID. No driver installed."
+        error "Unknown NVIDIA GPU device ID: $DEVICE_ID. No driver installed."
         exit 0
         ;;
     *)
-        echo "Older NVIDIA GPU detected (device ID: $DEVICE_ID). No driver installed by default."
+        error "Older NVIDIA GPU detected (device ID: $DEVICE_ID). No driver installed by default."
         exit 0
         ;;
 esac

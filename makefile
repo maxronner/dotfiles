@@ -16,7 +16,7 @@ DEPS := \
 .PHONY: all $(DEPS) unstow_dotfiles
 
 all: $(DEPS)
-	@echo "All packages installed and dotfiles symlinked successfully!"
+	@echo "make: All packages installed and dotfiles symlinked successfully!"
 
 install_cli:
 	@bash install/10-install-cli.sh

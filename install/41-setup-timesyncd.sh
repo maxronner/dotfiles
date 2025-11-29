@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 TIMEZONE="${1:-Europe/Stockholm}"
 NTP_SERVERS="${2:-0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org}"
 
-echo "Setting up timesyncd..."
+info "Setting up timesyncd..."
 
 sudo mkdir -p /etc/systemd/timesyncd.conf.d
 echo "[Time]" | sudo tee /etc/systemd/timesyncd.conf.d/local.conf > /dev/null

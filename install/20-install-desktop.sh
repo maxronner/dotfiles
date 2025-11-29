@@ -27,5 +27,5 @@ DESKTOP_PKGS=(
   xdg-desktop-portal-wlr
 )
 
-echo "Installing Desktop packages..."
+info "Installing Desktop packages..."
 "${PACKAGE_MANAGER[@]}" "${DESKTOP_PKGS[@]}"

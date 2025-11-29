@@ -8,6 +8,6 @@ AUR_PKGS=(
   zen-browser-bin
 )
 
-echo "Installing AUR packages..."
+info "Installing AUR packages..."
 "${AUR_HELPER[@]}" "${AUR_PKGS[@]}"
 
