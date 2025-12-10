@@ -7,6 +7,8 @@ export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 export PASSWORD_STORE_DIR="$HOME/personal/.password-store"
 
+export ATAC_KEY_BINDINGS="$XDG_CONFIG_HOME/atac/vim_keybindings.toml"
+
 if [ -z "$WAYLAND_DISPLAY" ]; then
   export ELECTRON_OZONE_PLATFORM_HINT=auto
 fi
