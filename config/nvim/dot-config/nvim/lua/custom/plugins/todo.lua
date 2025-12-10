@@ -12,7 +12,9 @@ return {
       },
     },
     config = function()
-      require("todo-comments").setup()
+      local todo_comments = require("todo-comments")
+      todo_comments.setup()
+
       vim.keymap.set("n", "]#", function()
         require("todo-comments").jump_next()
       end, { desc = "Next todo comment" })
@@ -21,7 +23,7 @@ return {
         require("todo-comments").jump_prev()
       end, { desc = "Previous todo comment" })
 
-      vim.keymap.set("n", "<leader>fl", ":TodoTelescope<CR>", { desc = "Telescope: TODOs" })
+      vim.keymap.set("n", "<leader>fl", ":TodoFzfLua<CR>", { desc = "Fzf: TODOs" })
     end,
   }
 }

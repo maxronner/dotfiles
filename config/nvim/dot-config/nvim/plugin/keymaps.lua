@@ -16,42 +16,37 @@ vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
 vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
 vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
 
--- Alternate file (toggle between buffers)
 vim.keymap.set("n", "<leader>e", "<C-6>", { desc = "Alternate buffer" })
 
--- Search within visual selection
 vim.keymap.set('x', '/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
 vim.keymap.set('x', '?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
 
 
 ---- Editing ----
 
--- Split line at midpoint
 vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
 
--- Delete word forward
-vim.keymap.set("i", "<C-Del>", "<C-o>de", { desc = "Delete word (insert mode)" })
-vim.keymap.set("n", "<C-Del>", "de", { desc = "Delete word (normal mode)" })
+vim.keymap.set("i", "<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
+vim.keymap.set("n", "<C-Del>", "dw", { desc = "Delete word (normal mode)" })
 
--- LSP formatting
-vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "Format buffer" })
+vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "LSP format buffer" })
 
--- Diagnostics to quickfix
 vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
 
 ---- Search ----
 
--- Search & replace word under cursor
 vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute word under cursor" })
 
--- Search & replace text under cursor
 vim.keymap.set("n", "<C-t>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute text under cursor" })
 
--- Clear search highlight
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
+vim.keymap.set("x", "<C-t>", [[:%s/<C-r>"/<C-r>"/gI<Left><Left><Left>]],
+  { desc = "Substitute visual selection" })
+
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>',
+  { desc = 'Clear search highlight' })
 
 
 ---- Files ----
