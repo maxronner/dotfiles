@@ -31,6 +31,9 @@ fzf.setup({
     rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 " .. rg_excludes,
   },
 })
+
+fzf.register_ui_select()
+
 -- Buffers
 vim.keymap.set("n", "<leader>/", fzf.lines, { desc = "Fzf: Fuzzy find in current buffer" })
 vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Fzf: Buffers" })
