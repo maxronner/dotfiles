@@ -28,10 +28,9 @@ fzf.setup({
   },
 
   grep = {
-    rg_opts = "--column --line-number --smart-case --hidden " .. rg_excludes,
+    rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 " .. rg_excludes,
   },
 })
-
 -- Buffers
 vim.keymap.set("n", "<leader>/", fzf.lines, { desc = "Fzf: Fuzzy find in current buffer" })
 vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Fzf: Buffers" })
