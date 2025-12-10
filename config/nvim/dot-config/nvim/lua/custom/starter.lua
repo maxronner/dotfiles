@@ -126,12 +126,11 @@ local buttons = {
   type = "group",
   val = {
     button("e", "  New file", "<cmd>ene <CR>"),
-    button("SPC f p", "󰈞  Find file"),
-    button("SPC f o", "󰊄  Recently opened files"),
-    button("SPC f f", "  Frecency/MRU"),
-    button("SPC f g", "󰈬  Live grep"),
-    button("SPC f l", "  Find leftovers"),
-    button("SPC b s", "  Scratch"),
+    button(leader .. " f p", "󰈞  Find files"),
+    button(leader .. " f o", "󰊄  Recently opened files"),
+    button(leader .. " f l", "󰈬  Live grep"),
+    button(leader .. " f t", "  Find leftovers"),
+    button(leader .. " b s", "  Scratch"),
     button("q", "X  Quit", "<cmd>qa <CR>"),
   },
   opts = {

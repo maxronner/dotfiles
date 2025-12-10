@@ -23,7 +23,7 @@ return {
         require("todo-comments").jump_prev()
       end, { desc = "Previous todo comment" })
 
-      vim.keymap.set("n", "<leader>fl", ":TodoFzfLua<CR>", { desc = "Fzf: TODOs" })
+      vim.keymap.set("n", "<leader>ft", ":TodoFzfLua<CR>", { desc = "Fzf: TODOs" })
     end,
   }
 }

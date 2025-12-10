@@ -1,11 +1,11 @@
 local fzf = require("fzf-lua")
 
-local fd_excludes = {
+local fd_excludes = table.concat({
   "--exclude", ".git",
   "--exclude", "node_modules",
   "--exclude", "dist",
   "--exclude", "build",
-}
+}, " ")
 
 local rg_excludes = table.concat({
   "--glob=!**/.git/**",
@@ -22,21 +22,12 @@ fzf.setup({
   },
 
   files = {
-    prompt = "Files > ",
-    fd_opts = table.concat(
-      vim.iter({ fzf.defaults.files.fd_opts, fd_excludes }):flatten()
-    ),
-  },
-
-  keymaps = {
-    ["<leader>ff"] = { fzf.lines },
+    git_icons = true,
+    file_icons = true,
+    fd_opts = fzf.defaults.files.fd_opts .. " " .. fd_excludes
   },
 
   grep = {
-    rg_opts = "--column --line-number --smart-case --hidden " .. rg_excludes,
-  },
-
-  live_grep = {
     rg_opts = "--column --line-number --smart-case --hidden " .. rg_excludes,
   },
 })
@@ -46,15 +37,18 @@ vim.keymap.set("n", "<leader>/", fzf.lines, { desc = "Fzf: Fuzzy find in current
 vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Fzf: Buffers" })
 
 -- Files
-vim.keymap.set("n", "<leader>fp", fzf.files, { desc = "Fzf: Find files" })
 vim.keymap.set("n", "<leader>fP", function()
-  fzf.files({ hidden = true, no_ignore = true })
-end, { desc = "Fzf: Find files (all)" })
+  fzf.files({ no_ignore = true })
+end, { desc = "Fzf: Find files (hidden)" })
+vim.keymap.set("n", "<leader>fp", function()
+  fzf.files({ hidden = false })
+end, { desc = "Fzf: Find files (no hidden, no ignored)" })
 vim.keymap.set("n", "<leader>fo", fzf.oldfiles, { desc = "Fzf: Find old files" })
 vim.keymap.set("n", "<leader>fi", fzf.git_files, { desc = "Fzf: Git files" })
 
 -- Grep
-vim.keymap.set("n", "<leader>fg", fzf.live_grep, { desc = "Fzf: Live grep" })
+vim.keymap.set("n", "<leader>fl", fzf.live_grep, { desc = "Fzf: Live grep" })
+vim.keymap.set("n", "<leader>fg", fzf.grep, { desc = "Fzf: Grep" })
 vim.keymap.set("x", "<leader>fw", fzf.grep_visual, { desc = "Fzf: Grep selection" })
 vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "Fzf: Grep word under cursor" })
 
