@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# This script is a wrapper for gitui, which is a git user interface.
-
-set -euo pipefail
-
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
-
-gitui "$@"
