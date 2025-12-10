@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <command> [args...]"
+    exit 1
+fi
+
+window_name="$1"
+
+if tmux list-windows -F '#W' | grep -Fxq "$window_name"; then
+    tmux select-window -t "$window_name"
+else
+    tmux new-window -n "$window_name" "$@"
+fi
