@@ -16,7 +16,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-vim.keymap.set("n", "<leader>z", function()
+vim.keymap.set("n", "<leader>zz", function()
   if vim.fn.executable("tmux-scratch") == 1 then
     vim.cmd("silent !tmux-scratch -P")
   else

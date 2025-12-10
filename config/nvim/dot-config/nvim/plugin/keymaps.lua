@@ -29,7 +29,7 @@ vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoi
 vim.keymap.set("i", "<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
 vim.keymap.set("n", "<C-Del>", "dw", { desc = "Delete word (normal mode)" })
 
-vim.keymap.set("n", "<leader>bf", vim.lsp.buf.format, { desc = "LSP format buffer" })
+vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
 
 vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
@@ -52,8 +52,8 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>',
 ---- Files ----
 
 -- Make file executable/non-executable
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
-vim.keymap.set("n", "<leader>X", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
+vim.keymap.set("n", "<leader>xf", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
+vim.keymap.set("n", "<leader>xF", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
 
 -- Source current file
 vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source current file" })
