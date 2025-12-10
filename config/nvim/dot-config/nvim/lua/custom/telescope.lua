@@ -75,3 +75,8 @@ end, { desc = "Telescope: Find files in plugins" })
 vim.keymap.set("n", "<leader>fi", builtin.git_files, { desc = "Telescope: Git files" })
 vim.keymap.set('n', '<leader>fc', builtin.git_branches, { desc = 'Telescope: Git Branch Checkout' })
 vim.keymap.set("n", "<leader>fm", builtin.git_status, { desc = "Telescope: Git status" })
+
+vim.keymap.set("n", "<leader>fd", builtin.lsp_definitions, { buffer = 0, desc = "Telescope: LSP Definitions" })
+vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { buffer = 0, desc = "Telescope: LSP References" })
+vim.keymap.set("n", "<leader>ls", builtin.lsp_document_symbols,
+  { buffer = 0, desc = "Telescope: LSP Document symbols" })
