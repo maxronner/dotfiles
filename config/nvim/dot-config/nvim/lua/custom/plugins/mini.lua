@@ -3,6 +3,7 @@ return {
     "echasnovski/mini.nvim",
     config = function()
       require("mini.ai").setup()
+      require('mini.cmdline').setup()
       require("mini.surround").setup()
       require("mini.pairs").setup()
       require("mini.comment").setup()
@@ -16,6 +17,9 @@ return {
       require("mini.icons").setup()
       require("mini.jump").setup()
       require("mini.cursorword").setup()
+      require("mini.starter").setup(
+        require "custom.starter"
+      )
       require("mini.indentscope").setup({
         draw = {
           delay = 0,
