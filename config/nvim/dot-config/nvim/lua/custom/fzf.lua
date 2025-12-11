@@ -41,7 +41,7 @@ vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Fzf: Buffers" })
 -- Files
 vim.keymap.set("n", "<leader>fP", function()
   fzf.files({ no_ignore = true })
-end, { desc = "Fzf: Find files (hidden)" })
+end, { desc = "Fzf: Find files (all)" })
 vim.keymap.set("n", "<leader>fp", function()
   fzf.files({ hidden = false })
 end, { desc = "Fzf: Find files (no hidden, no ignored)" })
