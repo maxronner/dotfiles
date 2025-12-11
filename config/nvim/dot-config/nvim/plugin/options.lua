@@ -5,6 +5,7 @@ vim.opt.timeoutlen     = 300
 vim.opt.confirm        = true
 vim.opt.updatetime     = 50
 vim.opt.splitright     = true
+vim.opt.splitbelow     = true
 vim.opt.spelloptions   = 'camel'               -- Treat camelCase word parts as separate words
 vim.opt.virtualedit    = "block"               -- Allow going past end of line in blockwise mode
 vim.opt.iskeyword      = '@,48-57,_,192-255,-' -- Treat dash as `word` textobject part
