@@ -5,6 +5,8 @@ WORDCHARS=${WORDCHARS/\/}
 
 setopt globdots
 
+bindkey '^B' backward-word
+
 # External tools
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
