@@ -3,7 +3,11 @@ return {
     "echasnovski/mini.nvim",
     config = function()
       require("mini.ai").setup()
-      require('mini.cmdline').setup()
+      require('mini.cmdline').setup({
+        autocomplete = {
+          delay = 200,
+        },
+      })
       require("mini.surround").setup()
       require("mini.pairs").setup()
       require("mini.comment").setup()
