@@ -63,6 +63,7 @@ vim.keymap.set("n", "<leader>:", fzf.command_history, { desc = "Fzf: Command his
 vim.keymap.set("n", "<leader>fH", fzf.search_history, { desc = "Fzf: Search history" })
 vim.keymap.set("n", "<leader>fh", fzf.helptags, { desc = "Fzf: Help tags" })
 vim.keymap.set("n", "<leader>fk", fzf.keymaps, { desc = "Fzf: Keymaps" })
+vim.keymap.set("n", "<leader>fO", fzf.nvim_options, { desc = "Fzf: Nvim options" })
 
 -- Neovim directories
 vim.keymap.set("n", "<leader>vv", function()
