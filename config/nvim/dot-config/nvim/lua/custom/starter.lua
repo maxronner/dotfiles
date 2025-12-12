@@ -82,6 +82,7 @@ local subheaders = {
   "You don’t need motivation. You need coffee.",
   "Whitespace wars: the saga continues.",
   "Remember: nothing is truly deprecated, only forgotten.",
+  "Fork it!",
 }
 
 local header_lines = headers[math.random(#headers)]
