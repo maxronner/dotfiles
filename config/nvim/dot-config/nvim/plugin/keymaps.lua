@@ -31,7 +31,7 @@ vim.keymap.set("n", "<C-Del>", "dw", { desc = "Delete word (normal mode)" })
 
 vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
 
-vim.keymap.set('n', '<leader>Q', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
+vim.keymap.set('n', '<leader>qd', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 
 
 ---- Search ----

@@ -3,7 +3,7 @@ return {
   config = function()
     vim.keymap.set("n", "<leader>gg", vim.cmd.Git, { desc = "Fugitive: Open window" })
     vim.keymap.set("n", "<leader>gb", ":Git blame<CR>", { desc = "Fugitive: Blame" })
-    vim.keymap.set("n", "<leader>gl", ":Gclog<CR>", { desc = "Fugitive: Log to quickfix" })
+    vim.keymap.set("n", "<leader>qg", ":Gclog<CR>", { desc = "Fugitive: Log to quickfix" })
 
     local maxronner_Fugitive = vim.api.nvim_create_augroup("maxronner_Fugitive", {})
     local autocmd = vim.api.nvim_create_autocmd
