@@ -6,6 +6,7 @@ WORDCHARS=${WORDCHARS/\/}
 setopt globdots
 
 bindkey '^B' backward-word
+bindkey '^[.' insert-last-word
 
 # External tools
 eval "$(starship init zsh)"
