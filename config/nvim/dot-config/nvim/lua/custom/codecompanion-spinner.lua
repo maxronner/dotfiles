@@ -15,6 +15,8 @@ function M.spinner:init()
     end,
   })
 
+
+
   vim.api.nvim_create_autocmd({ "User" }, {
     pattern = "CodeCompanionRequestFinished",
     group = group,
@@ -42,7 +44,7 @@ end
 
 function M.spinner:create_progress_handle(request)
   return progress.handle.create({
-    title = " Requesting assistance (" .. request.data.strategy .. ")",
+    title = " Requesting assistance (" .. request.data.interaction .. ")",
     message = "In progress...",
     lsp_client = {
       name = M.spinner:llm_role_title(request.data.adapter),

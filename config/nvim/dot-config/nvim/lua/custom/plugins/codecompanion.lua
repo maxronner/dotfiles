@@ -7,7 +7,6 @@ return {
       }
     },
     enabled = true,
-    version = "17.33.0",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -27,9 +26,12 @@ return {
     },
     config = function()
       require("codecompanion").setup({
-        strategies = {
+        interactions = {
           chat = {
-            adapter = "gemini",
+            adapter = {
+              name = "gemini",
+              model = "gemini-flash-latest",
+            }
           },
           inline = {
             adapter = "gemini",
@@ -72,7 +74,7 @@ return {
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
 
-      require("custom.codecompanion").spinner:init()
+      require("custom.codecompanion-spinner").spinner:init()
     end,
   },
 }
