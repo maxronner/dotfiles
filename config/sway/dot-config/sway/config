@@ -61,6 +61,8 @@ smart_gaps on
 # remove outer gaps when only one workspace exists on output
 smart_borders on
 
+# Application rules
+for_window [app_id="pavucontrol"] floating enable
 for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
 for_window [app_id="zen"] inhibit_idle fullscreen
