@@ -2,9 +2,6 @@ return {
   {
     "olimorris/codecompanion.nvim",
     opts = {
-      extensions = {
-        spinner = {}
-      }
     },
     enabled = true,
     dependencies = {
@@ -18,11 +15,6 @@ return {
         },
         ft = { "markdown", "codecompanion" },
       },
-      {
-        "franco-ruggeri/codecompanion-spinner.nvim",
-        commit = "af0dd1a",
-        opts = {},
-      }
     },
     config = function()
       require("codecompanion").setup({
