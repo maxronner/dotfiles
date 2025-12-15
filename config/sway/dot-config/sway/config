@@ -63,7 +63,6 @@ smart_borders on
 
 for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
-for_window [workspace=4] inhibit_idle fullscreen
 for_window [app_id="zen"] inhibit_idle fullscreen
 for_window [app_id="firefox"] inhibit_idle fullscreen
 for_window [app_id="chromium"] inhibit_idle fullscreen
