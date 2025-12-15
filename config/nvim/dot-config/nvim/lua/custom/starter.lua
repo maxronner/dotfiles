@@ -1,4 +1,5 @@
 local subheaders = {
+  "Don't remember signatures? Shift-K or Ctrl-H",
   "ZZ",
   "May the code be with you!",
   "AI-powered techincal debt machine",

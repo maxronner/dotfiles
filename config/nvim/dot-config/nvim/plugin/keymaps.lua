@@ -1,83 +1,89 @@
----- Navigation ----
+local nmap = function(lhs, rhs, opts)
+  vim.keymap.set('n', lhs, rhs, opts)
+end
+local xmap = function(lhs, rhs, opts)
+  vim.keymap.set('x', lhs, rhs, opts)
+end
+local imap = function(lhs, rhs, opts)
+  vim.keymap.set('i', lhs, rhs, opts)
+end
+local tmap = function(lhs, rhs, opts)
+  vim.keymap.set('t', lhs, rhs, opts)
+end
 
-vim.keymap.set("n", "<Up>", "<c-w>k")
-vim.keymap.set("n", "<Down>", "<c-w>j")
-vim.keymap.set("n", "<Left>", "<c-w>h")
-vim.keymap.set("n", "<Right>", "<c-w>l")
+local nmap_leader = function(suffix, rhs, opts)
+  vim.keymap.set('n', '<Leader>' .. suffix, rhs, opts)
+end
+local nxmap_leader = function(suffix, rhs, opts)
+  vim.keymap.set({ 'n', 'x' }, '<Leader>' .. suffix, rhs, opts)
+end
+
+
+---- Navigation ----
+nmap("<Up>", "<c-w>k", { desc = "Focus up" })
+nmap("<Down>", "<c-w>j", { desc = "Focus down" })
+nmap("<Left>", "<c-w>h", { desc = "Focus left" })
+nmap("<Right>", "<c-w>l", { desc = "Focus right" })
+
 
 -- Cursor stays in place when joining lines / scrolling
-vim.keymap.set("n", "J", "mzJ`z", { desc = "Join line below with cursor stay" })
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up, center screen" })
-vim.keymap.set("n", "n", "nzzzv", { desc = "Next match, center screen" })
-vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev match, center screen" })
+nmap("J", "mzJ`z", { desc = "Join line below with cursor stay" })
+nmap("<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })
+nmap("<C-u>", "<C-u>zz", { desc = "Half page up, center screen" })
+nmap("n", "nzzzv", { desc = "Next match, center screen" })
+nmap("N", "Nzzzv", { desc = "Prev match, center screen" })
 
--- Terminal mode
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Escape terminal mode" })
 
 -- Quickfix / location list navigation
-vim.keymap.set("n", "<C-j>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
-vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
-vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
-vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
+nmap("<C-j>", "<cmd>cnext<CR>zz", { desc = "Next quickfix" })
+nmap("<C-k>", "<cmd>cprev<CR>zz", { desc = "Prev quickfix" })
+nmap_leader("j", "<cmd>lnext<CR>zz", { desc = "Next loclist" })
+nmap_leader("k", "<cmd>lprev<CR>zz", { desc = "Prev loclist" })
+nmap_leader("e", "<C-6>", { desc = "Alternate buffer" })
 
-vim.keymap.set("n", "<leader>e", "<C-6>", { desc = "Alternate buffer" })
-
-vim.keymap.set('x', '/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
-vim.keymap.set('x', '?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
+xmap('/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
+xmap('?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
 
 
 ---- Editing ----
-
-vim.keymap.set('n', '<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
-
-vim.keymap.set("i", "<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
-vim.keymap.set("n", "<C-Del>", "dw", { desc = "Delete word (normal mode)" })
-
-vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
-
-vim.keymap.set('n', '<leader>qd', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
+nmap('<leader>|', "gMea<CR><Esc>", { desc = "Split line at midpoint" })
+nmap_leader("lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
+nmap('<leader>qd', vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
+nmap("<C-Del>", "dw", { desc = "Delete word (normal mode)" })
+imap("<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
+nxmap_leader("d", "\"_d", { desc = "Delete (no yank)" })
 
 
 ---- Search ----
-
-vim.keymap.set("n", "<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+nmap("<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute word under cursor" })
-
-vim.keymap.set("n", "<C-t>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
+nmap("<C-t>", [[:%s/<C-r><C-w>/<C-r><C-w>/gI<Left><Left><Left>]],
   { desc = "Substitute text under cursor" })
-
-vim.keymap.set("x", "<C-t>", [[:%s/<C-r>"/<C-r>"/gI<Left><Left><Left>]],
+xmap("<C-t>", [[:%s/<C-r>"/<C-r>"/gI<Left><Left><Left>]],
   { desc = "Substitute visual selection" })
-
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>',
+nmap('<Esc>', '<cmd>nohlsearch<CR>',
   { desc = 'Clear search highlight' })
 
 
 ---- Files ----
-
--- Make file executable/non-executable
-vim.keymap.set("n", "<leader>xf", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
-vim.keymap.set("n", "<leader>xF", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
-
--- Source current file
-vim.keymap.set("n", "<leader><leader>", "<cmd>so<CR>", { desc = "Source current file" })
+nmap_leader("xf", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
+nmap_leader("xF", "<cmd>!chmod -x %<CR>", { silent = true, desc = "Remove exec permission" })
+nmap_leader("<leader>", "<cmd>so<CR>", { desc = "Source current file" })
 
 
 ---- Clipboard ----
-
--- System clipboard
-vim.keymap.set({ "n", "x" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
-vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
-
--- Delete without yanking
-vim.keymap.set({ "n", "x" }, "<leader>d", "\"_d", { desc = "Delete (no yank)" })
+nxmap_leader("D", [["+d]], { desc = "Cut to system clipboard" })
+nxmap_leader("y", [["+y]], { desc = "Yank to system clipboard" })
+nmap_leader("Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
 
 ---- Logic ----
-
-vim.keymap.set("n", "<leader>cf", "<cmd>!find . -type f -not -path '*/.git/*' | wc -l<CR>",
+nmap_leader("cf", "<cmd>!find . -type f -not -path '*/.git/*' | wc -l<CR>",
   { desc = "Count files in directory" })
-vim.keymap.set("n", "<leader>cd",
+nmap_leader("cd",
   "<cmd>!find . -type f -not -path '*/.git/*' -exec wc -l {} \\; | awk '{ total += $1 } END { print \"Lines in workspace: \" total }'<CR>",
   { desc = "Count lines in all files of current directory" })
+
+
+-- Terminal mode
+tmap("<Esc>", "<C-\\><C-n>", { desc = "Escape terminal mode" })
