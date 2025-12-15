@@ -1,5 +1,10 @@
 ---- Navigation ----
 
+vim.keymap.set("n", "<Up>", "<c-w>k")
+vim.keymap.set("n", "<Down>", "<c-w>j")
+vim.keymap.set("n", "<Left>", "<c-w>h")
+vim.keymap.set("n", "<Right>", "<c-w>l")
+
 -- Cursor stays in place when joining lines / scrolling
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join line below with cursor stay" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })
