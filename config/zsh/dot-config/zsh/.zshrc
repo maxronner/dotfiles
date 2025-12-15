@@ -5,6 +5,7 @@ WORDCHARS=${WORDCHARS/\/}
 
 setopt globdots
 
+bindkey -e
 bindkey '^B' backward-word
 bindkey '^[.' insert-last-word
 
