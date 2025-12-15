@@ -87,7 +87,6 @@ assign [app_id="zen"] workspace 2
 #
 exec --no-startup-id gammastep -m wayland
 
-include $HOME/.config/sway/device.config
 
 ### Idle configuration
 #
@@ -340,3 +339,6 @@ include /etc/sway/config.d/*
 #
 exec $tmux
 exec $browser
+
+# Device specific configuration and overrides
+include $HOME/.config/sway/device.config
