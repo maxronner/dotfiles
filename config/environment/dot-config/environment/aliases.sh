@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 if [ -x /usr/bin/dircolors ]; then
     if test -r ~/.dircolors; then
         eval "$(dircolors -b ~/.dircolors)"
@@ -96,4 +98,4 @@ alias tde="task delete"
 alias te="task edit"
 alias tm="task modify"
 
-alias sctl="systemctl"
+alias sc="systemctl"
