@@ -2,13 +2,38 @@ local M = {}
 
 M.setup = function()
   local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
+  local ts = require("nvim-treesitter")
+  ts.setup()
 
-  require("nvim-treesitter").setup {
-    ensure_installed = {
-      "core",
-      "stable",
-    },
+  local ensure_installed = {
+    "bash",
+    "c",
+    "css",
+    "devicetree",
+    "diff",
+    "gitcommit",
+    "go",
+    "gomod",
+    "html",
+    "ini",
+    "javascript",
+    "json",
+    "jsonc",
+    "lua",
+    "make",
+    "markdown",
+    "markdown_inline",
+    "query",
+    "rust",
+    "scss",
+    "toml",
+    "typescript",
+    "vim",
+    "yaml",
+    "zig",
+    "zsh",
   }
+  ts.install(ensure_installed)
 
   local syntax_on = {
     markdown = true,

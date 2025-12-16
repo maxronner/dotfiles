@@ -61,6 +61,7 @@ CLI_PKGS=(
   tealdeer
   tgpt
   tmux
+  tree-sitter-cli
   ttf-hack-nerd
   wget
   wireguard-tools
