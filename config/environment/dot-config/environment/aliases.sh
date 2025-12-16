@@ -95,3 +95,5 @@ alias tdo="task done"
 alias tde="task delete"
 alias te="task edit"
 alias tm="task modify"
+
+alias sctl="systemctl"
