@@ -18,14 +18,6 @@ local nxmap_leader = function(suffix, rhs, opts)
   vim.keymap.set({ 'n', 'x' }, '<Leader>' .. suffix, rhs, opts)
 end
 
-
----- Navigation ----
-nmap("<Up>", "<c-w>k", { desc = "Focus up" })
-nmap("<Down>", "<c-w>j", { desc = "Focus down" })
-nmap("<Left>", "<c-w>h", { desc = "Focus left" })
-nmap("<Right>", "<c-w>l", { desc = "Focus right" })
-
-
 -- Cursor stays in place when joining lines / scrolling
 nmap("J", "mzJ`z", { desc = "Join line below with cursor stay" })
 nmap("<C-d>", "<C-d>zz", { desc = "Half page down, center screen" })

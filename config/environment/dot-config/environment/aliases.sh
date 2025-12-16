@@ -98,4 +98,5 @@ alias tde="task delete"
 alias te="task edit"
 alias tm="task modify"
 
-alias sc="systemctl"
+alias sc="systemctl --user"
+alias ssc="sudo systemctl"
