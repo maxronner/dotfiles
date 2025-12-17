@@ -5,7 +5,8 @@ WORDCHARS=${WORDCHARS/\/}
 
 setopt globdots
 
-bindkey -e
+bindkey -e # Use emacs key bindings
+bindkey '\e[3~' delete-char # Mapping <Del> to delete
 bindkey '^B' backward-word
 bindkey '^[.' insert-last-word
 
