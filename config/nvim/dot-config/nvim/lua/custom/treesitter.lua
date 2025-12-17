@@ -11,6 +11,7 @@ M.setup = function()
     "core",
     "stable",
     "gitcommit",
+    "diff",
   }
 
   local syntax_on = {
