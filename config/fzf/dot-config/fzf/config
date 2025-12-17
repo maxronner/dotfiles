@@ -1,12 +1,19 @@
 _show_preview='
 if [[ -d {} ]]; then
     eza --tree --color=always {} | head -200
-elif file --mime-type {} | grep -qF image; then
-    chafa --size 30 --passthrough none -d 2 {}
-elif file --mime-type {} | grep -aF -e text -e json; then
-    bat --color=always --style=numbers,grid --line-range :500 {};
 else
-    bat -n --color=always --line-range :500 {}
+    mime=$(file --mime-type -Lb {})
+    case "$mime" in
+        image/*)
+            chafa --size 30 --passthrough none -d 2 {}
+            ;;
+        text/*|application/json)
+            bat --color=always --style=numbers,grid --line-range :500 {}
+            ;;
+        *)
+            bat -n --color=always --line-range :500 {}
+            ;;
+    esac
 fi
 '
 
@@ -21,10 +28,30 @@ else
       --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 fi
 
-export FZF_BIND_OPTS="
-    --bind 'ctrl-y:execute-silent(printf {} | cut -f 2- | wl-copy --trim-newline),ctrl-d:preview-page-down,ctrl-u:preview-page-up,ctrl-y:preview-up,ctrl-e:preview-down,ctrl-b:preview-page-up,ctrl-f:preview-page-down,ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down,shift-up:preview-top,shift-down:preview-bottom,alt-up:half-page-up,alt-down:half-page-down'"
-export FZF_DEFAULT_OPTS="$FZF_COLOR_OPTS $FZF_BIND_OPTS"
-export FZF_TMUX_PANE_OPTS="bottom,40%,border-native"
+fzf_binds=(
+  "ctrl-y:execute-silent(printf '%s' {} | wl-copy --trim-newline)"
+  "ctrl-d:preview-half-page-down"
+  "ctrl-u:preview-half-page-up"
+  "ctrl-b:preview-page-up"
+  "ctrl-f:preview-page-down"
+  "ctrl-a:preview-top"
+  "ctrl-e:preview-bottom"
+  "ctrl-k:up"
+  "ctrl-j:down"
+)
+IFS=,
+export FZF_BIND_OPTS="--bind='${fzf_binds[*]}'"
+unset IFS
+
+export FZF_HEADER_DEFAULT="(Ctrl+) J/K up/down · Y copy"
+export FZF_DEFAULT_OPTS="
+  $FZF_COLOR_OPTS
+  $FZF_BIND_OPTS
+  --header='$FZF_HEADER_DEFAULT'
+"
+
+export FZF_HEADER_PREVIEW="$FZF_HEADER_DEFAULT | U/D ½ · B/F pg · A/E ↑↓"
+export FZF_TMUX_PANE_OPTS="center,75%"
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 
 export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND/--type f/}"
@@ -52,20 +79,15 @@ case "$SHELL" in
         ;;
 esac
 
-fat() {
-    fzf -q "$1" --select-1 --exit-0 --preview='bat -n --color=always --line-range :500 {}' --bind 'enter:become(bat {+})'
-}
-
-# Find in manual
 fman() {
     man -k . | fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' | awk \'{printf "%s ", $2} {print $1}\' | xargs -r man | col -bx | bat -l man -p --color always' | tr -d '()' | awk '{printf "%s ", $2} {print $1}' | xargs -r man
 }
 
-# Install packages using yay (change to pacman/AUR helper of your choice)
+# Install packages using yay
 ins() {
     yay -Slq | fzf -q "$1" -m --preview 'yay -Si {1}'| xargs -ro yay -S
 }
-# Remove installed packages (change to pacman/AUR helper of your choice)
+# Remove installed packages
 rem() {
     yay -Qq | fzf -q "$1" -m --preview 'yay -Qi {1}' | xargs -ro yay -Rns
 }
@@ -93,7 +115,6 @@ fzf-rg() {
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
 _fzf_comprun() {
-    echo "Command: $command" >&2  # Debug output
     local command=$1
     shift
 
