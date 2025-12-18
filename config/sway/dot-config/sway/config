@@ -342,3 +342,4 @@ exec $browser
 
 # Device specific configuration and overrides
 include $HOME/.config/sway/device.config
+workspace 1
