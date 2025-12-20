@@ -43,7 +43,15 @@ copy_clipboard() {
   fi
 }
 
+set +e
 result="$("$@")"
+status=$?
+set -e
+
+# Treat Ctrl+C / Esc as clean abort
+if [[ $status -eq 130 || $status -eq 1 || -z $result ]]; then
+  exit 0
+fi
 
 if [[ -n "$result" && "$mode" == "clipboard" ]]; then
   printf '%s' "$result" | copy_clipboard
