@@ -42,6 +42,7 @@ local starter = require("mini.starter")
 local items = {
   starter.sections.builtin_actions(),
   starter.sections.recent_files(5, true),
+  { name = "-",          action = "Oil",                                                             section = "Custom" },
   { name = "Scratch",    action = "ene | setlocal buftype=nofile",                                   section = "Custom" },
   { name = "Find files", action = "lua require('fzf-lua').files()",                                  section = "Custom" },
   { name = "Grep",       action = "lua require('fzf-lua').live_grep()",                              section = "Custom" },
