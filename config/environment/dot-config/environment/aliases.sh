@@ -75,6 +75,7 @@ alias gu="git pull"
 alias gb="git branch"
 alias gi="git init"
 alias gcl="git clone"
+alias gst="git stash"
 
 alias glo='git log --oneline --decorate --graph --all'
 alias glg='git log --graph --decorate --all'
