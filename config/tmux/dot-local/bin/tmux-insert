@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="clipboard"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -m|--mode)
+      mode=${2:?missing argument for $1}
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 [-m|--mode insert|clipboard] <command> [args...]" >&2
+  exit 1
+fi
+
+caller_pane=$(tmux display-message -p '#{pane_id}')
+
+copy_clipboard() {
+  if command -v wl-copy &>/dev/null; then
+    exec wl-copy
+  elif command -v xclip &>/dev/null; then
+    exec xclip -selection clipboard
+  elif command -v xsel &>/dev/null; then
+    exec xsel --clipboard --input
+  else
+    echo "No clipboard utility found" >&2
+    return 1
+  fi
+}
+
+result="$("$@")"
+
+if [[ -n "$result" && "$mode" == "clipboard" ]]; then
+  printf '%s' "$result" | copy_clipboard
+elif [[ -n "$result" ]]; then
+  tmux send-keys -t "$caller_pane" -- "$result"
+fi
+
