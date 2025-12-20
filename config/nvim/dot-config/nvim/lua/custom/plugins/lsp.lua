@@ -35,9 +35,9 @@ return {
             window = {
               winblend = 0,
               y_padding = 1,
-            }
-          }
-        }
+            },
+          },
+        },
       },
     },
 
@@ -70,6 +70,7 @@ return {
           },
         },
         lua_ls = true,
+        stylua = true,
         rust_analyzer = true,
         svelte = true,
         templ = true,
@@ -166,15 +167,16 @@ return {
       }
 
       vim.list_extend(ensure_installed, servers_to_install)
-      require("mason-tool-installer").setup { ensure_installed = ensure_installed }
+      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
       for name, cfg in pairs(servers) do
-        if cfg == true then cfg = {} end
+        if cfg == true then
+          cfg = {}
+        end
         local config = vim.tbl_deep_extend("force", { capabilities = capabilities }, cfg)
         vim.lsp.config(name, config)
         vim.lsp.enable(name)
       end
-
 
       local disable_semantic_tokens = {
         lua = true,
@@ -193,14 +195,20 @@ return {
           vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "LSP: Declaration" })
           vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0, desc = "LSP: Type definition" })
-          vim.keymap.set("n", "K", function() vim.lsp.buf.hover({ border = "rounded" }) end,
-            { buffer = 0, desc = "LSP: Hover documentation" })
+          vim.keymap.set("n", "K", function()
+            vim.lsp.buf.hover({ border = "rounded" })
+          end, { buffer = 0, desc = "LSP: Hover documentation" })
           vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, { buffer = 0, desc = "LSP: Code actions" })
           vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { buffer = 0, desc = "LSP: Rename symbol" })
-          vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help({ border = "rounded" }) end,
-            { buffer = 0, desc = "LSP: Signature help" })
-          vim.keymap.set("n", "<leader>lf", vim.diagnostic.open_float,
-            { buffer = 0, desc = "LSP: Open diagnostics float" })
+          vim.keymap.set("n", "<C-h>", function()
+            vim.lsp.buf.signature_help({ border = "rounded" })
+          end, { buffer = 0, desc = "LSP: Signature help" })
+          vim.keymap.set(
+            "n",
+            "<leader>lf",
+            vim.diagnostic.open_float,
+            { buffer = 0, desc = "LSP: Open diagnostics float" }
+          )
           vim.keymap.set("n", "[d", vim.diagnostic.get_next, { buffer = 0, desc = "Next diagnostic" })
           vim.keymap.set("n", "]d", vim.diagnostic.get_prev, { buffer = 0, desc = "Previous diagnostic" })
           vim.keymap.set("n", "<leader>lws", vim.lsp.buf.workspace_symbol, { buffer = 0, desc = "Workspace symbols" })
@@ -229,7 +237,7 @@ return {
       vim.diagnostic.config({
         -- update_in_insert = true,
         virtual_text = {
-          prefix = '●', -- Or '■', '●', '>>', '⚠️', etc.
+          prefix = "●", -- Or '■', '●', '>>', '⚠️', etc.
           spacing = 2,
         },
         signs = true,
@@ -247,9 +255,9 @@ return {
       vim.keymap.set("", "<leader>ll", function()
         local config = vim.diagnostic.config() or {}
         if config.virtual_text then
-          vim.diagnostic.config { virtual_text = false, virtual_lines = true }
+          vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
         else
-          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+          vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
         end
       end, { desc = "Toggle lsp_lines" })
     end,
