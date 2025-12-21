@@ -63,6 +63,7 @@ CLI_PKGS=(
   tmux
   tree-sitter-cli
   ttf-hack-nerd
+  vim-spell-sv
   wget
   wireguard-tools
   unzip
