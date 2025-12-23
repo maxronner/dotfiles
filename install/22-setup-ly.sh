@@ -16,6 +16,6 @@ echo "StandardOutput=null" | sudo tee -a "$LY_OVERRIDE_FILE" > /dev/null
 echo "StandardError=null" | sudo tee -a "$LY_OVERRIDE_FILE" > /dev/null
 sudo systemctl daemon-reexec
 info "Enabling ly service..."
-sudo systemctl enable --now ly.service
+sudo systemctl enable --now ly@tty2.service
 sudo systemctl disable --now getty@tty2.service
 
