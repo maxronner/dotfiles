@@ -17,10 +17,10 @@ USER_SERVICES=(
 
 HOME_DIR="${HOME:-/home/$(whoami)}"
 
-info "Enabling generic systemd system services..."
+info "Enabling required systemd system services..."
 sudo systemctl enable --now "${SYSTEM_SERVICES[@]}"
 
-info "Enabling specific user systemd services..."
+info "Enabling required user system services..."
 systemctl --user enable --now "${USER_SERVICES[@]}"
 
 info "Enabling all user services in ${HOME_DIR}/.config/systemd/user..."

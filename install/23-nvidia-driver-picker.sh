@@ -2,7 +2,7 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-NVIDIA_GPUS=($(lspci -nn | grep -i nvidia | grep -oP '\[10de:\K[0-9a-fA-F]{4}'))
+mapfile -t NVIDIA_GPUS < <(lspci -nn | grep -i nvidia | grep -oP '\[10de:\K[0-9a-fA-F]{4}')
 
 if [ ${#NVIDIA_GPUS[@]} -eq 0 ]; then
     warn "No NVIDIA GPU found, skipping driver installation."

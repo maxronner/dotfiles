@@ -19,11 +19,11 @@ all: $(DEPS)
 	@echo "make: All packages installed and dotfiles symlinked successfully!"
 
 install_cli:
-	@bash install/10-install-cli.sh
+	@bash install/10-install-terminal.sh
 	@bash install/11-install-tpm.sh
 
 install_desktop:
-	@bash install/20-install-desktop.sh
+	@bash install/20-install-graphical.sh
 	@bash install/22-setup-ly.sh
 	@bash install/23-nvidia-driver-picker.sh
 
