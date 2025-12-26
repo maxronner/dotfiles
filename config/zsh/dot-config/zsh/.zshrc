@@ -10,6 +10,10 @@ bindkey '\e[3~' delete-char # Mapping <Del> to delete
 bindkey '^B' backward-word
 bindkey '^[.' insert-last-word
 
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^[e' edit-command-line
+
 # External tools
 eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
