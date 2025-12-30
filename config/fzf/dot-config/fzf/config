@@ -17,38 +17,7 @@ else
 fi
 '
 
-if [ -f "$XDG_CONFIG_HOME/fzf/profile.sh" ]; then
-  source "$XDG_CONFIG_HOME/fzf/profile.sh"
-else
-  export FZF_COLOR_OPTS="
-      --color=fg:#908caa,bg:#232136,hl:#ea9a97
-      --color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
-      --color=border:#44415a,header:#3e8fb0,gutter:#232136
-      --color=spinner:#f6c177,info:#9ccfd8
-      --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
-fi
-
-fzf_binds=(
-  "ctrl-y:execute-silent(printf '%s' {} | wl-copy --trim-newline)"
-  "ctrl-d:preview-half-page-down"
-  "ctrl-u:preview-half-page-up"
-  "ctrl-b:preview-page-up"
-  "ctrl-f:preview-page-down"
-  "ctrl-a:preview-top"
-  "ctrl-e:preview-bottom"
-  "ctrl-k:up"
-  "ctrl-j:down"
-)
-IFS=,
-export FZF_BIND_OPTS="--bind='${fzf_binds[*]}'"
-unset IFS
-
-export FZF_HEADER_DEFAULT="(Ctrl+) J/K up/down · Y copy"
-export FZF_DEFAULT_OPTS="
-  $FZF_COLOR_OPTS
-  $FZF_BIND_OPTS
-  --header='$FZF_HEADER_DEFAULT'
-"
+export FZF_DEFAULT_OPTS="$("$XDG_CONFIG_HOME/fzf/build-opts.sh")"
 
 export FZF_HEADER_PREVIEW="$FZF_HEADER_DEFAULT | U/D ½ · B/F pg · A/E ↑↓"
 export FZF_TMUX_PANE_OPTS="center,75%"
