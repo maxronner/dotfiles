@@ -53,7 +53,7 @@
     "type": "symlink",
     "source": "fzf/profile.sh",
     "target": "~/.config/fzf/profile.sh",
-    "reload": "tmux set-environment -g FZF_DEFAULT_OPTS \"$(bash -c 'source ~/.config/fzf/profile.sh && echo -n \"$FZF_COLOR_OPTS $FZF_BIND_OPTS\"')\" ; tmux refresh-client -S"
+    "reload": "tmux set-environment -g FZF_DEFAULT_OPTS \"$($XDG_CONFIG_HOME/fzf/build-opts.sh)\" ; tmux refresh-client -S"
   },
   "mako": {
     "type": "symlink",
