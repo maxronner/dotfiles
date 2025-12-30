@@ -115,7 +115,7 @@ find_dirs() {
 
 if [[ -z $selected ]]; then
     header="$FZF_HEADER_DEFAULT | N query"
-    selected=$(find_dirs | fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt '⚡switch > ' --header "$header" --bind 'ctrl-n:print-query' --preview 'tree -C -L 3 {} | head -200')
+    selected=$(find_dirs | fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt ' switch > ' --header "$header" --bind 'ctrl-n:print-query' --preview 'tree -C -L 3 {} | head -200')
 fi
 
 if [[ -z $selected ]]; then
