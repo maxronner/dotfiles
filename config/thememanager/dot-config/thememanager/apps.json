@@ -80,6 +80,12 @@
   "tmux-plugins": {
     "type": "tmux-plugins",
     "path": "~/.config/tmux/tmux.conf"
+  },
+  "foot": {
+    "type": "symlink",
+    "source": "foot/theme.ini",
+    "target": "~/.config/foot/theme.ini",
+    "reload": "~/.config/thememanager/reload-foot.sh"
   }
 }
 
