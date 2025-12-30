@@ -109,61 +109,38 @@ if [ "$POPUP" -eq 1 ]; then
   exit 0
 fi
 
-#–– Configuration & discovery
-SESSION="$(tmux display-message -p '#S')"
-SRC_IDX="$(tmux display-message -p '#I')"
+SESSION=$(tmux display -p '#S')
+SRC_IDX=$(tmux display -p '#I')
+PANE_INFO=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{pane_title}" \
+  | awk -v s="$SESSION" -v m="$MARKER" '$0 ~ s && $0 ~ m {print; exit}')
+LAST_PANE_INDEX=$(tmux list-panes -t "$SESSION:$SRC_IDX" -F '#{pane_index}' | tail -n1)
 
-#–– Try to locate any pane titled $MARKER, anywhere in this session
-#    Output format: "session:window.pane  TITLE"
-PANE_INFO=$(
-  tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{pane_title}" \
-  | grep -F "$SESSION" \
-  | grep -F "$MARKER" || true
-)
-
-LAST_PANE_INDEX=$(tmux list-panes -t "$SESSION:$SRC_IDX" | wc -l)
-if [[ -n "$PANE_INFO" ]]; then
-  echo "Found helper pane: $PANE_INFO"
-  # –– We found our helper pane… let’s parse out its ID and owning window
-  PANE_ID="${PANE_INFO%% *}"                          # e.g. "mysession:3.2"
-  PANE_WIN="${PANE_ID#*:}"                            # drop session prefix → "3.2"
-  WIN_IDX="${PANE_WIN%%.*}"                           # take "3" out of "3.2"
+if [[ -n $PANE_INFO ]]; then
+  PANE_ID=${PANE_INFO%% *}
+  PANE_WIN=${PANE_ID#*:}
+  WIN_IDX=${PANE_WIN%%.*}
 
   if (( WIN_IDX == SRC_IDX )); then
-    if (( LAST_PANE_INDEX == 1 )); then
-      echo "It is in the source window and is the only pane → do nothing"
-      exit
-    fi
-    echo "It’s in the source window → moving it to target"
-    tmux break-pane -d -s "$PANE_ID"                   # pop it out into its own window
+    (( LAST_PANE_INDEX == 1 )) && exit
 
-    # -- Select the target window for easy access with last-window
-    LAST_INDEX=$(tmux list-windows -F "#{window_index}" | sort -n | tail -1)
+    tmux break-pane -d -s "$PANE_ID"
+
+    LAST_INDEX=$(tmux list-windows -F '#{window_index}' | tail -n1)
     tmux select-window -t :"$LAST_INDEX"
     tmux select-window -t "$SESSION:$SRC_IDX"
   else
-    echo "It’s somewhere else → moving it back to source"
     tmux move-pane -s "$PANE_ID" -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" "${POS_ARGS[@]}"
-    echo "Selecting window"
     tmux select-window -t "$SESSION:$SRC_IDX"
   fi
-
 else
-  COMMAND_STRING="${COMMAND[*]}"
-  if (( ${#COMMAND[@]} )); then
-    echo "Creating new pane with: $COMMAND_STRING"
-  else
-    echo "Creating new pane (no command)"
-  fi
+  CURRENT_DIR=$(tmux display -p -F '#{pane_current_path}')
 
-  CURRENT_DIR=$(tmux display-message -p -F "#{pane_current_path}")
-  NEW_PANE=$(
-    tmux split-window -P -F '#{pane_id}' \
-      -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
-      -c "$CURRENT_DIR" \
-      "${POS_ARGS[@]}" \
-      ${COMMAND_STRING:+ "$COMMAND_STRING"}
-  )
+  NEW_PANE=$(tmux split-window -P -F '#{pane_id}' \
+    -t "$SESSION:$SRC_IDX.$LAST_PANE_INDEX" \
+    -c "$CURRENT_DIR" \
+    "${POS_ARGS[@]}" \
+    ${COMMAND:+ "${COMMAND[*]}"} )
+
   tmux select-pane -t "$NEW_PANE" -T "$MARKER"
 fi
 
