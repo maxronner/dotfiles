@@ -104,12 +104,12 @@ find_dirs() {
     maxdepth=${depth:-${TS_MAX_DEPTH:-1}}
     [[ "$path" == *git* || "$path" == *personal/dev* ]] && ((maxdepth++))
 
-    [[ -d "$path" ]] && \
+    [[ -d "$path" || -L "$path" ]] && \
       find "$path" \
-      -mindepth 1 \
-      -maxdepth "$maxdepth" \
-      -name '.*' -prune -o \
-      -type d -print
+        -mindepth 1 \
+        -maxdepth "$maxdepth" \
+        -name '.*' -prune -o \
+        \( -type d -o -type l -xtype d \) -print
     done
   }
 
