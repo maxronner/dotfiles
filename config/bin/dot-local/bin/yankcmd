@@ -28,7 +28,10 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-caller_pane=$(tmux display-message -p '#{pane_id}')
+if [[ "$mode" != "clipboard" && -z ${TMUX-} ]]; then
+  echo "tmux is required for insert mode" >&2
+  exit 1
+fi
 
 copy_clipboard() {
   if command -v wl-copy &>/dev/null; then
@@ -56,6 +59,7 @@ fi
 if [[ -n "$result" && "$mode" == "clipboard" ]]; then
   printf '%s' "$result" | copy_clipboard
 elif [[ -n "$result" ]]; then
+  caller_pane=$(tmux display-message -p '#{pane_id}')
   tmux send-keys -t "$caller_pane" -- "$result"
 fi
 

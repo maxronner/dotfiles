@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+usage:
+  $0 [-n NAME] [--cwd DIR] [--force] -- [cmd [args...]]
+EOF
+  exit 1
+}
+
+session_name=""
+cwd="$HOME"
+force=0
+cmd=()
+
+while (($#)); do
+  case "$1" in
+    -n|--name)
+      [[ $# -ge 2 ]] || usage
+      session_name=$2
+      shift 2
+      ;;
+    --cwd)
+      [[ $# -ge 2 ]] || usage
+      cwd=$2
+      shift 2
+      ;;
+    -f|--force)
+      force=1
+      shift
+      ;;
+    --)
+      shift
+      cmd=("$@")
+      break
+      ;;
+    -*)
+      usage
+      ;;
+    *)
+      [[ -z $session_name ]] || usage
+      session_name=$1
+      shift
+      ;;
+  esac
+done
+
+if [[ -z $session_name ]]; then
+  if ((${#cmd[@]})); then
+    session_name=${cmd[0]##*/}
+  else
+    session_name=${PWD##*/}
+  fi
+fi
+
+if tmux has-session -t "$session_name" 2>/dev/null; then
+  ((force)) && tmux kill-session -t "$session_name"
+fi
+
+if ! tmux has-session -t "$session_name" 2>/dev/null; then
+  if ((${#cmd[@]})); then
+    tmux new-session -d -s "$session_name" -c "$cwd" "${cmd[@]}"
+  else
+    tmux new-session -d -s "$session_name" -c "$cwd"
+  fi
+fi
+
+if [[ -n ${TMUX-} ]]; then
+  tmux switch-client -t "$session_name"
+else
+  tmux attach-session -t "$session_name"
+fi
+
