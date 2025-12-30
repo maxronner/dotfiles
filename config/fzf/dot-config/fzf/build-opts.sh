@@ -38,9 +38,6 @@ _build_fzf_env() {
   local IFS=,
   export FZF_BIND_OPTS="--bind='${fzf_binds[*]}'"
 
-  # --- Headers & Assembly ---
-  export FZF_HEADER_DEFAULT="(Ctrl+) J/K up/down · Y copy"
-
   # Combine into the final default variable
   FZF_DEFAULT_OPTS="
     $FZF_COLOR_OPTS

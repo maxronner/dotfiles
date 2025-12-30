@@ -17,16 +17,18 @@ else
 fi
 '
 
+export FZF_HEADER_DEFAULT="(Ctrl+) J/K up/down · Y copy"
+export FZF_HEADER_PREVIEW="$FZF_HEADER_DEFAULT | U/D ½ · B/F pg · A/E ↑↓"
+
 export FZF_DEFAULT_OPTS="$("$XDG_CONFIG_HOME/fzf/build-opts.sh")"
 
-export FZF_HEADER_PREVIEW="$FZF_HEADER_DEFAULT | U/D ½ · B/F pg · A/E ↑↓"
 export FZF_TMUX_PANE_OPTS="center,75%"
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 
 export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND/--type f/}"
 export FZF_ALT_C_COMMAND="${FZF_DEFAULT_COMMAND/--type f/--type d}"
-export FZF_CTRL_T_OPTS="--preview '$_show_preview'"
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+export FZF_CTRL_T_OPTS="--preview '$_show_preview' --header '$FZF_HEADER_PREVIEW'"
+export FZF_ALT_C_OPTS="--preview --header '$FZF_HEADER_PREVIEW' 'eza --tree --color=always {} | head -200'"
 
 [ -f "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh" ] && \
     source "$XDG_CONFIG_HOME/fzf/scripts/fzf-git.sh"
