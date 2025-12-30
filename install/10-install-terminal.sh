@@ -63,6 +63,7 @@ CLI_PKGS=(
   tmux
   tree-sitter-cli
   ttf-hack-nerd
+  vim-spell-en
   vim-spell-sv
   wget
   wireguard-tools
@@ -78,5 +79,9 @@ CLI_PKGS=(
 
 info "Installing CLI/Environment packages..."
 "${PACKAGE_MANAGER[@]}" "${CLI_PKGS[@]}"
+
+info "Symlinking vim-spell-sv to $HOME/.local/share/nvim/site/spell"
+mkdir -p ~/.local/share/nvim/site/spell
+ln -s /usr/share/vim/vimfiles/spell/* "$HOME/.local/share/nvim/site/spell"
 
 bash "$(dirname "${BASH_SOURCE[0]}")/11-install-tpm.sh"
