@@ -10,7 +10,6 @@ bindkey '\e[3~' delete-char # Mapping <Del> to delete
 bindkey '^B' backward-word
 bindkey '^[.' insert-last-word
 bindkey '^S' end-of-line
-bindkey '^W' vi-forward-blank-word
 bindkey '^E' vi-forward-blank-word-end
 
 autoload -Uz edit-command-line
