@@ -4,6 +4,7 @@ selected=$(
   tmux list-sessions -F '#{session_activity}:#{session_name}: #{session_windows} windows #{?session_attached,(attached)}' |
   sort -n |
   sed 's/^[^:]*://' |
+  grep -v '^__' |
   FZF_TMUX_PANE_OPTS="center" fzf --exit-0 --multi --tmux --prompt=" kill > "
 )
 if [ -z "$selected" ]; then

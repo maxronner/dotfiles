@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+SESSION="__mail"
+CMD="neomutt"
+
+tmux has-session -t "$SESSION" 2>/dev/null || {
+  tmux new-session -d -s "$SESSION" "$CMD"
+  tmux set-option -t "$SESSION" status off
+}
+
+CURRENT="$(tmux display-message -p '#S' 2>/dev/null)"
+if [ "$CURRENT" = "$SESSION" ]; then
+  tmux detach-client
+else
+  tmux display-popup -w 80% -h 80% -E "exec tmux attach -t $SESSION"
+fi
+

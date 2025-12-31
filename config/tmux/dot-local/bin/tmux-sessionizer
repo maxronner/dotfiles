@@ -82,11 +82,15 @@ find_dirs() {
   # list TMUX sessions
   if [[ -n "${TMUX}" ]]; then
     current_session=$(tmux display-message -p '#S')
-    tmux list-sessions -F "#{session_name}" 2>/dev/null | grep -vFx "$current_session" 2>/dev/null |
-      awk 'BEGIN{i=1} {printf "%d: %s\n", i++, $0}'
+    tmux list-sessions -F "#{session_name}" 2>/dev/null |
+      awk -v cur="$current_session" '
+        !/^__/ && $0 != cur { printf "%d: %s\n", ++i, $0 }
+      '
   else
     tmux list-sessions -F "#{session_name}" 2>/dev/null |
-      awk 'BEGIN{i=1} {printf "%d: %s\n", i++, $0}'
+      awk '
+        !/^__/ { printf "%d: %s\n", ++i, $0 }
+      '
   fi
   # note: TS_SEARCH_PATHS is an array of paths to search for directories
   # if the path ends with :number, it will search for directories with a max depth of number ;)
