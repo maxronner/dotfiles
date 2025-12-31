@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
-export FZF_TMUX_PANE_OPTS="center"
-sessions=$(tmux ls | fzf --exit-0 --multi --tmux --prompt=" kill > ")
-if [ -z "$sessions" ]; then
-  exit $?
+selected=$(
+  tmux list-sessions -F '#{session_activity}:#{session_name}: #{session_windows} windows #{?session_attached,(attached)}' |
+  sort -n |
+  sed 's/^[^:]*://' |
+  FZF_TMUX_PANE_OPTS="center" fzf --exit-0 --multi --tmux --prompt=" kill > "
+)
+if [ -z "$selected" ]; then
+  exit 0
 fi
 
-echo "$sessions" | while IFS= read -r i; do
-  session_name="${i%%:*}"  # remove everything after the first colon
+echo "$selected" | while IFS= read -r i; do
+  session_name="${i%%:*}"
   if [ -n "$session_name" ]; then
-    current_session=$(tmux display-message -p '#S')
-    if [ "$session_name" = "$current_session" ]; then
+    if [[ "$session_name" == "$(tmux display-message -p '#S')" ]]; then
       tmux switch-client -l || tmux switch-client -p
     fi
     tmux kill-session -t "$session_name"
