@@ -9,6 +9,10 @@ fi
 echo "$sessions" | while IFS= read -r i; do
   session_name="${i%%:*}"  # remove everything after the first colon
   if [ -n "$session_name" ]; then
+    current_session=$(tmux display-message -p '#S')
+    if [ "$session_name" = "$current_session" ]; then
+      tmux switch-client -l || tmux switch-client -p
+    fi
     tmux kill-session -t "$session_name"
   fi
 done
