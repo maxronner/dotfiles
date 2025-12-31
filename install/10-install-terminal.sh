@@ -68,6 +68,7 @@ CLI_PKGS=(
   wget
   wireguard-tools
   unzip
+  yazi
   zig
   zk
   zoxide
