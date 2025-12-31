@@ -139,9 +139,8 @@ if ! has_session "$selected_name"; then
       -n "$CMD" \
       -c "$selected" \
       "bash -c '$CMD; \
-        if [ \"\$(tmux display-message -p \"#{session_panes}\")\" -eq 1 ]; then \
-          tmux switch-client -l; \
-        fi'"
+        panes=\$(tmux list-panes -t \"$selected_name\" | wc -l); \
+        [ \"\$panes\" -eq 1 ] && tmux switch-client -l'"
   else
     tmux new-session -ds "$selected_name" -c "$selected"
   fi
