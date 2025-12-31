@@ -1,0 +1,26 @@
+[Unit]
+Description=Rclone mount for %i
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+LoadCredential=rclone_pass:-
+Environment=RCLONE_CONFIG_PASS=@%d/rclone_pass
+StateDirectory=rclone-%i
+Type=notify
+ExecStart=/usr/bin/rclone mount %i: %h/.local/state/rclone-%i \
+  --config=%h/.config/rclone/rclone.conf \
+  --vfs-cache-mode=full \
+  --vfs-cache-max-age=72h \
+  --vfs-cache-max-size=20G \
+  --dir-cache-time=1h \
+  --poll-interval=15s \
+  --umask=022 \
+  --log-level=INFO
+ExecStop=/bin/fusermount -u %h/.local/state/rclone-%i
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+

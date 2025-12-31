@@ -50,6 +50,7 @@ CLI_PKGS=(
   passff-host
   pipewire-pulse
   pulsemixer
+  rclone
   ripgrep
   rsync
   starship
