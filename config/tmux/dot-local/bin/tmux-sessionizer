@@ -135,7 +135,13 @@ fi
 
 if ! has_session "$selected_name"; then
   if [[ -n "$CMD" ]]; then
-    tmux new-session -ds "$selected_name" -n "$CMD" -c "$selected" "bash -c '$CMD; tmux switch-client -l'"
+    tmux new-session -ds "$selected_name" \
+      -n "$CMD" \
+      -c "$selected" \
+      "bash -c '$CMD; \
+        if [ \"\$(tmux display-message -p \"#{session_panes}\")\" -eq 1 ]; then \
+          tmux switch-client -l; \
+        fi'"
   else
     tmux new-session -ds "$selected_name" -c "$selected"
   fi
