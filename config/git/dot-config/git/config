@@ -12,8 +12,11 @@
     addEmptyPathspec = false
     statusHints = false
 
+[url "git@codeberg.org:maxronner/"]
+    insteadOf = "cbm:"
+
 [url "git@github.com:maxronner/"]
-    insteadOf = "mr:"
+    insteadOf = "ghm:"
 
 [url "git@github.com:"]
     insteadOf = "gh:"
