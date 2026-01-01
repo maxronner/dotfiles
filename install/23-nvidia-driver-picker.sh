@@ -31,16 +31,20 @@ get_generation() {
 GEN=$(get_generation "$DEVICE_ID")
 
 case "$GEN" in
-    turing|ampere|ada)
+    turing|ampere)
         "${PACKAGE_MANAGER[@]}" "nvidia-open"
+        ;;
+    ada)
+        error "NVIDIA GPU detected (device ID: $DEVICE_ID). No driver installed by default. Manual intervention required."
+        exit 1
         ;;
     unknown)
         error "Unknown NVIDIA GPU device ID: $DEVICE_ID. No driver installed."
-        exit 0
+        exit 1
         ;;
     *)
         error "Older NVIDIA GPU detected (device ID: $DEVICE_ID). No driver installed by default."
-        exit 0
+        exit 1
         ;;
 esac
 
