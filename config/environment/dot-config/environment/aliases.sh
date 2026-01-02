@@ -17,7 +17,7 @@ fi
 
 if command -v eza &>/dev/null; then
     alias lt="eza --tree --level=5"
-    alias ll="eza --long --all --icons --git --mounts --smart-group"
+    alias ll="eza --long --all --icons --git --mounts --group"
     alias ls="eza --no-permissions --no-user --no-time --no-filesize --icons=always"
     alias l="eza --no-permissions --no-user --no-time --no-filesize --icons=always --long"
 fi
