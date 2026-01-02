@@ -15,20 +15,20 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-if command -v eza &>/dev/null; then
+if command -v eza > /dev/null 2>&1; then
     alias lt="eza --tree --level=5"
     alias ll="eza --long --all --icons --git --mounts --group"
     alias ls="eza --no-permissions --no-user --no-time --no-filesize --icons=always"
     alias l="eza --no-permissions --no-user --no-time --no-filesize --icons=always --long"
 fi
 
-if command -v nvim &>/dev/null; then
+if command -v nvim > /dev/null 2>&1; then
     alias vim="nvim"
     alias nano="nvim"
     alias svim="sudo nvim"
 fi
 
-if command -v bat &>/dev/null; then
+if command -v bat > /dev/null 2>&1; then
     alias cat="bat"
 fi
 
