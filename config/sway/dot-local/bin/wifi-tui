@@ -3,55 +3,42 @@
 # Strict error handling
 set -euo pipefail
 
+# Force English locale to ensure 'nmcli' keywords (wifi, connected, disabled) match standard strings.
+export LC_ALL=C
+
 # --- Configuration ---
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m'
 
-# --- Dependency Check ---
-for cmd in nmcli fzf awk; do
+for cmd in nmcli fzf awk sed grep; do
     if ! command -v "$cmd" &> /dev/null; then
         echo -e "${RED}Error: Required command '$cmd' is not installed.${RESET}"
         exit 1
     fi
 done
 
-# --- 1. Find WiFi Interface ---
-# Get the first device matching 'wifi' type
 IFACE=$(nmcli --get-values DEVICE,TYPE dev status | awk -F: '$2=="wifi"{print $1; exit}')
-
 if [[ -z "$IFACE" ]]; then
     echo -e "${RED}Error: No WiFi interface found.${RESET}"
     exit 1
 fi
 
-# Ensure WiFi radio is on
 if nmcli radio wifi | grep -q "disabled"; then
     echo -e "${YELLOW}WiFi is disabled. Enabling...${RESET}"
     nmcli radio wifi on
-    # Give it a moment to wake up
     sleep 2
 fi
 
-# --- 2. Scan and Select ---
-# We use -f (fields) with tabular output for better readability in fzf.
-# Columns: IN-USE (shows *), BSSID (unique ID), SSID, BARS (signal), SECURITY
 echo -e "${YELLOW}Scanning networks on $IFACE...${RESET}"
 
-# Get the list. We capture it in a variable to handle empty results.
-# We use '--color=yes' to force colors for fzf, even inside a script.
 WIFI_LIST=$(nmcli --color=yes -f IN-USE,BSSID,SSID,BARS,SECURITY dev wifi list ifname "$IFACE")
-
 if [[ -z "$WIFI_LIST" ]]; then
     echo -e "${RED}No WiFi networks found.${RESET}"
     exit 0
 fi
 
-# Pass to fzf.
-# --header-lines=1 keeps the column headers fixed.
-# --ansi interprets the colors from nmcli.
 SELECTED_LINE=$(echo "$WIFI_LIST" | fzf --ansi \
     --header-lines=1 \
     --reverse \
@@ -61,50 +48,52 @@ SELECTED_LINE=$(echo "$WIFI_LIST" | fzf --ansi \
 
 [[ -z "$SELECTED_LINE" ]] && exit 0
 
-# --- 3. Parse Selection ---
-# We need to robustly extract the BSSID and SSID.
-# The lines look like: "*  AA:BB:CC:DD:EE:FF  MyNetwork  ____  WPA2"
-# or                 "   AA:BB:CC:DD:EE:FF  MyNetwork  ____  WPA2"
+# Strip ANSI codes for processing
+CLEAN_LINE=$(sed 's/\x1b\[[0-9;]*m//g' <<< "$SELECTED_LINE")
 
-# Remove the color codes for parsing text
-CLEAN_LINE=$(echo "$SELECTED_LINE" | sed 's/\x1b\[[0-9;]*m//g')
+# 2. Robust Extraction: Use Regex to find the BSSID (MAC Address).
+# This ignores spaces in SSIDs or column misalignment.
+# Pattern: Two hex digits followed by colon, repeated 5 times, ending with two hex digits.
+BSSID=$(echo "$CLEAN_LINE" | grep -oE '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' | head -n1)
 
-# Extract BSSID (MAC Address). It is always the first "word" that looks like a MAC.
-# If "IN-USE" is present (the asterisk), BSSID is field 2. If not, it's field 1.
-if [[ "$CLEAN_LINE" =~ ^\* ]]; then
-    BSSID=$(echo "$CLEAN_LINE" | awk '{print $2}')
-else
-    BSSID=$(echo "$CLEAN_LINE" | awk '{print $1}')
+if [[ -z "$BSSID" ]]; then
+    echo -e "${RED}Error: Could not parse BSSID from selection.${RESET}"
+    exit 1
 fi
 
-# Get the exact SSID associated with this BSSID from nmcli (safest method)
-# -g gets raw value, avoids parsing issues with spaces/colons in SSID names
+if [[ "$CLEAN_LINE" =~ ^[[:space:]]*\* ]]; then
+    ALREADY_CONNECTED=true
+else
+    ALREADY_CONNECTED=false
+fi
+
+# Look up the specific SSID using the BSSID we just extracted safely
 SSID=$(nmcli -g SSID dev wifi list bssid "$BSSID" | head -n1)
 
-# Check if we are already connected
-CURRENT_CON=$(nmcli -t -f UUID,Active connection show --active | grep ":yes" || true)
-if [[ "$CLEAN_LINE" =~ ^\* ]]; then
+# 3. Handle Hidden Networks (Empty SSID)
+if [[ -z "$SSID" ]]; then
+    echo -e "${YELLOW}Hidden network detected.${RESET}"
+    read -rp "Enter SSID manually: " SSID
+fi
+
+if [[ "$ALREADY_CONNECTED" == "true" ]]; then
     echo -e "${GREEN}Already connected to '$SSID'.${RESET}"
     exit 0
 fi
 
-# --- 4. Connect ---
 echo -e "Connecting to ${GREEN}$SSID${RESET}..."
 
-# Try connecting. If it fails (likely due to missing password), retry with --ask.
-# We turn off immediate error exit (set +e) for this block to handle the potential failure gracefully.
+# Try connecting non-interactively (uses saved secrets if they exist)
 set +e
-OUTPUT=$(nmcli dev wifi connect "$SSID" ifname "$IFACE" 2>&1)
+nmcli dev wifi connect "$SSID" ifname "$IFACE" >/dev/null 2>&1
 STATUS=$?
 set -e
 
 if [[ $STATUS -eq 0 ]]; then
     echo -e "${GREEN}Success! Connected to $SSID.${RESET}"
 else
-    # If standard connect failed, it might need a password.
-    # Check if the error suggests a missing secret or just retry with prompt.
-    echo -e "${YELLOW}Connection failed or password required. Retrying with prompt...${RESET}"
-
+    echo -e "${YELLOW}Connection info required or failed. Retrying with prompt...${RESET}"
+    # Note: --ask requires a terminal. It works here, but would fail in a background script.
     if nmcli dev wifi connect "$SSID" ifname "$IFACE" --ask; then
         echo -e "${GREEN}Success! Connected to $SSID.${RESET}"
     else
