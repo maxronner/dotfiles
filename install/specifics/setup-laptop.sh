@@ -3,19 +3,19 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../common.sh"
 
 LAPTOP_PKGS=(
-  dhcpcd
-  kmonad
-  iwd
   bluez
   bluez-utils
+  iwd
+  kmonad
+  networkmanager
   sway
 )
 
 info "Installing laptop specific packages..."
 "${AUR_HELPER[@]}" "${LAPTOP_PKGS[@]}"
 
-info "Setting up dhcpcd..."
-sudo systemctl enable --now dhcpcd.service
+info "Setting up networking"
+sudo systemctl enable --now NetworkManager.service
 
 info "Allow uinput access for kmonad"
 sudo tee /etc/udev/rules.d/90-uinput.rules <<'EOF'
