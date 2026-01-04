@@ -15,6 +15,7 @@ set $right l
 
 set $term ghostty
 set $tmux $term --title=terminal -e zsh -lic tmux-launcher
+set $home_app ^chrome-home\.ronner\.dev
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -70,6 +71,7 @@ for_window [app_id="firefox"] inhibit_idle fullscreen
 for_window [app_id="chromium"] inhibit_idle fullscreen
 for_window [class="Godot"] floating enable
 for_window [title="^btop-float$"] floating enable, resize set 1000 600
+for_window [app_id="$home_app"] floating enable, resize set 1200 800
 assign [title="^terminal$"] workspace 1
 assign [class="steam"] workspace 4
 assign [app_id="gamemoderun"] workspace 4
@@ -131,9 +133,10 @@ input "type:touchpad" {
 
     bindsym $mod+d exec $menu
     bindsym $mod+u exec $browser
+    bindsym $mod+Shift+d exec ~/.config/sway/scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
-    bindsym $mod+Escape exec ~/.config/sway/scripts/btop-toggle.sh
+    bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
     bindsym $mod+Shift+w exec $lock
