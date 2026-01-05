@@ -63,16 +63,27 @@ fzf-rg() {
   }
 
 treecat() {
-  DIR="${1:-.}"
-  find "$DIR" \
-    -path "$DIR/.git" -prune -o \
-    -type f -print0 \
-  | sort -z \
-  | while IFS= read -r -d '' file; do
-      printf '===== %s =====\n' "$file"
-      \cat -- "$file"
-      printf '\n\n'
-    done
+  local dir="${1:-.}"
+  local find_cmd
+
+  if command -v fd >/dev/null 2>&1; then
+    find_cmd=(fd -t f -0 -E .git --color=never . "$dir")
+  else
+    find_cmd=(find "$dir" -path "$dir/.git" -prune -o -type f -print0)
+  fi
+
+  "${find_cmd[@]}" |
+    sort -z |
+    xargs -0 awk '
+      FNR==1 {
+        # Print separation between files, but not before the very first file of the batch
+        if (NR > 1) print "\n\n"
+        printf "===== %s =====\n", FILENAME
+      }
+      { print }
+      # Ensure the last file in the batch gets trailing newlines
+      END { print "\n\n" }
+    '
 }
 
 treeclip() {
