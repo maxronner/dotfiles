@@ -64,13 +64,15 @@ fzf-rg() {
 
 treecat() {
   DIR="${1:-.}"
-  find "$DIR" -type f -print0 \
-    | sort -z \
-    | while IFS= read -r -d '' file; do
-        printf '===== %s =====\n' "$file"
-        \cat -- "$file"
-        printf '\n\n'
-      done
+  find "$DIR" \
+    -path "$DIR/.git" -prune -o \
+    -type f -print0 \
+  | sort -z \
+  | while IFS= read -r -d '' file; do
+      printf '===== %s =====\n' "$file"
+      \cat -- "$file"
+      printf '\n\n'
+    done
 }
 
 treeclip() {
