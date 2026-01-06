@@ -123,7 +123,7 @@ if [[ -n $PANE_INFO ]]; then
   if (( WIN_IDX == SRC_IDX )); then
     (( LAST_PANE_INDEX == 1 )) && exit
 
-    tmux break-pane -d -s "$PANE_ID"
+    tmux break-pane -d -s "$PANE_ID" -n "$MARKER"
 
     LAST_INDEX=$(tmux list-windows -F '#{window_index}' | tail -n1)
     tmux select-window -t :"$LAST_INDEX"
