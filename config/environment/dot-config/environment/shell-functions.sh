@@ -8,7 +8,7 @@ v() {
       mkdir -p "$NVIM_SOCKET_DIR"
       NVIM_LISTEN_ADDR="$NVIM_SOCKET_DIR/nvim-$TMUX_SESSION.sock"
       if [ -S "$NVIM_LISTEN_ADDR" ]; then
-        echo "Error: nvim socket already exists at $NVIM_LISTEN_ADDR"
+        printf '\e[1;31m%s\e[0m: %s %s\n' 'v' 'nvim socket already exists at' "$NVIM_LISTEN_ADDR" >&2
         return 1
       fi
       nvim --listen "$NVIM_LISTEN_ADDR" "$@"
