@@ -1,23 +1,50 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-file="$HOME/.local/share/emoji.txt"
-query=""
+FILE="${EMOJI_FILE:-$HOME/.local/share/emoji.txt}"
+QUERY=""
 
-# Parse options
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [OPTIONS] [QUERY]
+
+Select emojis using fzf.
+
+Options:
+  -f, --file <path>   Specify path to emoji file (default: $FILE)
+  -h, --help          Show this help message
+
+Examples:
+  $(basename "$0") smile
+  $(basename "$0") --file ./custom-emojis.txt fire
+EOF
+}
+
+die() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+if ! command -v fzf &> /dev/null; then
+    die "fzf is required but not installed."
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -f|--file)
-      file="$2"
+      FILE="$2"
       shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
       ;;
     --)
       shift
       break
       ;;
     -*)
-      echo "Unknown option: $1" >&2
-      exit 1
+      die "Unknown option: $1"
       ;;
     *)
       break
@@ -25,24 +52,27 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Remaining arguments form the query
-query="$*"
+QUERY="$*"
 
-# Run fzf in a subshell, capture output and exit code explicitly
+if [[ ! -f "$FILE" ]]; then
+    die "Emoji file not found at: $FILE"
+fi
+
+FZF_OPTS=(--multi --select-1 --exit-0 --tmux)
+
 fzf_output=""
-fzf_exit=0
-if ! fzf_output=$(<"$file" fzf --tmux --query="$query" --multi --select-1 --exit-0); then
-  fzf_exit=$?
+set +e # Temporarily disable exit-on-error to handle fzf exit codes manually
+fzf_output=$(<"$FILE" fzf "${FZF_OPTS[@]}" --query="$QUERY")
+fzf_exit=$?
+set -e
+
+case $fzf_exit in
+    0)   ;;
+    1)   exit 0 ;;
+    130) exit 0 ;;
+    *)   die "fzf failed with exit code $fzf_exit" ;;
+esac
+
+if [[ -n "$fzf_output" ]]; then
+    echo "$fzf_output" | awk '{print $1}' | tr -d '\n'
 fi
-
-# Handle Ctrl+C or other non-zero exits
-if [[ $fzf_exit -eq 130 ]]; then
-  exit 130
-elif [[ $fzf_exit -ne 0 ]]; then
-  exit "$fzf_exit"
-fi
-
-# Process and emit selected emoji
-selected_emoji=$(printf '%s\n' "$fzf_output" | awk '{print $1}' | paste -sd '' -)
-[[ -n "$selected_emoji" ]] && echo "$selected_emoji"
-
