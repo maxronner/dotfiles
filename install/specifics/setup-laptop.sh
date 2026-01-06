@@ -5,7 +5,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/../common.sh"
 LAPTOP_PKGS=(
   bluez
   bluez-utils
-  iwd
   kmonad
   networkmanager
   sway
