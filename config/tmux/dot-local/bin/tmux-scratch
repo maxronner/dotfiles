@@ -85,7 +85,7 @@ fi
 #–– Normalize POS into the tmux args you want
 case "$POS" in
   bottom|b)
-    POS_ARGS=(-f -l 16)
+    POS_ARGS=(-f -l 12)
     ;;
   right|r|"" )
     POS_ARGS=(-fh -l 80)
