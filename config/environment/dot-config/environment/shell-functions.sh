@@ -70,7 +70,22 @@ fzf-rg() {
     --preview 'bat --color=always {1} --highlight-line {2}' \
     --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
     --bind 'enter:become(nvim {1} +{2})'
-  }
+}
+
+_get_clip() {
+  CLIP=()
+  if command -v wl-copy >/dev/null 2>&1; then
+    CLIP=(wl-copy)
+  elif command -v xclip >/dev/null 2>&1; then
+    CLIP=(xclip -selection clipboard)
+  elif command -v pbcopy >/dev/null 2>&1; then
+    CLIP=(pbcopy)
+  else
+    echo "No clipboard tool found (wl-copy, xclip, pbcopy)" >&2
+    return 1
+  fi
+  printf '%s ' "${CLIP[@]}"
+}
 
 nicecat() {
     awk '
@@ -84,18 +99,10 @@ nicecat() {
 }
 
 niceclip() {
-  CLIP=()
-  if command -v wl-copy >/dev/null 2>&1; then
-    CLIP=(wl-copy)
-  elif command -v xclip >/dev/null 2>&1; then
-    CLIP=(xclip -selection clipboard)
-  elif command -v pbcopy >/dev/null 2>&1; then
-    CLIP=(pbcopy)
-  else
-    echo "No clipboard tool found (wl-copy, xclip, pbcopy)" >&2
-    exit 1
+  if ! cmd_script="$(_get_clip)"; then
+    return 1
   fi
-  nicecat "$@" | "${CLIP[@]}"
+  nicecat "$@" | eval "$cmd_script"
 }
 
 treecat() {
@@ -112,19 +119,9 @@ treecat() {
   nicecat "${files[@]}"
 }
 
-
 treeclip() {
-  DIR="${1:-.}"
-  CLIP=()
-  if command -v wl-copy >/dev/null 2>&1; then
-    CLIP=(wl-copy)
-  elif command -v xclip >/dev/null 2>&1; then
-    CLIP=(xclip -selection clipboard)
-  elif command -v pbcopy >/dev/null 2>&1; then
-    CLIP=(pbcopy)
-  else
-    echo "No clipboard tool found (wl-copy, xclip, pbcopy)" >&2
-    exit 1
+  if ! cmd_script="$(_get_clip)"; then
+    return 1
   fi
-  treecat "$DIR" | "${CLIP[@]}"
+  treecat "${1:-.}" | eval "$cmd_script"
 }
