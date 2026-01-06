@@ -50,6 +50,7 @@ get() {
   yay -Slq | fzf -q "$1" -m --preview 'yay -Si {1}'| xargs -ro yay -S
 
 }
+
 del() {
   yay -Qq | fzf -q "$1" -m --preview 'yay -Qi {1}' | xargs -ro yay -Rns
 }
@@ -58,7 +59,6 @@ fzf-nvim() {
   fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt='nvim> ' --multi --bind 'enter:become(nvim {+})'
 }
 
-# Ripgrep current directory with fzf
 fzf-rg() {
   RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
   INITIAL_QUERY="${*:-}"
@@ -81,6 +81,21 @@ nicecat() {
     { print }
     END { print "\n\n" }
   ' "$@"
+}
+
+niceclip() {
+  CLIP=()
+  if command -v wl-copy >/dev/null 2>&1; then
+    CLIP=(wl-copy)
+  elif command -v xclip >/dev/null 2>&1; then
+    CLIP=(xclip -selection clipboard)
+  elif command -v pbcopy >/dev/null 2>&1; then
+    CLIP=(pbcopy)
+  else
+    echo "No clipboard tool found (wl-copy, xclip, pbcopy)" >&2
+    exit 1
+  fi
+  nicecat "$@" | "${CLIP[@]}"
 }
 
 treecat() {
