@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dir="${1:-.}"
+if command -v fd >/dev/null 2>&1; then
+    find_cmd=(fd -t f -0 -E .git --color=never . "$dir")
+else
+    find_cmd=(find "$dir" -path "$dir/.git" -prune -o -type f -print0)
+fi
+
+mapfile -d '' files < <("${find_cmd[@]}" | sort -z)
+nicecat "${files[@]}"

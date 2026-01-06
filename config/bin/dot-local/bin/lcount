@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (( $# > 0 )) && { [ "$1" = '-h' ] || [ "$1" = '--help' ]; }; then
+    echo "lcount [-h|--help] [<path>]"
+    echo "Count lines of code in files in <path> or current directory"
+    return 0
+fi
+cmd=()
+if command -v fd >/dev/null 2>&1; then
+    cmd=(fd -t f -E .git . "${1:-.}" -X wc -l)
+else
+    cmd=(find "${1:-.}" \
+        -type f \
+        -not -path '*/.git/*' \
+        -exec wc -l {} +)
+fi
+"${cmd[@]}" | sort -n | column -t

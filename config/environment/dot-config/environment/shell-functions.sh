@@ -20,24 +20,6 @@ v() {
   fi
 }
 
-lcount() {
-  if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
-    echo "lcount [-h|--help] [<path>]"
-    echo "Count lines of code in files in <path> or current directory"
-    return 0
-  fi
-  cmd=()
-  if command -v fd >/dev/null 2>&1; then
-    cmd=(fd -t f -E .git . "${1:-.}" -X wc -l)
-  else
-    cmd=(find "${1:-.}" \
-      -type f \
-      -not -path '*/.git/*' \
-      -exec wc -l {} +)
-  fi
-  "${cmd[@]}" | sort -n | column -t
-}
-
 fman() {
   man -k . | \
     fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' |
@@ -87,36 +69,11 @@ _getclip() {
   printf '%s ' "${CLIP[@]}"
 }
 
-nicecat() {
-    awk '
-    FNR==1 {
-      if (NR > 1) print "\n\n"
-      printf "===== %s =====\n", FILENAME
-    }
-    { print }
-    END { print "\n\n" }
-  ' "$@"
-}
-
 niceclip() {
   if ! cmd_script="$(_getclip)"; then
     return 1
   fi
   nicecat "$@" | eval "$cmd_script"
-}
-
-treecat() {
-  local dir="${1:-.}"
-  local find_cmd
-
-  if command -v fd >/dev/null 2>&1; then
-    find_cmd=(fd -t f -0 -E .git --color=never . "$dir")
-  else
-    find_cmd=(find "$dir" -path "$dir/.git" -prune -o -type f -print0)
-  fi
-
-  mapfile -d '' files < <("${find_cmd[@]}" | sort -z)
-  nicecat "${files[@]}"
 }
 
 treeclip() {
