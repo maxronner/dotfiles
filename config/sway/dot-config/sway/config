@@ -43,9 +43,11 @@ smart_gaps on
 smart_borders on
 
 # Application rules
-for_window [app_id="pavucontrol"] floating enable
 for_window [app_id="gamemoderun"] inhibit_idle open
 for_window [app_id="gamescope"] inhibit_idle open
+for_window [class="^steam_app_.*"] fullscreen enable
+for_window [class="^steam_app_.*"] inhibit_idle fullscreen
+for_window [app_id="pavucontrol"] floating enable
 for_window [app_id="zen"] inhibit_idle fullscreen
 for_window [app_id="firefox"] inhibit_idle fullscreen
 for_window [app_id="chromium"] inhibit_idle fullscreen
