@@ -71,6 +71,7 @@ for_window [app_id="firefox"] inhibit_idle fullscreen
 for_window [app_id="chromium"] inhibit_idle fullscreen
 for_window [class="Godot"] floating enable
 for_window [title="^btop-float$"] floating enable, resize set 1000 600
+for_window [title="^pass-float$"] floating enable, resize set 900 500
 for_window [app_id="$home_app"] floating enable, resize set 1500 900
 assign [title="^terminal$"] workspace 1
 assign [class="steam"] workspace 4
@@ -137,6 +138,7 @@ input "type:touchpad" {
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
     bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
+    bindsym $mod+i exec foot --title=pass-float -e zsh -ic 'pass-launcher --linger'
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
     bindsym $mod+Shift+w exec $lock

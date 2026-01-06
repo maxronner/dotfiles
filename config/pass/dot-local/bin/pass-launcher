@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+
+linger=0
+
+usage() {
+  cat <<EOF
+Usage: ${0##*/} [OPTIONS]
+
+Options:
+  -l, --linger   Wait for Enter before exiting
+  -h, --help     Show this help and exit
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -l|--linger) linger=1 ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; break ;;
+    *) printf "Unknown option: %s\n" "$1" >&2; usage >&2; exit 1 ;;
+  esac
+  shift
+done
+
+select_mode_fzf() {
+  printf "Passwords\nOTP\n" | fzf --prompt=" mode > "
+}
+
+password_mode() {
+  output=$(pass fzf)
+  status=$?
+
+  [ "$status" -ne 0 ] && return "$status"
+
+  printf '%s\n' "$output"
+  if printf '%s\n' "$output" | grep -q '^otpauth://totp/otp-secret'; then
+    printf "\nOTP secret detected. Fetch OTP? [y/N] "
+    read -r ans
+
+    case "$ans" in
+      y|Y)
+        entry=$(printf '%s\n' "$output" |
+          sed -n 's/^Copied \(.*\) to clipboard.*/\1/p')
+
+        [ -n "$entry" ] && pass otp -c "$entry"
+        ;;
+    esac
+  fi
+}
+
+if command -v fzf >/dev/null 2>&1; then
+  mode=$(select_mode_fzf)
+else
+  printf "Select mode:\n1) Passwords\n2) OTP\n> "
+  read -r choice
+  case "$choice" in
+    1) mode="Passwords" ;;
+    2) mode="OTP" ;;
+    *) printf "Invalid selection\n" >&2; exit 1 ;;
+  esac
+fi
+
+case "$mode" in
+  Passwords)
+    password_mode
+    status=$?
+    ;;
+  OTP)
+    pass fzf-otp -c
+    status=$?
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+
+if [ "$status" -eq 0 ] && [ "$linger" -eq 1 ]; then
+  printf "Press Enter to exit..."
+  read -r _
+fi
+
+exit "$status"
+
