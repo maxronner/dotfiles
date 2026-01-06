@@ -72,7 +72,7 @@ fzf-rg() {
     --bind 'enter:become(nvim {1} +{2})'
 }
 
-_get_clip() {
+_getclip() {
   CLIP=()
   if command -v wl-copy >/dev/null 2>&1; then
     CLIP=(wl-copy)
@@ -99,7 +99,7 @@ nicecat() {
 }
 
 niceclip() {
-  if ! cmd_script="$(_get_clip)"; then
+  if ! cmd_script="$(_getclip)"; then
     return 1
   fi
   nicecat "$@" | eval "$cmd_script"
@@ -120,7 +120,7 @@ treecat() {
 }
 
 treeclip() {
-  if ! cmd_script="$(_get_clip)"; then
+  if ! cmd_script="$(_getclip)"; then
     return 1
   fi
   treecat "${1:-.}" | eval "$cmd_script"
