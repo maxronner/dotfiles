@@ -33,7 +33,7 @@ password_mode() {
   [ "$status" -ne 0 ] && return "$status"
 
   printf '%s\n' "$output"
-  if printf '%s\n' "$output" | grep -q '^otpauth://totp/otp-secret'; then
+  if printf '%s\n' "$output" | grep -q '^otpauth://totp/'; then
     printf "\nOTP secret detected. Fetch OTP? [y/N] "
     read -n 1 -r ans
     printf '\n'
