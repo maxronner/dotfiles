@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 
 v() {
+  local session_name=""
   if command -v tmux >/dev/null 2>&1; then
-    TMUX_SESSION=$(tmux display-message -p '#S')
-    if [ -n "$TMUX_SESSION" ]; then
-      NVIM_SOCKET_DIR="${XDG_RUNTIME_DIR:-/tmp}/nvim-sockets"
-      mkdir -p "$NVIM_SOCKET_DIR"
-      NVIM_LISTEN_ADDR="$NVIM_SOCKET_DIR/nvim-$TMUX_SESSION.sock"
-      if [ -S "$NVIM_LISTEN_ADDR" ]; then
-        printf '\e[1;31m%s\e[0m: %s %s\n' 'v' 'nvim socket already exists at' "$NVIM_LISTEN_ADDR" >&2
-        return 1
-      fi
-      nvim --listen "$NVIM_LISTEN_ADDR" "$@"
-    else
-      nvim "$@"
-    fi
-  else
-    nvim "$@"
+    session_name=$(tmux display-message -p '#S' 2>/dev/null)
   fi
+
+  if [ -z "$session_name" ]; then
+    nvim "$@"
+    return $?
+  fi
+
+  local nvim_socket_dir="${XDG_RUNTIME_DIR:-/tmp}/nvim-sockets"
+  mkdir -p "$nvim_socket_dir"
+  local nvim_listen_addr="$nvim_socket_dir/nvim-$session_name.sock"
+  if [ -S "$nvim_listen_addr" ]; then
+    printf '\e[1;31m%s\e[0m: %s %s\n' 'v' 'nvim socket already exists at' "$nvim_listen_addr" >&2
+    return 1
+  fi
+  nvim --listen "$nvim_listen_addr" "$@"
+  return $?
 }
 
 fman() {
