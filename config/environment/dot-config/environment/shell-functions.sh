@@ -21,15 +21,21 @@ v() {
 }
 
 lcount() {
+  if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
+    echo "lcount [-h|--help] [<path>]"
+    echo "Count lines of code in files in <path> or current directory"
+    return 0
+  fi
+  cmd=()
   if command -v fd >/dev/null 2>&1; then
-    fd -t f -E .git "${1:-.}" -X wc -l | sort -n
+    cmd=(fd -t f -E .git . "${1:-.}" -X wc -l)
   else
-    find "${1:-.}" \
+    cmd=(find "${1:-.}" \
       -type f \
       -not -path '*/.git/*' \
-      -exec wc -l {} + |
-      sort -n
+      -exec wc -l {} +)
   fi
+  "${cmd[@]}" | sort -n | column -t
 }
 
 fman() {
