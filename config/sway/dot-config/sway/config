@@ -112,6 +112,7 @@ input "type:touchpad" {
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
     bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
+    bindsym $mod+z exec ~/.config/sway/scripts/toggle-hide-cursor.sh
     bindsym $mod+i exec foot --title=pass-float -e zsh -ic 'pass-launcher --linger'
     bindsym $mod+Shift+i exec foot --title=emoji-float -e zsh -ic 'yankcmd fzf-emoji'
     bindsym $mod+g exec gammastep-toggle.sh
