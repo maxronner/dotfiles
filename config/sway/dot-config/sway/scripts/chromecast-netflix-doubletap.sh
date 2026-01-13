@@ -29,5 +29,4 @@ for i in {1..2}; do
     echo "Error: Failed to send command to Home Assistant." >&2
     exit 1
   fi
-  sleep 1
 done
