@@ -108,16 +108,21 @@ input "type:touchpad" {
 
     bindsym $mod+d exec $menu
     bindsym $mod+u exec $browser
+    bindsym $mod+g exec gammastep-toggle.sh
+    bindsym $mod+Shift+w exec $lock
+
+    bindsym $mod+Shift+n exec chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant)
+
     bindsym $mod+Shift+d exec ~/.config/sway/scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
+    bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
-    bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
     bindsym $mod+z exec ~/.config/sway/scripts/toggle-hide-cursor.sh
+
     bindsym $mod+i exec foot --title=pass-float -e zsh -ic 'pass-launcher --linger'
     bindsym $mod+Shift+i exec foot --title=emoji-float -e zsh -ic 'yankcmd fzf-emoji'
-    bindsym $mod+g exec gammastep-toggle.sh
+
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
-    bindsym $mod+Shift+w exec $lock
 
     bindsym $mod+Shift+Print exec screenshot selection
     bindsym $mod+Print exec screenshot focused
