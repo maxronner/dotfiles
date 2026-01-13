@@ -18,7 +18,6 @@ ENTITY="$2"
 
 for i in {1..2}; do
   echo "Attempt $i of 2..."
-  notify-send "Attempt $i of 2..."
   response=$(curl -sf \
     -H "Authorization: Bearer $HA_TOKEN" \
     -H "Content-Type: application/json" \
