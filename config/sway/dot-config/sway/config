@@ -18,10 +18,14 @@ set $down j
 set $up k
 set $right l
 
+# Apps
 set $term ghostty
 set $browser zen-browser
 set $tmux $term --title=terminal -e zsh -lic tmux-launcher
 set $lock swaylock -f -e -i $HOME/.config/sway/lock.wallpaper
+
+set $scripts $HOME/.config/sway/scripts
+
 set $home_app ^chrome-home\.ronner\.dev
 
 # Your preferred application launcher
@@ -111,14 +115,14 @@ input "type:touchpad" {
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+Shift+w exec $lock
 
-    bindsym $mod+Shift+n exec chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant)
-
-    bindsym $mod+Shift+d exec ~/.config/sway/scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
-    bindsym $mod+Escape exec ~/.config/sway/scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
+    bindsym $mod+n exec $scripts/chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant) hemmabiosystem
+    bindsym $mod+Shift+n exec $scripts/chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant) sovrum
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
-    bindsym $mod+z exec ~/.config/sway/scripts/toggle-hide-cursor.sh
+    bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 
+    bindsym $mod+Escape exec $scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
+    bindsym $mod+Shift+d exec $scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
     bindsym $mod+i exec foot --title=pass-float -e zsh -ic 'pass-launcher --linger'
     bindsym $mod+Shift+i exec foot --title=emoji-float -e zsh -ic 'yankcmd fzf-emoji'
 
@@ -279,8 +283,8 @@ bindsym $mod+Shift+e mode "$mode_system"
 # Media:
 #
     # Volume
-    bindsym XF86AudioRaiseVolume exec ~/.config/sway/scripts/modify-volume.sh "+"
-    bindsym XF86AudioLowerVolume exec ~/.config/sway/scripts/modify-volume.sh "-"
+    bindsym XF86AudioRaiseVolume exec $scripts/modify-volume.sh "+"
+    bindsym XF86AudioLowerVolume exec $scripts/modify-volume.sh "-"
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
     bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
@@ -316,7 +320,7 @@ bindsym $mod+Shift+e mode "$mode_system"
 #        urgent_workspace $love $love $text
 #    }
 # }
-exec_always ~/.config/sway/scripts/start-waybar.sh
+exec_always $scripts/start-waybar.sh
 
 include /etc/sway/config.d/*
 

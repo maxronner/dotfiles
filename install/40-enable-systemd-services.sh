@@ -3,7 +3,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 SYSTEM_SERVICES=(
-    avahi-daemon.service
+  avahi-daemon.service
 	bluetooth.service
 	sshd.service
 	systemd-resolved.service
@@ -11,7 +11,7 @@ SYSTEM_SERVICES=(
 )
 
 USER_SERVICES=(
-    mako.service
+  mako.service
 	syncthing.service
 )
 
@@ -23,9 +23,9 @@ sudo systemctl enable --now "${SYSTEM_SERVICES[@]}"
 info "Enabling required user system services..."
 systemctl --user enable --now "${USER_SERVICES[@]}"
 
-info "Enabling all user services in ${HOME_DIR}/.config/systemd/user..."
+info "Enabling all user services in ${HOME_DIR}/.config/systemd/user... (ignoring templated services)"
 # Use array to handle service files with spaces safely
-mapfile -t user_service_files < <(find "${HOME_DIR}/.config/systemd/user" -maxdepth 1 -name "*.service")
+mapfile -t user_service_files < <(find "${HOME_DIR}/.config/systemd/user" -maxdepth 1 -name "*.service" -not -name "*@.service")
 if [[ ${#user_service_files[@]} -gt 0 ]]; then
   systemctl --user enable --now "${user_service_files[@]}"
 else

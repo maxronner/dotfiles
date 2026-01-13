@@ -9,6 +9,7 @@ DEPS := \
 	setup_device_specifics \
 	stow_dotfiles \
 	stow_scripts \
+	setup_sway \
 	setup_services \
 	set_theme \
 	setup_password_store
@@ -43,6 +44,10 @@ stow_scripts:
 	@echo "Stowing scripts from $(BASE_DIR)scripts to $(HOME)/.local/bin..."
 	@stow -t $(HOME)/.local/bin scripts
 
+setup_sway:
+	@bash install/60-configure-sway-desktop.sh
+	@bash install/61-create-sway-config-dir.sh
+
 setup_device_specifics:
 	@if [ -z "$(env)" ]; then \
 		echo "env is not set, nothing to do."; \
@@ -53,7 +58,6 @@ setup_device_specifics:
 	else \
 		echo "Unknown env: $(env)"; \
 	fi
-	@bash install/60-configure-sway-desktop.sh
 
 set_theme:
 	@python3 scripts/thememanager set rose-pine-moon

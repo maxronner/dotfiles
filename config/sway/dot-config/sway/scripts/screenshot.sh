@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$1" = "full" ]; then
-  exec grim -o $(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name') - | wl-copy
+  exec grim -o "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')" - | wl-copy
 elif [ "$1" = "focused" ]; then
   exec swaymsg -t get_tree | jq -r '.. | (.nodes? // empty)[] | if (.focused) then select(.focused) | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height)" else (.floating_nodes? // empty)[] | select(.visible) | select(.focused) | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height)" end' | grim -g - - | wl-copy
 elif [ "$1" = "selection" ]; then

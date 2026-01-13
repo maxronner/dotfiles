@@ -84,6 +84,6 @@ info "Installing CLI/Environment packages..."
 
 info "Symlinking vim-spell-sv to $HOME/.local/share/nvim/site/spell"
 mkdir -p ~/.local/share/nvim/site/spell
-ln -s /usr/share/vim/vimfiles/spell/* "$HOME/.local/share/nvim/site/spell"
+stow -d /usr/share/vim/vimfiles -t "$HOME/.local/share/nvim/site/spell" spell
 
 bash "$(dirname "${BASH_SOURCE[0]}")/11-install-tpm.sh"
