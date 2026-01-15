@@ -32,6 +32,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -242,12 +243,13 @@ class ThemeManager:
             logger.warning(f"Skipping {app}: No section in theme.ini.")
             return
         cmd = theme_config.get(app, "cmd", fallback="")
+        allow_shell = theme_config.getboolean(app, "shell", fallback=False)
         try:
             if self.dry_run:
                 logger.info(f"[dry-run] Would run: {cmd}")
             else:
-                subprocess.run(cmd, shell=True, check=True)
-                logger.info(f"Applied {app} theme via command.")
+                if self._run_command(app, cmd, allow_shell=allow_shell):
+                    logger.info(f"Applied {app} theme via command.")
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to run {app} command: {e}")
 
@@ -326,10 +328,43 @@ class ThemeManager:
                 if self.dry_run:
                     logger.info(f"[dry-run] Would run: {reload_cmd}")
                 else:
-                    subprocess.run(reload_cmd, shell=True, check=True)
-                    logger.info(f"Reloaded {app}")
+                    allow_shell = conf.get("reload_shell", False)
+                    if self._run_command(app, reload_cmd, allow_shell=allow_shell):
+                        logger.info(f"Reloaded {app}")
             except subprocess.CalledProcessError as e:
                 logger.error(f"Failed to reload {app}: {e}")
+
+    def _run_command(self, app, cmd, allow_shell=False):
+        cmd_str = None
+        argv = None
+        if isinstance(cmd, list):
+            argv = [str(part) for part in cmd]
+        else:
+            cmd_str = str(cmd or "").strip()
+            if not cmd_str:
+                return False
+            argv = shlex.split(cmd_str)
+
+        if allow_shell:
+            if not cmd_str:
+                cmd_str = " ".join(shlex.quote(arg) for arg in argv)
+            subprocess.run(cmd_str, shell=True, check=True)
+            return True
+
+        if cmd_str and (re.search(r"[;&|<>`]", cmd_str) or re.search(r"\$\(", cmd_str)):
+            logger.error(
+                f"Refusing to run shell command for {app} without allow_shell=true"
+            )
+            return False
+
+        argv = [
+            os.path.expandvars(os.path.expanduser(part))
+            for part in argv
+        ]
+        if not argv:
+            return False
+        subprocess.run(argv, check=True)
+        return True
 
 
 def main():

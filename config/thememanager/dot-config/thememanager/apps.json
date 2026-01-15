@@ -53,7 +53,8 @@
     "type": "symlink",
     "source": "fzf/profile.sh",
     "target": "~/.config/fzf/profile.sh",
-    "reload": "tmux set-environment -g FZF_DEFAULT_OPTS \"$($XDG_CONFIG_HOME/fzf/build-opts.sh)\" ; tmux refresh-client -S"
+    "reload": "tmux set-environment -g FZF_DEFAULT_OPTS \"$($XDG_CONFIG_HOME/fzf/build-opts.sh)\" ; tmux refresh-client -S",
+    "reload_shell": true
   },
   "mako": {
     "type": "symlink",
@@ -88,4 +89,3 @@
     "reload": "~/.config/thememanager/reload-foot.sh"
   }
 }
-
