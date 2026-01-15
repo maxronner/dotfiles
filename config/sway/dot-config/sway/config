@@ -145,6 +145,7 @@ input "type:touchpad" {
 #
 # Themes:
 #
+    bindsym $mod+o exec $scripts/tofi-theme.sh
     bindsym $mod+Mod1+1 exec thememanager set rose-pine-moon
     bindsym $mod+Mod1+2 exec thememanager set rose-pine-dawn
     bindsym $mod+Mod1+3 exec thememanager set gruvbox
