@@ -34,7 +34,7 @@ set $home_app ^chrome-home\.ronner\.dev
 set $menu bemenu-run -i --fn $font 14 -p "Launch" -B 1 --bdr "$indicator" --tb "$base" --fb "$highlightlow" \
     --nb "$highlightmed" --ab "$highlightmed" --hb "$highlighthigh" --tf "$rose" --hf "$rose" | xargs -r swaymsg exec --
 set $menu wofi --show drun --prompt "Search applications..." | xargs -r swaymsg exec --
-set $menu tofi-drun --font /usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf | xargs -r swaymsg exec --
+set $menu tofi-drun | xargs -r swaymsg exec --
 
 include /etc/sway/config-vars.d/*
 
