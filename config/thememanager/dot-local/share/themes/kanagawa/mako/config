@@ -1,0 +1,25 @@
+sort=-time
+layer=overlay
+border-size=2
+border-radius=10
+icons=1
+max-icon-size=64
+default-timeout=10000
+ignore-timeout=1
+font=JetbrainsMonoNerdFont 12
+anchor=top-left
+
+background-color=#1f1f28cc
+text-color=#dcd7ba
+border-color=#54546d
+progress-color=over #7e9cd8
+
+[urgency=low]
+border-color=#363646
+
+[urgency=normal]
+border-color=#7e9cd8
+
+[urgency=critical]
+default-timeout=0
+border-color=#e46876

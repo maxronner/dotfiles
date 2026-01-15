@@ -1,0 +1,81 @@
+# ========== Base: Primary background ==========
+color normal        color187 default
+color tree          color187 default
+color tilde         color187 default
+color markers       color187 default
+
+# ========== Surface: Secondary background ==========
+color status        color180 default
+color signature     color180 default
+
+# ========== Overlay: Tertiary background ==========
+color indicator     color179 default
+color search        color179 default
+color attachment    color179 default
+
+# ========== Muted: Low contrast foreground ==========
+color error         color131 default
+color quoted9       color242 default
+color index_date    color242 default
+color index_size    color242 default
+
+# ========== Subtle: Medium contrast foreground ==========
+color quoted1       color168 default
+color quoted2       color179 default
+color quoted3       color110 default
+
+# ========== Text: High contrast foreground ==========
+color quoted        color242 default
+color body          color180 default "[-a-z_0-9.+]+@[-a-z_0-9.]+"
+color body          color110 default "((ftp|http|https)://|news:)[^ >)\"\t]+"
+color body          color187 default "\\[[0-9]+\\]"
+color body          color179 default "\\[\\.\\.\\.?\\]"
+
+# ========== Love: Diagnostic errors, builtins ==========
+color header        color131 default '^From:'
+color index_flags   color168 default ~D
+color quoted6       color131 default
+
+# ========== Gold: Warnings, strings ==========
+color header        color179 default '^Subject:'
+color index_flags   color179 default ~N
+color quoted4       color179 default
+
+# ========== Rose: Search highlight, functions ==========
+color search        color168 default
+color quoted7       color168 default
+color header        color168 default '^User-Agent:.*Mutt'
+
+# ========== Pine: Keywords, conditionals ==========
+color index_number  color110 default
+color quoted5       color110 default
+color header        color110 default '^User-Agent: Mozilla/5.0.*Linux'
+
+# ========== Foam: Information, types ==========
+color index_author  color109 default ~F
+color index_flags   color109 default ~g
+color quoted8       color109 default
+
+# ========== Iris: Hints, links, parameters ==========
+color index_author  color103 default ~P
+color quoted        color103 default
+color quoted3       color103 default
+
+# ========== Highlight Levels ==========
+# Low highlight — e.g., cursorline
+color tilde         color242 default
+
+# Medium highlight — e.g., selection, status
+color status        color180 default
+
+# High contrast — e.g., cursor itself
+color indicator     color179 default
+
+# ========== Misc Index ==========
+color index_author  color179 default ~l
+color index_flags   color168 default ~l
+color index_flags   color110 default ~G
+
+# ========== Pager / Header ==========
+color bold          color187 default
+color underline     color179 default

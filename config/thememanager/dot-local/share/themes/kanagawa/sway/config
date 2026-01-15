@@ -1,0 +1,31 @@
+# set primary Kanagawa Wave colorscheme colors
+set $base           #1f1f28
+set $surface        #2a2a37
+set $overlay        #363646
+set $muted          #727169
+set $subtle         #c8c093
+set $text           #dcd7ba
+set $love           #c34043
+set $gold           #dca561
+set $rose           #e46876
+set $pine           #7e9cd8
+set $foam           #7aa89f
+set $iris           #957fb8
+set $highlightlow   #2a2a37
+set $highlightmed   #363646
+set $highlighthigh  #54546d
+
+set $hll $highlightlow
+set $hlm $highlightmed
+set $hlh $highlighthigh
+set $indicator      #c8c093
+
+# Theming border and Windows --------------
+#target                  border     bg         text      indicator   child-border
+client.focused           $muted     $muted     $text     $muted      $muted
+client.focused_tab_title $muted     $muted     $text
+client.focused_inactive  $hll       $surface   $text     $hll        $hll
+client.unfocused         $hll       $surface   $text     $hll        $hll
+client.urgent            $love      $love      $text     $love       $love
+client.placeholder       $base      $base      $text     $base       $base
+client.background        $base
