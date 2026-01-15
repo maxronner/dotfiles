@@ -115,9 +115,6 @@ input "type:touchpad" {
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+Shift+w exec $lock
 
-    bindsym $mod+n exec $scripts/chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant) hemmabiosystem
-    bindsym $mod+Shift+n exec $scripts/chromecast-netflix-doubletap.sh $(pass Credentials/tokens/home-assistant) sovrum
-
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 
