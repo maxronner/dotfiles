@@ -148,6 +148,7 @@ input "type:touchpad" {
     bindsym $mod+Mod1+1 exec thememanager set rose-pine-moon
     bindsym $mod+Mod1+2 exec thememanager set rose-pine-dawn
     bindsym $mod+Mod1+3 exec thememanager set gruvbox
+    bindsym $mod+Mod1+4 exec thememanager set kanagawa
 
 #
 # Moving around:
