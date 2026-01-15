@@ -265,14 +265,6 @@ class ThemeManager:
 
         start_marker = "# THEME-MANAGED-PLUGINS-START"
         end_marker = "# THEME-MANAGED-PLUGINS-END"
-        replacement_block = (
-            start_marker
-            + "\n"
-            + "\n".join(f"set -g @plugin '{p}'" for p in plugins)
-            + "\n"
-            + end_marker
-        )
-
         content = tmux_conf_path.read_text() if tmux_conf_path.exists() else ""
         original_content = content
 
@@ -281,21 +273,36 @@ class ThemeManager:
             re.DOTALL | re.MULTILINE,
         )
 
-        if pattern.search(content):
-            content = pattern.sub(replacement_block, content)
+        if not plugins:
+            if pattern.search(content):
+                replacement_block = start_marker + "\n" + end_marker
+                content = pattern.sub(replacement_block, content)
         else:
-            tpm_run_re = re.compile(r"^\s*run\s+['\"].*?tpm/tpm['\"]\s*$", re.MULTILINE)
-            match = tpm_run_re.search(content)
-            if match:
-                insert_pos = match.start()
-                content = (
-                    content[:insert_pos]
-                    + replacement_block
-                    + "\n\n"
-                    + content[insert_pos:]
-                )
+            replacement_block = (
+                start_marker
+                + "\n"
+                + "\n".join(f"set -g @plugin '{p}'" for p in plugins)
+                + "\n"
+                + end_marker
+            )
+
+            if pattern.search(content):
+                content = pattern.sub(replacement_block, content)
             else:
-                content = content.rstrip() + "\n\n" + replacement_block + "\n"
+                tpm_run_re = re.compile(
+                    r"^\s*run\s+['\"].*?tpm/tpm['\"]\s*$", re.MULTILINE
+                )
+                match = tpm_run_re.search(content)
+                if match:
+                    insert_pos = match.start()
+                    content = (
+                        content[:insert_pos]
+                        + replacement_block
+                        + "\n\n"
+                        + content[insert_pos:]
+                    )
+                else:
+                    content = content.rstrip() + "\n\n" + replacement_block + "\n"
 
         if content != original_content:
             if self.dry_run:

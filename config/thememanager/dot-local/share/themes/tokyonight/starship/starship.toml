@@ -1,0 +1,94 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$git_metrics\
+$cmd_duration\
+${custom.conditional_line_break}\
+$go\
+$python\
+$character"""
+
+palette = "tokyonight"
+
+[palettes.tokyonight]
+overlay = '#24283b'
+love = '#f7768e'
+gold = '#e0af68'
+rose = '#7dcfff'
+pine = '#7aa2f7'
+foam = '#9ece6a'
+iris = '#bb9af7'
+subtle = '#a9b1d6'
+muted = '#565f89'
+
+[directory]
+style = "bold pine"
+
+[fill]
+symbol = " "
+
+[character]
+success_symbol = "[❯](foam)"
+error_symbol = "[❯](love)"
+vimcmd_symbol = "[❮](rose)"
+
+[hostname]
+ssh_only = true
+format = '$hostname '
+
+[git_status]
+style = "fg:love"
+format = '[$all_status$ahead_behind]($style) '
+up_to_date = '[✓](fg:foam)'
+untracked = '[?\($count\)](fg:gold)'
+stashed = '[\$](fg:rose)'
+modified = '[!\($count\)](fg:gold)'
+renamed = '[»\($count\)](fg:iris)'
+deleted = '[✘\($count\)](style)'
+staged = '[++\($count\)](fg:gold)'
+ahead = '[↑\(${count}\)](fg:foam)'
+diverged = '↕[\[](fg:iris)[⇡\(${ahead_count}\)](fg:foam)[⇣\(${behind_count}\)](fg:rose)[\]](fg:iris)'
+behind = '[↓\(${count}\)](fg:rose)'
+
+[git_branch]
+format = "on [$branch(:$remote_branch)]($style) "
+style = "bold iris"
+truncation_symbol = "⋯"
+truncation_length = 11
+only_attached = true
+
+[git_metrics]
+format = '([+$added]($added_style))([-$deleted]($deleted_style)) '
+only_nonzero_diffs = true
+added_style = 'italic dimmed foam'
+deleted_style = 'italic dimmed love'
+ignore_submodules = true
+disabled = false
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "subtle"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "muted"
+
+[golang]
+format = "[$symbol$version]($style) "
+disabled = false
+style = "subtle"
+symbol = " "
+
+[python]
+format = "[$virtualenv]($style) "
+style = "subtle"
+disabled = false
+
+[custom.conditional_line_break]
+when = "git rev-parse --is-inside-work-tree"
+command = "echo"
+format = "\n"

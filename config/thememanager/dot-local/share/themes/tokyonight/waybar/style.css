@@ -1,0 +1,171 @@
+@define-color base            #1a1b26;
+@define-color surface         #1f2335;
+@define-color overlay         #24283b;
+
+@define-color muted           #565f89;
+@define-color subtle          #a9b1d6;
+@define-color text            #c0caf5;
+
+@define-color love            #f7768e;
+@define-color gold            #e0af68;
+@define-color rose            #7dcfff;
+@define-color pine            #7aa2f7;
+@define-color foam            #9ece6a;
+@define-color iris            #bb9af7;
+
+@define-color highlightLow    #2a2e3f;
+@define-color highlightMed    #363d59;
+@define-color highlightHigh   #545c7e;
+
+* {
+    font-family: Jetbrains Mono Nerd Font, Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+window#waybar {
+    all: unset;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    color: @text;
+}
+
+tooltip,
+tooltip label {
+    color: @text;
+    padding: 0px;
+    margin: 0px;
+    background: alpha(@base,.8);
+}
+
+tooltip {
+    border: none;
+}
+
+tooltip label {
+    background-color: transparent;
+}
+
+.module{
+    padding: 0px 5px;
+    transition: all .3s ease;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+.module:hover {
+    transition: all .3s ease;
+    color: @iris;
+}
+
+.modules-left,
+.modules-right,
+.modules-center,
+tooltip {
+    padding:7px;
+    border-radius:10px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, .6);
+}
+
+.modules-left,
+.modules-right,
+.modules-center {
+    background: alpha(@base,.6);
+}
+
+.modules-left {
+    margin: 10px 0px 5px 10px;
+}
+.modules-right {
+    margin: 10px 10px 5px 0px;
+}
+.modules-center {
+    margin: 10px 0px 5px 0px;
+}
+
+#mode {
+    font-size: 14px;
+}
+
+#workspaces {
+    padding: 0px 5px;
+}
+#workspaces button {
+    all:unset;
+    padding: 0px 5px;
+    color: @muted;
+    transition: all .2s ease;
+}
+/* This is here to make the buttons align with border, they are right aligned
+* by default, so we need to add some padding to the right to make it look nice */
+#workspaces button:last-child {
+    transition: all .5s ease;
+    padding: 0px 8px 0px 5px;
+}
+#workspaces button:hover {
+    color: @text;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+    transition: all .5s ease;
+}
+#workspaces button.focused {
+    color: @pine;
+    border: none;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+}
+#workspaces button.urgent {
+    color: @love;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+}
+#workspaces button.empty {
+    color: @overlay;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
+}
+#workspaces button.empty:hover {
+    color: rgba(0,0,0,0);
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+    transition: all 1s ease;
+}
+#workspaces button.empty.active {
+    border: none;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+}
+
+#battery {
+    padding: 0px 10px 0px 5px;
+}
+#battery.charging {
+    color: @foam;
+}
+#battery.warning:not(.charging) {
+    color: @gold;
+}
+#battery.critical:not(.charging) {
+    color: @love;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+#network {
+    /* This is here because current wifi icon will be cut off otherwise */
+    padding: 0px 8px 0px 0px;
+}
+
+#custom-notification.active,
+#idle_inhibitor.activated {
+    color: @gold;
+}
+#custom-dog.warning {
+    color: @gold;
+}
+#custom-dog.critical {
+    color: @love;
+}
+.group-item .module {
+    padding: 0px 10px;
+}
