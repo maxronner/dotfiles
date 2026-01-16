@@ -125,9 +125,9 @@ input "type:touchpad" {
 
     bindsym $mod+p exec pgrep -x pavucontrol >/dev/null && pkill -x pavucontrol || pavucontrol
 
-    bindsym $mod+Shift+Print exec screenshot selection
-    bindsym $mod+Print exec screenshot focused
-    bindsym Print exec screenshot full
+    bindsym $mod+Shift+Print exec $scripts/screenshot.sh selection
+    bindsym $mod+Print exec $scripts/screenshot.sh focused
+    bindsym Print exec $scripts/screenshot.sh full
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
