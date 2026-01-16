@@ -53,6 +53,7 @@ CLI_PKGS=(
   rclone
   ripgrep
   rsync
+  ruby
   starship
   stow
   sqlite
