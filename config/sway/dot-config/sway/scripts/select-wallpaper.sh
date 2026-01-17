@@ -3,7 +3,7 @@
 wallpaper_dir="${WALLPAPER_DIR:-$HOME/.local/share/wallpapers}"
 wallpaper="$(
   find -L "$wallpaper_dir" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' \
-    | tofi --prompt-text wallpaper:
+    | tofi --prompt-text "wallpaper: "
 )"
 [ -n "$wallpaper" ] || exit 1
 systemctl --user set-environment WALLPAPER_IMAGE="$wallpaper_dir/$wallpaper"
