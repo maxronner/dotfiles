@@ -8,5 +8,7 @@ default-timeout=10000
 ignore-timeout=1
 font=JetbrainsMonoNerdFont 12
 anchor=top-left
+height=200
+width=400
 
 include=~/.config/mako/theme.ini
