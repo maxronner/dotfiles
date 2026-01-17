@@ -50,7 +50,7 @@ fi
 mkdir -p "$(dirname "$WALLPAPER_PATH")" "$(dirname "$LOCK_WALLPAPER_PATH")"
 ln -sf "$selected" "$WALLPAPER_PATH"
 
-magick "$selected" -blur 0x48 "$LOCK_WALLPAPER_PATH" & disown
+magick "$selected" -blur 0x48 "$LOCK_WALLPAPER_PATH" &
 
 pkill -x swaybg >/dev/null 2>&1 || true
 exec swaybg --color 000000 --image "$selected" --mode fill
