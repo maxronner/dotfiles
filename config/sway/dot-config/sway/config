@@ -115,8 +115,8 @@ input "type:touchpad" {
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+Shift+w exec $lock
 
-    bindsym $mod+Shift+m exec systemctl --user start swaybg-update.service
-    bindsym $mod+m exec $scripts/select-wallpaper.sh
+    bindsym $mod+Shift+m exec systemctl --user restart swaybg-update.service
+    bindsym $mod+o exec $scripts/select-wallpaper.sh
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 
     bindsym $mod+Escape exec $scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
@@ -146,7 +146,7 @@ input "type:touchpad" {
 #
 # Themes:
 #
-    bindsym $mod+o exec $scripts/select-theme.sh
+    bindsym $mod+Shift+o exec $scripts/select-theme.sh
     bindsym $mod+Mod1+1 exec thememanager set rose-pine-moon
     bindsym $mod+Mod1+2 exec thememanager set rose-pine-dawn
     bindsym $mod+Mod1+3 exec thememanager set gruvbox
