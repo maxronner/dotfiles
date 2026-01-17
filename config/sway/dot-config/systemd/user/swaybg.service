@@ -1,0 +1,13 @@
+[Unit]
+Description=swaybg wallpaper
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/swaybg --color 000000 --image %h/.config/sway/1.wallpaper --mode fill
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+

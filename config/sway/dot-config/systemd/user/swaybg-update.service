@@ -1,0 +1,8 @@
+[Unit]
+Description=Pick new wallpaper and restart swaybg
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/rnbg
+ExecStartPost=/bin/systemctl --user restart swaybg.service
+

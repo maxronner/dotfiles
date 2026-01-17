@@ -115,7 +115,7 @@ input "type:touchpad" {
     bindsym $mod+g exec gammastep-toggle.sh
     bindsym $mod+Shift+w exec $lock
 
-    bindsym $mod+Shift+m exec systemctl --user restart sway-wallpaper
+    bindsym $mod+Shift+m exec systemctl --user start swaybg-update.service
     bindsym $mod+m exec $scripts/select-wallpaper.sh
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 

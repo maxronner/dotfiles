@@ -64,7 +64,7 @@
         "format-icons": {
             "default": "󰝮"
         },
-        "on-click": "systemctl --user restart sway-wallpaper",
+        "on-click": "systemctl --user restart swaybg.service",
         "tooltip": true,
         "tooltip-format": "Randomize wallpaper"
     },

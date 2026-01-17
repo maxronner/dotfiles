@@ -1,5 +1,5 @@
 [Unit]
-Description=Run wallpaper changer every day
+Description=Daily wallpaper update
 
 [Timer]
 OnCalendar=daily
@@ -7,3 +7,4 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
+

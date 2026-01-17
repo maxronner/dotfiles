@@ -6,7 +6,5 @@ wallpaper="$(
     | tofi --prompt-text "wallpaper: "
 )"
 [ -n "$wallpaper" ] || exit 1
-systemctl --user set-environment WALLPAPER_IMAGE="$wallpaper_dir/$wallpaper"
-systemctl --user restart sway-wallpaper.service
-systemctl --user unset-environment WALLPAPER_IMAGE
-
+ln -sf "$wallpaper_dir/$wallpaper" "$HOME/.config/sway/1.wallpaper"
+systemctl --user restart swaybg.service

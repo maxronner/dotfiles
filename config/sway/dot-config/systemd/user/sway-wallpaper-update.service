@@ -1,7 +1,0 @@
-[Unit]
-Description=Update wallpaper and restart swaybg
-
-[Service]
-Type=oneshot
-ExecStart=/bin/systemctl --user restart sway-wallpaper.service
-
