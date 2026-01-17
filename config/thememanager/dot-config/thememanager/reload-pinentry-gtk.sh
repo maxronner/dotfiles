@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -a
 source ~/.config/environment.d/gtk.conf
 set +a
