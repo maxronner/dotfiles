@@ -367,8 +367,30 @@ class ThemeManager:
         return True
 
 
+def _extract_global_flags(argv):
+    verbose = 0
+    dry_run = False
+    remaining = []
+
+    for arg in argv:
+        if arg == "--dry-run":
+            dry_run = True
+            continue
+        if arg in ("-v", "--verbose"):
+            verbose += 1
+            continue
+        if re.fullmatch(r"-v{2,}", arg):
+            verbose += len(arg) - 1
+            continue
+        remaining.append(arg)
+
+    return verbose, dry_run, remaining
+
+
 def main():
     """Parse command-line arguments and execute the corresponding action."""
+    extracted_verbose, extracted_dry_run, argv = _extract_global_flags(sys.argv[1:])
+
     parser = argparse.ArgumentParser(description="Manage application themes.")
     parser.add_argument(
         "-v",
@@ -389,7 +411,9 @@ def main():
     set_parser = subparsers.add_parser("set", help="Set the active theme.")
     set_parser.add_argument("theme", help="The name of the theme to set.")
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    args.verbose = extracted_verbose
+    args.dry_run = extracted_dry_run
 
     # Adjust logging level based on verbosity
     if args.verbose == 1:

@@ -58,8 +58,8 @@
   },
   "mako": {
     "type": "symlink",
-    "source": "mako/config",
-    "target": "~/.config/mako/config",
+    "source": "mako/theme.ini",
+    "target": "~/.config/mako/theme.ini",
     "reload": "makoctl reload"
   },
   "gtk3": {
