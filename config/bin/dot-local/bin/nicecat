@@ -3,10 +3,9 @@ set -euo pipefail
 
 awk '
 FNR==1 {
-    if (NR > 1) print "\n\n"
-        printf "===== %s =====\n", FILENAME
-    }
+    if (NR > 1) print "\n"
+    printf "===== %s =====\n", FILENAME
+}
 { print }
-END { print "\n\n" }
 ' "$@"
 
