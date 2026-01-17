@@ -116,6 +116,7 @@ input "type:touchpad" {
     bindsym $mod+Shift+w exec $lock
 
     bindsym $mod+m exec systemctl --user restart sway-wallpaper
+    bindsym $mod+Shift+m exec $scripts/select-wallpaper.sh
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 
     bindsym $mod+Escape exec $scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
@@ -145,7 +146,7 @@ input "type:touchpad" {
 #
 # Themes:
 #
-    bindsym $mod+o exec $scripts/tofi-theme.sh
+    bindsym $mod+o exec $scripts/select-theme.sh
     bindsym $mod+Mod1+1 exec thememanager set rose-pine-moon
     bindsym $mod+Mod1+2 exec thememanager set rose-pine-dawn
     bindsym $mod+Mod1+3 exec thememanager set gruvbox
