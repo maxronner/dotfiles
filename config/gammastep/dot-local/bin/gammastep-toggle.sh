@@ -1,54 +1,66 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-GAMMA_CMD="gammastep -m wayland"
+GAMMASTEP=(gammastep -m wayland)
 
-current_mode="off"
-PIDS=( $(pidof gammastep) )
+STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/gammastep-mode"
+LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/gammastep-toggle.lock"
 
-if [ ${#PIDS[@]} -gt 0 ]; then
-    # Check each pid's cmdline for flags
-    for PID in "${PIDS[@]}"; do
-        cmdline=$(ps -p $PID -o args=)
-        if grep -q -- "-O 3500" <<< "$cmdline"; then
-            current_mode="medium"
-            break
-        elif grep -q -- "-O 2500" <<< "$cmdline"; then
-            current_mode="high"
-            break
-        else
-            current_mode="auto"
-        fi
-    done
-fi
+mkdir -p "$(dirname "$STATE_FILE")"
 
-shutdown() {
-    echo "Stopping gammastep"
-    gammastep -x
-    pkill -x gammastep
-    timeout=5
-    while pidof gammastep >/dev/null && (( timeout > 0 )); do
-        sleep 1
-        ((timeout--))
-    done
+get_mode() { [[ -f "$STATE_FILE" ]] && cat "$STATE_FILE" || echo off; }
+set_mode() { printf '%s\n' "$1" >"$STATE_FILE"; }
+
+stop_gammastep() {
+  pkill -x -TERM gammastep 2>/dev/null || true
+  for _ in {1..25}; do
+    pgrep -x gammastep >/dev/null || return 0
+    sleep 0.02
+  done
+  pkill -x -KILL gammastep 2>/dev/null || true
+  for _ in {1..10}; do
+    pgrep -x gammastep >/dev/null || return 0
+    sleep 0.02
+  done
 }
 
-case $current_mode in
-    off)
-        echo "Starting automatic mode"
-        $GAMMA_CMD &
-        ;;
-    auto)
-        echo "Switching to medium intensity (3500K)"
-        shutdown
-        $GAMMA_CMD -O 3500 &
-        ;;
-    medium)
-        echo "Switching to high intensity (2500K)"
-        shutdown
-        $GAMMA_CMD -O 2500 -b 0.8 &
-        ;;
-    high)
-        shutdown
-        ;;
+start_gammastep() {
+  "${GAMMASTEP[@]}" "$@" >/dev/null 2>&1 &
+  disown || true
+}
+
+# --- one-shot lock (never block) ---
+exec 9>"$LOCK_FILE"
+flock -n -x 9 || exit 0
+
+mode="$(get_mode)"
+case "$mode" in
+  off)    next=auto ;;
+  auto)   next=medium ;;
+  medium) next=high ;;
+  high)   next=off ;;
+  *)      next=off ;;
+esac
+set_mode "$next"
+
+# release lock early: state is committed, avoid wedging future runs
+flock -u 9
+
+case "$next" in
+  auto)
+    start_gammastep
+    ;;
+  medium)
+    stop_gammastep
+    start_gammastep -t 3500:3500
+    ;;
+  high)
+    stop_gammastep
+    start_gammastep -t 2500:2500 -b 0.8:0.8
+    ;;
+  off)
+    stop_gammastep
+    gammastep -x || true
+    ;;
 esac
 
