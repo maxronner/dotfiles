@@ -330,6 +330,7 @@ include /etc/sway/config.d/*
 #
 exec $tmux
 exec $browser
+exec vesktop
 exec --no-startup-id gammastep -m wayland
 exec --no-startup-id autotiling
 
