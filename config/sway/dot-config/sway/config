@@ -6,6 +6,7 @@ font $font 12
 
 exec_always --no-startup-id swaymsg seat seat0 xcursor_theme BreezeX-RosePine-Linux
 seat * hide_cursor 1000
+exec --no-startup-id $scripts/toggle-hide-cursor.sh
 
 ### Variables
 #
