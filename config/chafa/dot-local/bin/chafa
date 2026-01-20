@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# This script is a wrapper for chafa to be used within tmux.
+# It sets the correct TERM environment variable to terminal emulator
+# that supports 256 colors, and then runs chafa with the correct arguments.
+
+if [[ -z "$TERM" ]]; then
+  export TERM=xterm-256color
+fi
+
+if [[ -n "$TMUX" ]]; then
+  TERM=$(tmux display -p "#{TERM}")
+fi
+
+exec /usr/bin/chafa "$@"
