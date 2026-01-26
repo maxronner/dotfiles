@@ -24,6 +24,7 @@
     q;tn (tap-hold 200 ; rmet)
     syms (layer-toggle symbols)
     clmk (layer-switch colemakdh)
+    nums (layer-toggle numpad)
     qwrt (layer-switch qwerty)
 )
 
@@ -33,7 +34,7 @@
   tab  q    w    e    r    t    y    u    i    o    p    [  ]    \
   esc  @qatn @qstn @qdtn @qftn g    h    @qjtn @qktn @qltn @q;tn  '    ret
   lsft 102d z    x    c    v    b    n    m    ,    .    /    rsft
-  lctl lmet lalt           @thspc            bspc @clmk
+  lctl lmet lalt           @thspc            bspc @nums
 )
 
 (defalias
@@ -44,6 +45,15 @@
     cetn (tap-hold 200 e rsft)
     citn (tap-hold 200 i ralt)
     cotn (tap-hold 200 o rmet)
+)
+
+(deflayer numpad
+  caps f1    f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1     2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q     7    8    9    t    y    u    i    o    p    [  ]    \
+  esc  @qatn 4    5    6    g    h    @qjtn @qktn @qltn @q;tn  '    ret
+  lsft 102d  0     1    2    3    b    n    m    ,    .    /    rsft
+  lctl lmet  bspc           spc            ralt @nums
 )
 
 (deflayer colemakdh
