@@ -8,11 +8,13 @@ SYSTEM_SERVICES=(
 	sshd.service
 	systemd-resolved.service
 	systemd-timesyncd.service
+  systemd-tmpfiles-clean.timer
 )
 
 USER_SERVICES=(
   mako.service
 	syncthing.service
+  systemd-tmpfiles-clean.timer
 )
 
 HOME_DIR="${HOME:-/home/$(whoami)}"
