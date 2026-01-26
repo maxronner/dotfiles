@@ -6,17 +6,32 @@ v() {
     session_name=$(tmux display-message -p '#S' 2>/dev/null)
   fi
 
-  if [ -z "$session_name" ]; then
+  if [ -z "$session_name" ] || [[ -z "$TMUX" ]]; then
     nvim "$@"
     return $?
   fi
 
   local nvim_socket_dir="${XDG_RUNTIME_DIR:-/tmp}/nvim-sockets"
   mkdir -p "$nvim_socket_dir"
+  chmod 700 "$nvim_socket_dir"
+
   local nvim_listen_addr="$nvim_socket_dir/nvim-$session_name.sock"
-  if [ -S "$nvim_listen_addr" ]; then
-    printf '\e[1;31m%s\e[0m: %s %s\n' 'v' 'nvim socket already exists at' "$nvim_listen_addr" >&2
-    return 1
+  if [[ -S "$nvim_listen_addr" ]]; then
+    if nvim --server "$nvim_listen_addr" --remote-expr "1" >/dev/null 2>&1; then
+      local nvim_window_id=""
+      nvim_window_id=$(tmux list-windows -t "$session_name" \
+        -F '#{window_id} #{pane_current_command}' \
+        -f '#{==:#{pane_current_command},nvim}' 2>/dev/null | \
+        awk 'NR==1 {print $1}')
+      if [[ -z "$nvim_window_id" ]]; then
+        printf '\e[1;31m%s\e[0m: %s %s\n' 'error' 'connection refused' "$nvim_listen_addr"
+        return 1
+      fi
+      tmux switch-client -t "$nvim_window_id" && return 0
+    else
+      echo "nvim not responding, removing socket"
+      rm -f "$nvim_listen_addr"
+    fi
   fi
   nvim --listen "$nvim_listen_addr" "$@"
   return $?
