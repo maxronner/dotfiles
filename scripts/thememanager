@@ -65,6 +65,24 @@ class ThemeManager:
         self.config = configparser.ConfigParser()
         self.config.read(CONFIG_FILE)
 
+    @staticmethod
+    def _is_path_within(path, base, resolve_symlinks=True):
+        path_str = str(path)
+        base_str = str(base)
+        if resolve_symlinks:
+            path_str = os.path.realpath(path_str)
+            base_str = os.path.realpath(base_str)
+        else:
+            path_str = os.path.abspath(path_str)
+            base_str = os.path.abspath(base_str)
+        return os.path.commonpath([path_str, base_str]) == base_str
+
+    def _ensure_home_target(self, app, path):
+        if not self._is_path_within(path, HOME, resolve_symlinks=True):
+            logger.error(f"Refusing to write outside HOME for {app}: {path}")
+            return False
+        return True
+
     def _setup_directories(self):
         """Ensure necessary directories and config files exist."""
         THEME_MANAGER_DIR.mkdir(parents=True, exist_ok=True)
@@ -166,10 +184,20 @@ class ThemeManager:
             logger.warning(f"Skipping {app}: '{config['source']}' not found in theme.")
             return
 
+        if not self._is_path_within(source_path, theme_path, resolve_symlinks=False):
+            logger.error(f"Refusing to use source outside theme for {app}: {source_path}")
+            return
+
+        if not self._ensure_home_target(app, dest_path):
+            return
+
         if self.dry_run:
             logger.info(f"[dry-run] Would symlink {source_path} → {dest_path}")
         else:
             dest_path.parent.mkdir(parents=True, exist_ok=True)
+            if dest_path.exists() and dest_path.is_dir():
+                logger.error(f"Refusing to replace directory for {app}: {dest_path}")
+                return
             dest_path.unlink(missing_ok=True)
             os.symlink(source_path, dest_path)
             logger.info(f"Applied {app} theme via symlink: {source_path} → {dest_path}")
@@ -183,14 +211,33 @@ class ThemeManager:
             logger.warning(f"Skipping {app}: Source dir '{source_dir}' not found.")
             return
 
+        if not self._is_path_within(source_dir, theme_path, resolve_symlinks=False):
+            logger.error(f"Refusing to use source outside theme for {app}: {source_dir}")
+            return
+
+        if not self._ensure_home_target(app, target_dir):
+            return
+
         target_dir.mkdir(parents=True, exist_ok=True)
 
         for src_file in source_dir.iterdir():
             if src_file.is_file():
+                if not self._is_path_within(
+                    src_file, source_dir, resolve_symlinks=False
+                ):
+                    logger.error(
+                        f"Refusing to use source outside directory for {app}: {src_file}"
+                    )
+                    continue
                 dest_file = target_dir / src_file.name
                 if self.dry_run:
                     logger.info(f"[dry-run] Would symlink {src_file} → {dest_file}")
                 else:
+                    if dest_file.exists() and dest_file.is_dir():
+                        logger.error(
+                            f"Refusing to replace directory for {app}: {dest_file}"
+                        )
+                        continue
                     dest_file.unlink(missing_ok=True)
                     os.symlink(src_file, dest_file)
                     logger.info(f"{app}: {src_file.name} → {dest_file}")
@@ -205,6 +252,8 @@ class ThemeManager:
             return
 
         target_path = config["path"]
+        if not self._ensure_home_target(app, target_path):
+            return
         if not target_path.is_file():
             logger.warning(f"Skipping {app}: Config file not found at '{target_path}'.")
             return
@@ -243,7 +292,12 @@ class ThemeManager:
             logger.warning(f"Skipping {app}: No section in theme.ini.")
             return
         cmd = theme_config.get(app, "cmd", fallback="")
-        allow_shell = theme_config.getboolean(app, "shell", fallback=False)
+        allow_shell = bool(config.get("cmd_shell", False))
+        theme_allow_shell = theme_config.getboolean(app, "shell", fallback=False)
+        if theme_allow_shell and not allow_shell:
+            logger.warning(
+                f"Ignoring theme.ini shell=true for {app}; enable cmd_shell in apps.json"
+            )
         try:
             if self.dry_run:
                 logger.info(f"[dry-run] Would run: {cmd}")
@@ -262,6 +316,8 @@ class ThemeManager:
             return
 
         tmux_conf_path = config["path"]
+        if not self._ensure_home_target(app, tmux_conf_path):
+            return
         plugins_str = theme_config.get(app, "plugins", fallback="")
         plugins = [p.strip() for p in plugins_str.split(",") if p.strip()]
 
