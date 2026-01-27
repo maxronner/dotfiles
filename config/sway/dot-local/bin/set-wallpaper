@@ -64,6 +64,12 @@ if [[ -z "$selected" ]]; then
 fi
 
 mkdir -p "$(dirname "$WALLPAPER_PATH")" "$(dirname "$LOCK_WALLPAPER_PATH")"
+if [[ -L "$WALLPAPER_PATH" ]]; then
+  if [[ "$(readlink "$WALLPAPER_PATH")" == "$selected" ]]; then
+    exit 0
+  fi
+  rm "$WALLPAPER_PATH"
+fi
 ln -s "$selected" "$WALLPAPER_PATH"
 
 systemd-run --user --unit=lockimage-gen.service --collect --quiet \
