@@ -34,13 +34,11 @@ resolve_input() {
 
   [[ -z "$arg" ]] && return 1
 
-  # absolute or relative path
   if [[ -f "$arg" ]]; then
     printf '%s\n' "$(realpath "$arg")"
     return 0
   fi
 
-  # filename inside wallpaper dir
   if [[ -f "$WALLPAPER_DIR/$arg" ]]; then
     printf '%s\n' "$(realpath "$WALLPAPER_DIR/$arg")"
     return 0
@@ -66,7 +64,7 @@ if [[ -z "$selected" ]]; then
 fi
 
 mkdir -p "$(dirname "$WALLPAPER_PATH")" "$(dirname "$LOCK_WALLPAPER_PATH")"
-ln -sf "$selected" "$WALLPAPER_PATH"
+ln -s "$selected" "$WALLPAPER_PATH"
 
 systemd-run --user --unit=lockimage-gen.service --collect --quiet \
   magick "$selected" -blur 0x48 "$LOCK_WALLPAPER_PATH"
