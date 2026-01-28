@@ -87,6 +87,9 @@ symbol = " "
 format = "[$virtualenv]($style) "
 style = "subtle"
 disabled = false
+detect_extensions = []
+detect_files = []
+detect_folders = []
 
 [custom.conditional_line_break]
 when = "git rev-parse --is-inside-work-tree"

@@ -147,6 +147,9 @@ format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 symbol = ""
 style = "bg:color_blue"
 format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+detect_extensions = []
+detect_files = []
+detect_folders = []
 
 [docker_context]
 symbol = ""
