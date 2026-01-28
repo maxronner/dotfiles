@@ -17,7 +17,7 @@ v() {
 
   local nvim_listen_addr="$nvim_socket_dir/nvim-$session_name.sock"
   if [[ -S "$nvim_listen_addr" ]]; then
-    if nvim --server "$nvim_listen_addr" --remote-expr "1" >/dev/null 2>&1; then
+    if nvim --server "$nvim_listen_addr" --headless --remote-expr "1" >/dev/null 2>&1; then
       local nvim_window_id=""
       nvim_window_id=$(tmux list-windows -t "$session_name" \
         -F '#{window_id} #{pane_current_command}' \
