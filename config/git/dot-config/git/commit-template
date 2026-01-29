@@ -1,16 +1,42 @@
 
-# feat:
-# fix:
-# docs:
-# build:
-# style:
-# refactor:
-# test:
-# chore:
-# build:
-#
-# <type>[optional scope]: <description>
+# <type>[optional scope][!]: <description>
 #
 # [optional body]
 #
 # [optional footer(s)]
+#
+# <type> must be one of:
+#     feat:     A new feature
+#     fix:      A bug fix
+#     docs:     Documentation only changes
+#     style:    Formatting-only changes (whitespace, lint, formatting)
+#     refactor: Code changes that neither fix a bug nor add a feature
+#     perf:     Code changes that improve performance
+#     test:     Adding or correcting tests
+#     build:    Changes affecting the build system or external dependencies
+#     ci:       Changes to CI configuration or scripts
+#     chore:    Maintenance, tooling, or meta changes
+#     revert:   Reverts a previous commit
+#
+# <scope> (optional):
+#     - Use lowercase
+#     - Prefer stable module or domain names
+#     - Avoid file names
+#
+# Append ! to the type or type(scope) to indicate a breaking change.
+#     Example: feat(api)!: remove deprecated endpoint
+#
+# <description>:
+#     - imperative, present tense ("add", not "added")
+#     - no trailing period
+#     - <= 72 characters
+#
+# <body> (optional):
+#     - explain what and why, not how
+#     - wrap at 72 characters
+#
+# <footer> (optional):
+#     - BREAKING CHANGE: <description>
+#     - Fixes: #<issue>
+#     - Closes: #<issue>
+#     - Refs: #<issue>
