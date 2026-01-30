@@ -30,14 +30,21 @@ fi
 state_name=""
 state_path=""
 want_clear=false
+list_states=false
 args=()
+prompt=""
+combined_prompt=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -s|--state)
-      [[ -z "${2:-}" ]] && { echo "error: --state requires a name" >&2; exit 1; }
-      state_name="$2"
-      shift 2
+      if [[ -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        list_states=true
+        shift
+      else
+        state_name="$2"
+        shift 2
+      fi
       ;;
     -c|--clear)
       want_clear=true
@@ -66,6 +73,25 @@ init_state() {
   state_path="$state_dir/$state_name"
 }
 
+list_states() {
+  local state_root state_dir entries ts name pretty
+  state_root="${XDG_STATE_HOME:-$HOME/.local/state}"
+  state_dir="$state_root/llm"
+  mkdir -p "$state_dir"
+
+  entries=$(find "$state_dir" -maxdepth 1 -type f -name "*.md" -printf '%T@\t%f\n' 2>/dev/null | sort -nr)
+  if [[ -z "$entries" ]]; then
+    echo "no saved states" >&2
+    return 0
+  fi
+
+  while IFS=$'\t' read -r ts name; do
+    [[ -z "$ts" ]] && continue
+    pretty=$(date -d "@${ts%.*}" +"%Y-%m-%d %H:%M")
+    printf "%s  %s\n" "$pretty" "$name"
+  done <<<"$entries"
+}
+
 clear_state() {
   if [[ -z "$state_path" ]]; then
     echo "error: --clear requires --state <name>" >&2
@@ -75,7 +101,6 @@ clear_state() {
 }
 
 build_prompt() {
-  local prompt
   prompt=$(printf "%s " "${args[@]}")
   prompt=${prompt% }  # Remove trailing space
 
@@ -100,7 +125,7 @@ call_claude() {
     --arg content "$PREPROMPT"$'\n\n'"$combined_prompt" \
     '{
       model: $model,
-      max_tokens: 1000,
+      max_tokens: 5000,
       messages: [{
         role: "user",
         content: $content
@@ -162,6 +187,10 @@ main() {
 
   # Display state history if no prompt given
   if [[ ${#args[@]} -eq 0 ]]; then
+    if [[ "$list_states" == true ]]; then
+      list_states
+      exit 0
+    fi
     if [[ -n "$state_path" && -f "$state_path" ]]; then
       glow "$state_path"
     fi
