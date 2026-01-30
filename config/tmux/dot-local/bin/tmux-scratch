@@ -3,21 +3,22 @@ set -euo pipefail
 
 #–– Default values
 MARKER="scratch"
-POS=""
 COMMAND=()
 POPUP=0
 KILL=0
+SMALL=0
+VERTICAL=0
 
 print_help() {
   cat <<-EOF
 Create quick and dirty scratch panes in tmux
 
-Usage: $(basename "$0") [-m MARKER] [-p POSITION] [--] [COMMAND...]
+Usage: $(basename "$0") [-m MARKER] [-v] [-s] [--] [COMMAND...]
 
 Options:
   -m, --marker MARKER    Name of the pane to find/create (default: $MARKER)
-  -p, --position POS     Pane position specifier: 'bottom|b' or 'right|r'
-                         (default: right)
+  -v, --vertical         Use a vertical split (top/bottom). Default is horizontal.
+  -s, --small            Use smaller than half-size pane splits
   -k, --kill             Kill the pane after running the command
   -P, --popup            Use a popup window instead of a split pane
   -h, --help             Show this help message and exit
@@ -25,14 +26,14 @@ Options:
 Everything after the '--' is treated as the COMMAND to run in your pane;
 e.g.:
 
-  $(basename "$0") -m ai -p bottom -- tgpt --chat --model gpt-4
+  $(basename "$0") -m ai -v -- tgpt --chat --model gpt-4
 EOF
 }
 
 #–– Use GNU getopt to support long options and `--`
 OPTS=$(getopt \
-  --options m:p:hkP \
-  --longoptions marker:,position:,help,kill,popup \
+  --options m:vshkP \
+  --longoptions marker:,vertical,small,help,kill,popup \
   --name "$(basename "$0")" \
   -- "$@"
 ) || exit 1
@@ -46,9 +47,13 @@ while true; do
       MARKER="__$2__"
       shift 2
       ;;
-    -p|--position)
-      POS="$2"
-      shift 2
+    -s|--small)
+      SMALL=1
+      shift
+      ;;
+    -v|--vertical)
+      VERTICAL=1
+      shift
       ;;
     -k|--kill)
       KILL=1
@@ -83,18 +88,18 @@ if [[ $# -gt 0 ]]; then
 fi
 
 #–– Normalize POS into the tmux args you want
-case "$POS" in
-  bottom|b)
-    POS_ARGS=(-f -l 12)
-    ;;
-  right|r|"" )
+POS_ARGS=(-h)
+if [ "$VERTICAL" -eq 1 ]; then
+  POS_ARGS=(-v)
+fi
+
+if [ "$SMALL" -eq 1 ]; then
+  if [ "$VERTICAL" -eq 1 ]; then
+    POS_ARGS=(-fv -l 12)
+  else
     POS_ARGS=(-fh -l 80)
-    ;;
-  *)
-    echo "Unknown position: '$POS'" >&2
-    exit 1
-    ;;
-esac
+  fi
+fi
 
 exec &>/dev/null # Hide output
 
@@ -143,4 +148,3 @@ else
 
   tmux select-pane -t "$NEW_PANE" -T "$MARKER"
 fi
-
