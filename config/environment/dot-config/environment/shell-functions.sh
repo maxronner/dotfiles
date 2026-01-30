@@ -106,3 +106,16 @@ treeclip() {
   fi
   treecat "${1:-.}" | eval "$cmd_script"
 }
+
+cht() {
+  local q="$*"
+  curl -s https://cht.sh/:list \
+    | fzf --query="$q" \
+          --select-1 --exit-0 \
+          --preview 'curl -s https://cht.sh/{1}' \
+          --bind 'enter:execute(curl -s https://cht.sh/{})+abort'
+  local rc=$?
+  (( rc == 130 )) && rc=0
+  return "$rc"
+}
+
