@@ -1,16 +1,89 @@
 #!/bin/bash
+set -euo pipefail
 
 preprompt=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in Markdown format."}
 provider=${LLM_PROVIDER:-"gemini"}
 model=${LLM_MODEL:-"gemini-2.5-flash"}
 key=$(pass Credentials/keys/gemini)
 
-tgpt \
-  --provider "$provider" \
-  --preprompt "$preprompt" \
-  --key "$key" \
-  --model "$model" \
-  -- "$*" | \
-  sed '/^.*[[:space:]][[:space:]]Loading/d' | \
-  glow
+state_name=""
+state_path=""
+clear_state=false
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -s|--state)
+      if [[ -z "${2:-}" ]]; then
+        echo "error: --state requires a name" >&2
+        exit 1
+      fi
+      state_name="$2"
+      shift 2
+      ;;
+    -c|--clear)
+      clear_state=true
+      shift
+      ;;
+    --)
+      shift
+      args+=("$@")
+      break
+      ;;
+    *)
+      args+=("$1")
+      shift
+      ;;
+  esac
+done
 
+prompt=$(printf "%s " "${args[@]}")
+prompt=${prompt% }
+
+if [[ -n "$state_name" ]]; then
+  state_root="${XDG_STATE_HOME:-$HOME/.local/state}"
+  state_dir="$state_root/llm"
+  mkdir -p "$state_dir"
+  if [[ "$state_name" != *.md ]]; then
+    state_name="${state_name}.md"
+  fi
+  state_path="$state_dir/$state_name"
+fi
+
+if $clear_state; then
+  if [[ -z "$state_path" ]]; then
+    echo "error: --clear requires --state <name>" >&2
+    exit 1
+  fi
+  echo "Clearing state: $state_path"
+  rm -f "$state_path"
+  if [[ -z "$prompt" ]]; then
+    exit 0
+  fi
+fi
+
+combined_prompt="$prompt"
+if [[ -n "$state_path" && -f "$state_path" ]]; then
+  combined_prompt="$(cat "$state_path")"$'\n\n'"$prompt"
+fi
+
+response=$(
+  tgpt \
+    --provider "$provider" \
+    --preprompt "$preprompt" \
+    --key "$key" \
+    --model "$model" \
+    -- "$combined_prompt" | \
+    sed '/^.*[[:space:]][[:space:]]Loading/d'
+)
+status=$?
+if [[ $status -ne 0 ]]; then
+  exit $status
+fi
+
+if [[ -n "$state_path" ]]; then
+  {
+    printf "# ME:\n%s\n\n# MODEL:\n%s\n\n" "$prompt" "$response"
+  } >> "$state_path"
+fi
+
+printf "%s\n" "$response" | glow
