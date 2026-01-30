@@ -1,10 +1,30 @@
 #!/bin/bash
 set -euo pipefail
 
-preprompt=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in Markdown format."}
-provider=${LLM_PROVIDER:-"gemini"}
-model=${LLM_MODEL:-"gemini-2.5-flash"}
-key=$(pass Credentials/keys/gemini)
+preprompt=${CLAI_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in Markdown format."}
+provider=${CLAI_PROVIDER:-"gemini"}
+model=${CLAI_MODEL:-}
+key=${CLAI_KEY:-}
+
+if [[ -z "$key" ]]; then
+  echo "error: CLAI_KEY is not set" >&2
+  exit 1
+fi
+
+if [[ -z "$model" ]]; then
+  case "$provider" in
+    "gemini")
+      model="gemini-flash-latest"
+      ;;
+    "openai")
+      model="gpt-5.2"
+      ;;
+    *)
+      echo "fatal: model cant be inferred for provider '$provider'" >&2
+      exit 1
+      ;;
+  esac
+fi
 
 state_name=""
 state_path=""
@@ -54,7 +74,6 @@ if $clear_state; then
     echo "error: --clear requires --state <name>" >&2
     exit 1
   fi
-  echo "Clearing state: $state_path"
   rm -f "$state_path"
   if [[ -z "$prompt" ]]; then
     exit 0
@@ -74,16 +93,16 @@ response=$(
     --model "$model" \
     -- "$combined_prompt" | \
     sed '/^.*[[:space:]][[:space:]]Loading/d'
-)
-status=$?
-if [[ $status -ne 0 ]]; then
-  exit $status
-fi
+  )
+  status=$?
+  if [[ $status -ne 0 ]]; then
+    exit $status
+  fi
 
-if [[ -n "$state_path" ]]; then
-  {
-    printf "# ME:\n%s\n\n# MODEL:\n%s\n\n" "$prompt" "$response"
-  } >> "$state_path"
-fi
+  if [[ -n "$state_path" ]]; then
+    {
+      printf "# ME:\n%s\n\n# MODEL:\n%s\n\n" "$prompt" "$response"
+    } >> "$state_path"
+  fi
 
-printf "%s\n" "$response" | glow
+  printf "%s\n" "$response" | glow
