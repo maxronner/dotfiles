@@ -40,8 +40,6 @@ case "$SHELL" in
     */zsh)
         source /usr/share/fzf/key-bindings.zsh
         source /usr/share/fzf/completion.zsh
-        bindkey -s '^N' "fzf-nvim\n"
-        bindkey -s '^G' "fat\n"
         ;;
     *)
         echo "Unsupported shell for FZF: $SHELL"

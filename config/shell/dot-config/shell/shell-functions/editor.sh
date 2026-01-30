@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 v() {
   local session_name=""
   if command -v tmux >/dev/null 2>&1; then
@@ -37,30 +35,6 @@ v() {
   return $?
 }
 
-duck() {
-  [ "$#" -gt 0 ] || { printf "Usage: ? <search terms>\n" >&2; exit 2; }
-  q="$*"
-  enc="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$q")" || exit 1
-  w3m "https://duckduckgo.com/html/?q=$enc"
-}
-
-fman() {
-  man -k . | \
-    fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' |
-    awk \'{printf "%s ", $2} {print $1}\' | xargs -r man | col -bx |
-    bat -l man -p --color always' | \
-    tr -d '()' | awk '{printf "%s ", $2} {print $1}' | xargs -r man
-  }
-
-get() {
-  yay -Slq | fzf -q "$1" -m --preview 'yay -Si {1}'| xargs -ro yay -S
-
-}
-
-del() {
-  yay -Qq | fzf -q "$1" -m --preview 'yay -Qi {1}' | xargs -ro yay -Rns
-}
-
 fzf-nvim() {
   fzf --tmux "$FZF_TMUX_PANE_OPTS" --prompt='nvim> ' --multi --bind 'enter:become(nvim {+})'
 }
@@ -77,45 +51,3 @@ fzf-rg() {
     --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
     --bind 'enter:become(nvim {1} +{2})'
 }
-
-_getclip() {
-  CLIP=()
-  if command -v wl-copy >/dev/null 2>&1; then
-    CLIP=(wl-copy)
-  elif command -v xclip >/dev/null 2>&1; then
-    CLIP=(xclip -selection clipboard)
-  elif command -v pbcopy >/dev/null 2>&1; then
-    CLIP=(pbcopy)
-  else
-    echo "No clipboard tool found (wl-copy, xclip, pbcopy)" >&2
-    return 1
-  fi
-  printf '%s ' "${CLIP[@]}"
-}
-
-niceclip() {
-  if ! cmd_script="$(_getclip)"; then
-    return 1
-  fi
-  nicecat "$@" | eval "$cmd_script"
-}
-
-treeclip() {
-  if ! cmd_script="$(_getclip)"; then
-    return 1
-  fi
-  treecat "${1:-.}" | eval "$cmd_script"
-}
-
-cht() {
-  local q="$*"
-  curl -s https://cht.sh/:list \
-    | fzf --query="$q" \
-          --select-1 --exit-0 \
-          --preview 'curl -s https://cht.sh/{1}' \
-          --bind 'enter:execute(curl -s https://cht.sh/{})+abort'
-  local rc=$?
-  (( rc == 130 )) && rc=0
-  return "$rc"
-}
-

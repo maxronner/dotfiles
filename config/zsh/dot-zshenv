@@ -1,9 +1,9 @@
-if [ -f $HOME/.config/environment/base-xdg-paths.sh ]; then
-    source "$HOME/.config/environment/base-xdg-paths.sh"
+if [ -f $HOME/.config/shell/base-xdg-paths.sh ]; then
+    source "$HOME/.config/shell/base-xdg-paths.sh"
 fi
 
-if [ -f $HOME/.config/environment/core-env-exports.sh ]; then
-    source "$HOME/.config/environment/core-env-exports.sh"
+if [ -f $HOME/.config/shell/core-env-exports.sh ]; then
+    source "$HOME/.config/shell/core-env-exports.sh"
 fi
 
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"

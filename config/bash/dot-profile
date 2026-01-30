@@ -8,16 +8,16 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-if [ -f "$XDG_CONFIG_HOME/environment/base-xdg-paths.sh" ]; then
-    source "$XDG_CONFIG_HOME/environment/base-xdg-paths.sh"
+if [ -f "$XDG_CONFIG_HOME/shell/base-xdg-paths.sh" ]; then
+    source "$XDG_CONFIG_HOME/shell/base-xdg-paths.sh"
 fi
 
-if [ -f "$XDG_CONFIG_HOME/environment/core-env-exports.sh" ]; then
-    source "$XDG_CONFIG_HOME/environment/core-env-exports.sh"
+if [ -f "$XDG_CONFIG_HOME/shell/core-env-exports.sh" ]; then
+    source "$XDG_CONFIG_HOME/shell/core-env-exports.sh"
 fi
 
-if [ -f "$XDG_CONFIG_HOME/environment/init-session.sh" ] ; then
-    source "$XDG_CONFIG_HOME/environment/init-session.sh"
+if [ -f "$XDG_CONFIG_HOME/shell/init-session.sh" ] ; then
+    source "$XDG_CONFIG_HOME/shell/init-session.sh"
 fi
 
 # if running bash

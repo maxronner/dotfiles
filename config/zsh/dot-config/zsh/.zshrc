@@ -20,8 +20,8 @@ eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
 # Source interactive shell configs
-[ -f "$XDG_CONFIG_HOME/environment/interactive-shell-configs.sh" ] && \
-    source "$XDG_CONFIG_HOME/environment/interactive-shell-configs.sh"
+[ -f "$XDG_CONFIG_HOME/shell/interactive-shell-configs.sh" ] && \
+    source "$XDG_CONFIG_HOME/shell/interactive-shell-configs.sh"
 
 # Source plugins
 [ -d "$XDG_CONFIG_HOME/zsh/plugins" ] && \
