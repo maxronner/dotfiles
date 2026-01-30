@@ -1,47 +1,46 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
-preprompt=${CLAI_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in Markdown format."}
-provider=${CLAI_PROVIDER:-"gemini"}
-model=${CLAI_MODEL:-}
-key=${CLAI_KEY:-}
+# Configuration with defaults
+PREPROMPT=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in plaintext or markdown. Add +1 # when using #"}
+PROVIDER=${LLM_PROVIDER:-"gemini"}
+MODEL=${LLM_MODEL:-}
+API_KEY=${LLM_KEY:-}
 
-if [[ -z "$key" ]]; then
-  echo "error: CLAI_KEY is not set" >&2
+# Validate API key
+if [[ -z "$API_KEY" ]]; then
+  echo "error: LLM_KEY is not set" >&2
   exit 1
 fi
 
-if [[ -z "$model" ]]; then
-  case "$provider" in
-    "gemini")
-      model="gemini-flash-latest"
-      ;;
-    "openai")
-      model="gpt-5.2"
-      ;;
+# Set default model based on provider
+if [[ -z "$MODEL" ]]; then
+  case "$PROVIDER" in
+    gemini)  MODEL="gemini-flash-latest" ;;
+    openai)  MODEL="gpt-5.2" ;;
+    claude)  MODEL="claude-haiku-4-5" ;;
     *)
-      echo "fatal: model cant be inferred for provider '$provider'" >&2
+      echo "fatal: model cannot be inferred for provider '$PROVIDER'" >&2
       exit 1
       ;;
   esac
 fi
 
+# Parse arguments
 state_name=""
 state_path=""
-clear_state=false
+want_clear=false
 args=()
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -s|--state)
-      if [[ -z "${2:-}" ]]; then
-        echo "error: --state requires a name" >&2
-        exit 1
-      fi
+      [[ -z "${2:-}" ]] && { echo "error: --state requires a name" >&2; exit 1; }
       state_name="$2"
       shift 2
       ;;
     -c|--clear)
-      clear_state=true
+      want_clear=true
       shift
       ;;
     --)
@@ -56,53 +55,137 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-prompt=$(printf "%s " "${args[@]}")
-prompt=${prompt% }
+init_state() {
+  [[ -z "$state_name" ]] && return
 
-if [[ -n "$state_name" ]]; then
-  state_root="${XDG_STATE_HOME:-$HOME/.local/state}"
-  state_dir="$state_root/llm"
+  local state_root="${XDG_STATE_HOME:-$HOME/.local/state}"
+  local state_dir="$state_root/llm"
   mkdir -p "$state_dir"
-  if [[ "$state_name" != *.md ]]; then
-    state_name="${state_name}.md"
-  fi
-  state_path="$state_dir/$state_name"
-fi
 
-if $clear_state; then
+  [[ "$state_name" != *.md ]] && state_name="${state_name}.md"
+  state_path="$state_dir/$state_name"
+}
+
+clear_state() {
   if [[ -z "$state_path" ]]; then
     echo "error: --clear requires --state <name>" >&2
     exit 1
   fi
   rm -f "$state_path"
+}
+
+build_prompt() {
+  local prompt
+  prompt=$(printf "%s " "${args[@]}")
+  prompt=${prompt% }  # Remove trailing space
+
   if [[ -z "$prompt" ]]; then
-    exit 0
+    echo "error: prompt is empty" >&2
+    exit 1
   fi
-fi
 
-combined_prompt="$prompt"
-if [[ -n "$state_path" && -f "$state_path" ]]; then
-  combined_prompt="$(cat "$state_path")"$'\n\n'"$prompt"
-fi
+  # Prepend state history if it exists
+  if [[ -n "$state_path" && -f "$state_path" ]]; then
+    combined_prompt=$(<"$state_path")$'\n\n'"$prompt"
+  else
+    combined_prompt="$prompt"
+  fi
+}
 
-response=$(
+call_claude() {
+  local payload api_response text
+
+  payload=$(jq -n \
+    --arg model "$MODEL" \
+    --arg content "$PREPROMPT"$'\n\n'"$combined_prompt" \
+    '{
+      model: $model,
+      max_tokens: 1000,
+      messages: [{
+        role: "user",
+        content: $content
+      }]
+    }')
+
+  if ! api_response=$(curl -sS https://api.anthropic.com/v1/messages \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: $API_KEY" \
+    -H "anthropic-version: 2023-06-01" \
+    -d "$payload"); then
+    echo "error: claude API request failed" >&2
+    return 1
+  fi
+
+  text=$(jq -r '.content[0].text // empty' <<<"$api_response")
+
+  if [[ -z "$text" ]]; then
+    local err
+    err=$(jq -r '.error.message // .error // empty' <<<"$api_response")
+    if [[ -n "$err" ]]; then
+      echo "error: $err" >&2
+    else
+      echo "error: failed to parse claude response" >&2
+    fi
+    return 1
+  fi
+
+  printf "%s\n" "$text"
+}
+
+call_tgpt() {
   tgpt \
-    --provider "$provider" \
-    --preprompt "$preprompt" \
-    --key "$key" \
-    --model "$model" \
+    --provider "$PROVIDER" \
+    --preprompt "$PREPROMPT" \
+    --key "$API_KEY" \
+    --model "$MODEL" \
     -- "$combined_prompt" | \
     sed '/^.*[[:space:]][[:space:]]Loading/d'
-  )
-  status=$?
-  if [[ $status -ne 0 ]]; then
-    exit $status
+}
+
+save_to_state() {
+  [[ -z "$state_path" ]] && return
+
+  {
+    printf "## Me:\n%s\n\n" "$prompt"
+    printf "## Model:\n%s\n\n" "$response"
+  } >> "$state_path"
+}
+
+main() {
+  init_state
+
+  # Handle --clear flag
+  if [[ "$want_clear" == true ]]; then
+    clear_state
+    [[ ${#args[@]} -eq 0 ]] && exit 0
   fi
 
-  if [[ -n "$state_path" ]]; then
-    {
-      printf "# ME:\n%s\n\n# MODEL:\n%s\n\n" "$prompt" "$response"
-    } >> "$state_path"
+  # Display state history if no prompt given
+  if [[ ${#args[@]} -eq 0 ]]; then
+    if [[ -n "$state_path" && -f "$state_path" ]]; then
+      glow "$state_path"
+    fi
+    exit 0
   fi
 
+  build_prompt
+
+  # Call appropriate provider
+  case "$PROVIDER" in
+    gemini|openai)
+      response=$(call_tgpt)
+      ;;
+    claude)
+      response=$(call_claude)
+      ;;
+    *)
+      echo "fatal: provider '$PROVIDER' is not supported" >&2
+      exit 1
+      ;;
+  esac
+
+  save_to_state
   printf "%s\n" "$response" | glow
+}
+
+main

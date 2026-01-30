@@ -1,27 +1,3 @@
-clai() {
-  if [[ -n "$CLAI_KEY" ]]; then
-    key=$CLAI_KEY
-  else
-    case "$CLAI_PROVIDER" in
-      "gemini")
-        key="$(pass Credentials/keys/gemini)"
-        ;;
-      "claude")
-        key="$(pass Credentials/keys/claude)"
-        ;;
-      "openai")
-        key="$(pass Credentials/keys/openai)"
-        ;;
-      *)
-        echo "fatal: key can not be inferred for CLAI_PROVIDER '$CLAI_PROVIDER'" >&2
-        return 1
-        ;;
-    esac
-  fi
-  CLAI_KEY="$key" \
-    "$HOME/.local/bin/clai" "$@"
-  }
-
 fman() {
   man -k . | \
     fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' |
