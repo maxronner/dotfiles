@@ -1,11 +1,16 @@
 #!/bin/bash
 
+preprompt=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in Markdown format."}
+provider=${LLM_PROVIDER:-"gemini"}
+model=${LLM_MODEL:-"gemini-2.5-flash"}
+key=$(pass Credentials/keys/gemini)
+
 tgpt \
-  --provider gemini \
-  --key "$(pass Credentials/keys/gemini)" \
-  --model gemini-2.5-flash \
+  --provider "$provider" \
+  --preprompt "$preprompt" \
+  --key "$key" \
+  --model "$model" \
   -- "$*" | \
   sed '/^.*[[:space:]][[:space:]]Loading/d' | \
   glow
-
 
