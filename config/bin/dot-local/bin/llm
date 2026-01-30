@@ -3,7 +3,7 @@
 tgpt \
   --provider gemini \
   --key "$(pass Credentials/keys/gemini)" \
-  --model gemini-3-flash-preview \
+  --model gemini-2.5-flash \
   -- "$*" | \
   sed '/^.*[[:space:]][[:space:]]Loading/d' | \
   glow
