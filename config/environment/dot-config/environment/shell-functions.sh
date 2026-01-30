@@ -37,6 +37,13 @@ v() {
   return $?
 }
 
+duck() {
+  [ "$#" -gt 0 ] || { printf "Usage: ? <search terms>\n" >&2; exit 2; }
+  q="$*"
+  enc="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$q")" || exit 1
+  w3m "https://duckduckgo.com/html/?q=$enc"
+}
+
 fman() {
   man -k . | \
     fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' |

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+tgpt \
+  --provider gemini \
+  --key "$(pass Credentials/keys/gemini)" \
+  --model gemini-3-flash-preview \
+  -- "$*" | \
+  sed '/^.*[[:space:]][[:space:]]Loading/d' | \
+  glow
+
+

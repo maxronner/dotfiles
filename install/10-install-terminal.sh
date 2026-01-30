@@ -26,6 +26,7 @@ CLI_PKGS=(
   git
   gitui
   git-delta
+  glow
   go
   grim
   htop
@@ -67,6 +68,7 @@ CLI_PKGS=(
   ttf-hack-nerd
   vim-spell-en
   vim-spell-sv
+  w3m
   wget
   wireguard-tools
   unzip

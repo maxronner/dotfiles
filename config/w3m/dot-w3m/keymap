@@ -1,0 +1,5 @@
+keymap C-d NEXT_HALF_PAGE
+keymap C-u PREV_HALF_PAGE
+keymap C-f NEXT_PAGE
+keymap C-b PREV_PAGE
+keymap : COMMAND
