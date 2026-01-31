@@ -9,6 +9,7 @@
     "modules-left": [
         "custom/notification",
         "clock",
+        "custom/weather",
         "group/control",
         "custom/dog",
         "sway/scratchpad",
@@ -23,6 +24,12 @@
         "pulseaudio",
         "battery"
     ],
+    "custom/weather": {
+        "format": "{text}",
+        "interval": 1800,
+        "exec": "~/.config/waybar/scripts/weather.sh",
+        "return-type": "json"
+    },
     "sway/workspaces": {
         "disable-scroll": false,
         "all-outputs": true,
