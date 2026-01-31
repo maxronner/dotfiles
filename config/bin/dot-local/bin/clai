@@ -8,15 +8,15 @@ PROVIDER=${LLM_PROVIDER:-"gemini"}
 case "$PROVIDER" in
   gemini)
     MODEL="${LLM_MODEL:-"gemini-flash-latest"}"
-    API_KEY="${LLM_KEY:-$GEMINI_API_KEY}"
+    API_KEY="${LLM_KEY:-${GEMINI_API_KEY:-}}"
     ;;
   openai)
     MODEL="${LLM_MODEL:-"gpt-5.2"}"
-    API_KEY="${LLM_KEY:-$OPENAI_API_KEY}"
+    API_KEY="${LLM_KEY:-${OPENAI_API_KEY:-}}"
     ;;
   claude)
     MODEL="${LLM_MODEL:-"claude-haiku-4-5"}"
-    API_KEY="${LLM_KEY:-$ANTHROPIC_API_KEY}"
+    API_KEY="${LLM_KEY:-${ANTHROPIC_API_KEY:-}}"
     ;;
   *)
     echo "fatal: provider '$PROVIDER' is not supported" >&2
