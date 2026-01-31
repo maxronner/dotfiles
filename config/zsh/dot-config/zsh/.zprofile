@@ -1,3 +1,3 @@
-if [ -f "$XDG_CONFIG_HOME/environment/init-session.sh" ] ; then
-    source "$XDG_CONFIG_HOME/environment/init-session.sh"
+if [ -f "$XDG_CONFIG_HOME/shell/init-session.sh" ] ; then
+    source "$XDG_CONFIG_HOME/shell/init-session.sh"
 fi
