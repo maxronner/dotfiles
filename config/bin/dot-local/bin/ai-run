@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+provider="${1:-}"
+shift || true
+
+case "$provider" in
+  openai)
+    secret="$(pass "Credentials/keys/$provider")"
+    export OPENAI_API_KEY="$secret"
+    export LLM_PROVIDER="openai"
+    ;;
+  anthropic|claude)
+    provider="anthropic"
+    secret="$(pass "Credentials/keys/$provider")"
+    export ANTHROPIC_API_KEY="$secret"
+    export LLM_PROVIDER="claude"
+    ;;
+  gemini|google)
+    provider="gemini"
+    secret="$(pass "Credentials/keys/$provider")"
+    export GEMINI_API_KEY="$secret"
+    export LLM_PROVIDER="gemini"
+    ;;
+  *)
+    base="$(basename "$0")"
+    echo "usage: $base {openai|anthropic|gemini} command [args...]" >&2
+    exit 2
+    ;;
+esac
+
+cmd="${1:-}"
+shift || true
+
+exec $cmd "$@"

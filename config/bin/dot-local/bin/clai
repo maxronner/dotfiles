@@ -4,26 +4,29 @@ set -euo pipefail
 # Configuration with defaults
 PREPROMPT=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in plaintext or markdown. Add +1 # when using #"}
 PROVIDER=${LLM_PROVIDER:-"gemini"}
-MODEL=${LLM_MODEL:-}
-API_KEY=${LLM_KEY:-}
 
-# Validate API key
+case "$PROVIDER" in
+  gemini)
+    MODEL="${LLM_MODEL:-"gemini-flash-latest"}"
+    API_KEY="${LLM_KEY:-$GEMINI_API_KEY}"
+    ;;
+  openai)
+    MODEL="${LLM_MODEL:-"gpt-5.2"}"
+    API_KEY="${LLM_KEY:-$OPENAI_API_KEY}"
+    ;;
+  claude)
+    MODEL="${LLM_MODEL:-"claude-haiku-4-5"}"
+    API_KEY="${LLM_KEY:-$ANTHROPIC_API_KEY}"
+    ;;
+  *)
+    echo "fatal: provider '$PROVIDER' is not supported" >&2
+    exit 1
+    ;;
+esac
+
 if [[ -z "$API_KEY" ]]; then
   echo "error: LLM_KEY is not set" >&2
   exit 1
-fi
-
-# Set default model based on provider
-if [[ -z "$MODEL" ]]; then
-  case "$PROVIDER" in
-    gemini)  MODEL="gemini-flash-latest" ;;
-    openai)  MODEL="gpt-5.2" ;;
-    claude)  MODEL="claude-haiku-4-5" ;;
-    *)
-      echo "fatal: model cannot be inferred for provider '$PROVIDER'" >&2
-      exit 1
-      ;;
-  esac
 fi
 
 # Parse arguments
@@ -50,6 +53,11 @@ while [[ $# -gt 0 ]]; do
       want_clear=true
       shift
       ;;
+    -p|--preprompt)
+      PREPROMPT="$2"
+      shift 2
+      ;;
+
     --)
       shift
       args+=("$@")
@@ -130,31 +138,30 @@ call_claude() {
         role: "user",
         content: $content
       }]
-    }')
+  }')
+if ! api_response=$(curl -sS https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -d "$payload"); then
+echo "error: claude API request failed" >&2
+return 1
+fi
 
-  if ! api_response=$(curl -sS https://api.anthropic.com/v1/messages \
-    -H "Content-Type: application/json" \
-    -H "x-api-key: $API_KEY" \
-    -H "anthropic-version: 2023-06-01" \
-    -d "$payload"); then
-    echo "error: claude API request failed" >&2
-    return 1
+text=$(jq -r '.content[0].text // empty' <<<"$api_response")
+
+if [[ -z "$text" ]]; then
+  local err
+  err=$(jq -r '.error.message // .error // empty' <<<"$api_response")
+  if [[ -n "$err" ]]; then
+    echo "error: $err" >&2
+  else
+    echo "error: failed to parse claude response" >&2
   fi
+  return 1
+fi
 
-  text=$(jq -r '.content[0].text // empty' <<<"$api_response")
-
-  if [[ -z "$text" ]]; then
-    local err
-    err=$(jq -r '.error.message // .error // empty' <<<"$api_response")
-    if [[ -n "$err" ]]; then
-      echo "error: $err" >&2
-    else
-      echo "error: failed to parse claude response" >&2
-    fi
-    return 1
-  fi
-
-  printf "%s\n" "$text"
+printf "%s\n" "$text"
 }
 
 call_tgpt() {
@@ -165,7 +172,7 @@ call_tgpt() {
     --model "$MODEL" \
     -- "$combined_prompt" | \
     sed '/^.*[[:space:]][[:space:]]Loading/d'
-}
+  }
 
 save_to_state() {
   [[ -z "$state_path" ]] && return

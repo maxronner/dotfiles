@@ -1,3 +1,9 @@
+ai() {
+  provider="${LLM_PROVIDER:-$1}"
+  [[ -z "$LLM_PROVIDER" ]] && shift || true
+  ai-run "$provider" clai "$@"
+}
+
 fman() {
   man -k . | \
     fzf -q "$1" --prompt='man> ' --preview $'echo {} | tr -d \'()\' |
