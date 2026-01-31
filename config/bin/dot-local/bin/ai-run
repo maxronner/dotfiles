@@ -6,19 +6,19 @@ shift || true
 
 case "$provider" in
   openai)
-    secret="$(pass "Credentials/keys/$provider")"
+    secret="$(pass "api/llm/$provider")"
     export OPENAI_API_KEY="$secret"
     export LLM_PROVIDER="openai"
     ;;
   anthropic|claude)
     provider="anthropic"
-    secret="$(pass "Credentials/keys/$provider")"
+    secret="$(pass "api/llm/$provider")"
     export ANTHROPIC_API_KEY="$secret"
     export LLM_PROVIDER="claude"
     ;;
   gemini|google)
     provider="gemini"
-    secret="$(pass "Credentials/keys/$provider")"
+    secret="$(pass "api/llm/$provider")"
     export GEMINI_API_KEY="$secret"
     export LLM_PROVIDER="gemini"
     ;;
