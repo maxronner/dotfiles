@@ -4,9 +4,12 @@ include $HOME/.config/sway/theme.config
 set $font "pango:Jetbrains Mono Nerd Font"
 font $font 12
 
-exec_always --no-startup-id swaymsg seat seat0 xcursor_theme BreezeX-RosePine-Linux
+set $cursor "BreezeX-RosePine-Linux"
+set $cursor_normal "28"
+set $cursor_big "46"
+exec_always --no-startup-id swaymsg seat seat0 xcursor_theme $cursor $cursor_normal
 seat * hide_cursor 1000
-exec --no-startup-id $scripts/toggle-hide-cursor.sh
+exec --no-startup-id $scripts/toggle-cursor-hide.sh
 
 ### Variables
 #
@@ -118,7 +121,9 @@ input "type:touchpad" {
 
     bindsym $mod+Shift+m exec systemctl --user restart swaybg-update.service
     bindsym $mod+o exec $scripts/select-wallpaper.sh
-    bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
+    bindsym $mod+z exec $scripts/toggle-cursor-hide.sh
+    bindsym $mod+Shift+b exec $scripts/toggle-cursor-size.sh $cursor $cursor_normal $cursor_big
+
     bindsym $mod+c exec hyprpicker --autocopy
 
     bindsym $mod+Shift+d exec dict
