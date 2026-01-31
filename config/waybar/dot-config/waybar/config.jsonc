@@ -271,7 +271,7 @@
         ]
     },
     "custom/dog": {
-        "exec": "HA_TOKEN=$(pass api/home-assistant) ~/.config/waybar/scripts/dog.sh",
+        "exec": "~/.config/waybar/scripts/dog.sh",
         "interval": 60,
         "return-type": "json",
         "format": "{icon}",
