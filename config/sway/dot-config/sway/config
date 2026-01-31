@@ -121,8 +121,8 @@ input "type:touchpad" {
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
 
     bindsym $mod+Shift+d exec dict
-    bindsym $mod+Escape exec $scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
-    bindsym $mod+Shift+Escape exec $scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
+    bindsym $mod+Escape exec $scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
+    bindsym $mod+Shift+Escape exec $scripts/scratch-toggle.sh -t btop-float -- foot --title=btop-float -e btop
     bindsym $mod+i exec foot --title=pass-float -e zsh -ic 'pass-launcher --linger'
     bindsym $mod+Shift+i exec foot --title=emoji-float -e zsh -ic 'yankcmd fzf-emoji'
 

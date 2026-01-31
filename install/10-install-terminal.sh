@@ -29,6 +29,7 @@ CLI_PKGS=(
   go
   grim
   htop
+  hyprpicker
   inetutils
   inotify-tools
   imagemagick
@@ -48,8 +49,10 @@ CLI_PKGS=(
   pass
   pass-otp
   passff-host
+  pastel
   pipewire-pulse
   pulsemixer
+  python
   rclone
   ripgrep
   rsync
