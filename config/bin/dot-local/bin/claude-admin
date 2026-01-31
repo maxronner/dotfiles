@@ -1,0 +1,170 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat << EOF
+Usage: claude-admin <command> [options]
+
+Commands:
+    messages    Get messages usage report (token counts)
+    cost        Get cost report (detailed breakdown)
+    summary     Get total cost summary (like dashboard)
+    -h, --help  Show this help message
+
+Options:
+    -d, --days <value>    Number of days to look back (e.g., 30d, 7d)
+    -j, --json            Output raw JSON only (no pretty print or summary text)
+
+Environment:
+    ANTHROPIC_ADMIN_KEY  Your Anthropic admin API key (required)
+
+Examples:
+    claude-admin summary -d 30d
+    claude-admin cost -d 7d
+    claude-admin messages -d 14d
+EOF
+    exit 1
+}
+
+require_api_key() {
+  if [[ -z "${ANTHROPIC_ADMIN_KEY:-}" ]]; then
+    echo "Error: ANTHROPIC_ADMIN_KEY environment variable not set" >&2
+    echo "Set it with: export ANTHROPIC_ADMIN_KEY=sk-ant-admin..." >&2
+    exit 1
+  fi
+}
+
+admin_get() {
+  local endpoint="$1"
+
+  curl -s "https://api.anthropic.com/v1/organizations/${endpoint}" \
+    --header "anthropic-version: 2023-06-01" \
+    --header "x-api-key: ${ANTHROPIC_ADMIN_KEY}"
+}
+
+parse_days() {
+  local days="$1"
+  local days_num="${days%d}"
+
+  if ! [[ "$days_num" =~ ^[0-9]+$ ]]; then
+    echo "Error: Invalid days format. Use format like '7d', '30d'" >&2
+    exit 1
+  fi
+
+  echo "$days_num"
+}
+
+date_range() {
+  local days_num="$1"
+
+  STARTING_AT=$(date -u -d "${days_num} days ago" '+%Y-%m-%dT00:00:00Z')
+  ENDING_AT=$(date -u '+%Y-%m-%dT23:59:59Z')
+}
+
+summarize_cost() {
+  local response="$1"
+  local days_num="$2"
+  local total_amount
+  local breakdown
+
+  total_amount=$(echo "$response" | jq '[.data[].results[]?.amount | (tonumber? // 0)] | add // 0')
+
+  echo "Cost Summary (Last ${days_num} days)"
+  echo "======================================"
+  echo "Period: $(date -d "${days_num} days ago" '+%Y-%m-%d') to $(date '+%Y-%m-%d')"
+  echo "Total Cost: \$$(awk -v total="$total_amount" 'BEGIN {printf "%.2f", total / 100}')"
+  echo ""
+  echo "Breakdown by service:"
+  breakdown=$(echo "$response" | jq -r '
+  [.data[].results[]?]
+  | group_by(.description)
+  | map({description: (.[0].description // "unknown"), amount: (map(.amount | (tonumber? // 0)) | add / 100)})
+  | .[]
+  | [.description, (.amount | tostring)]
+  | @tsv
+  ')
+  if [[ -z "$breakdown" ]]; then
+    echo "  (none)"
+  else
+    while IFS=$'\t' read -r description amount; do
+      printf '  %s: $%.2f\n' "$description" "$amount"
+    done <<< "$breakdown"
+  fi
+}
+
+output_json() {
+  local response="$1"
+
+  if (( JSON_ONLY )); then
+    echo "$response"
+  else
+    echo "$response" | jq '.'
+  fi
+}
+
+require_api_key
+
+COMMAND="${1:-}"
+shift || true
+
+if [[ -z "$COMMAND" ]]; then
+    usage
+fi
+
+DAYS="7d"
+JSON_ONLY=0
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -d|--days)
+            if [[ $# -lt 2 || "${2:-}" == -* ]]; then
+              echo "Error: Missing value for --days" >&2
+              exit 1
+            fi
+            DAYS="$2"
+            shift 2
+            ;;
+        -j|--json)
+            JSON_ONLY=1
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage
+            ;;
+    esac
+done
+
+DAYS_NUM="$(parse_days "$DAYS")"
+date_range "$DAYS_NUM"
+
+# Execute command
+case "$COMMAND" in
+  messages)
+    RESPONSE=$(admin_get "usage_report/messages?\
+      starting_at=${STARTING_AT}&\
+      ending_at=${ENDING_AT}&\
+      bucket_width=1d")
+    output_json "$RESPONSE"
+    ;;
+  cost)
+    echo "Cost Report (Last ${DAYS_NUM} days)"
+    RESPONSE=$(admin_get "cost_report?starting_at=${STARTING_AT}&ending_at=${ENDING_AT}")
+    output_json "$RESPONSE"
+    ;;
+  summary)
+    RESPONSE=$(admin_get "cost_report?starting_at=${STARTING_AT}&ending_at=${ENDING_AT}&group_by[]=description")
+    if (( JSON_ONLY )); then
+      echo "$RESPONSE"
+    else
+      summarize_cost "$RESPONSE" "$DAYS_NUM"
+    fi
+    ;;
+  *)
+    echo "Error: Unknown command '$COMMAND'" >&2
+    usage
+    ;;
+esac
