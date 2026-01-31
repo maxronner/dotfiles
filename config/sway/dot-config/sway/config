@@ -122,7 +122,7 @@ input "type:touchpad" {
     bindsym $mod+Shift+m exec systemctl --user restart swaybg-update.service
     bindsym $mod+o exec $scripts/select-wallpaper.sh
     bindsym $mod+z exec $scripts/toggle-cursor-hide.sh
-    bindsym $mod+Shift+b exec $scripts/toggle-cursor-size.sh $cursor $cursor_normal $cursor_big
+    bindsym $mod+Shift+z exec $scripts/toggle-cursor-size.sh $cursor $cursor_normal $cursor_big
 
     bindsym $mod+c exec hyprpicker --autocopy
 
