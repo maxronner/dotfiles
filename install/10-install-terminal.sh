@@ -17,7 +17,6 @@ CLI_PKGS=(
   duf
   dust
   eza
-  fastfetch
   fd
   feh
   fzf
