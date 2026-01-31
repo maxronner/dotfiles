@@ -1,7 +1,9 @@
 ai() {
-  provider="${LLM_PROVIDER:-$1}"
-  [[ -z "$LLM_PROVIDER" ]] && shift || true
-  ai-run "$provider" clai "$@"
+  if [[ -z "$LLM_PROVIDER" ]]; then
+    echo "error: LLM_PROVIDER is not set" >&2
+    return 1
+  fi
+  ai-run "$LLM_PROVIDER" clai "$@"
 }
 
 fman() {
