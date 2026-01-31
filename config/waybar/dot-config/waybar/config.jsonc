@@ -8,10 +8,10 @@
     "spacing": 10, // Gaps between modules (4px)
     "modules-left": [
         "custom/notification",
+        "custom/dog",
         "clock",
         "custom/weather",
         "group/control",
-        "custom/dog",
         "sway/scratchpad",
         "sway/mode"
     ],
@@ -26,6 +26,7 @@
     ],
     "custom/weather": {
         "format": "{icon} {text}",
+        "format-alt": "{icon}",
         "tooltip": true,
         "interval": 1800,
         "exec": "~/.config/waybar/scripts/weather.sh",
@@ -72,7 +73,7 @@
         "tooltip-format": "Display recent notifications"
     },
     "custom/pacman": {
-        "format": "{} {icon}",
+        "format": "{icon} {}",
         "format-icons": {
             "default": "󰚰"
         },
@@ -84,17 +85,8 @@
         "tooltip": true,
         "tooltip-format": "Install {} pending updates"
     },
-    "custom/wallpaper": {
-        "format": "{icon}",
-        "format-icons": {
-            "default": "󰝮"
-        },
-        "on-click": "systemctl --user restart swaybg.service",
-        "tooltip": true,
-        "tooltip-format": "Randomize wallpaper"
-    },
     "custom/gammastep": {
-        "format": "{text} {icon}",
+        "format": "{icon} {text}",
         "format-icons": {
             "off": "󰖨",
             "on": "󱠩",
@@ -121,14 +113,12 @@
         "orientation": "horizontal",
         "drawer": {
             "children-class": "group-item",
-            "transition-duration": 600,
+            "transition-duration": 300,
             "transition-to-left": false,
             "click-to-reveal": true
         },
         "modules": [
             "custom/control-wrap",
-            "custom/pacman",
-            "custom/wallpaper",
             "custom/gammastep",
             "bluetooth",
             "network"
@@ -137,15 +127,15 @@
     "custom/control-wrap": {
         "format": "{icon}",
         "format-icons": {
-            "default": ""
+            "default": ""
         },
-        "tooltip-format": "Control group"
+        "tooltip-format": "System controls"
     },
     "group/stats": {
         "orientation": "horizontal",
         "drawer": {
             "children-class": "group-item",
-            "transition-duration": 600,
+            "transition-duration": 300,
             "transition-to-left": true,
             "click-to-reveal": true
         },
@@ -206,7 +196,7 @@
         "tooltip-format-disconnected": "MPD (disconnected)"
     },
     "idle_inhibitor": {
-        "format": "{icon} ",
+        "format": "{icon}",
         "format-icons": {
             "activated": "",
             "deactivated": "󰒲"
@@ -226,8 +216,8 @@
         "format": "",
         "format-on": "",
         "format-off": "󰂲",
-        "format-connected": "{device_alias} ",
-        "format-connected-battery": "{device_alias} {device_battery_percentage}% ",
+        "format-connected": " {device_alias}",
+        "format-connected-battery": " {device_alias} {device_battery_percentage}%",
         // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
         "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
@@ -293,7 +283,7 @@
         "interval": 60,
         "return-type": "json",
         "format": "{icon}",
-        "format-alt": "{text} {icon}",
+        "format-alt": "{icon} {text}",
         "format-icons": [
             ""
         ]
@@ -347,11 +337,11 @@
     },
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid}({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} 󰱔",
+        "format-wifi": "󱚽 {essid}({signalStrength}%)",
+        "format-ethernet": "󰱔 {ipaddr}/{cidr}",
         "tooltip-format": "{ifname} via {gwaddr}",
-        "format-linked": "{ifname} (No IP) 󰱟",
-        "format-disconnected": "Disconnected ",
+        "format-linked": "󰱟 {ifname} (No IP)",
+        "format-disconnected": " Disconnected",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
     "pulseaudio": {
