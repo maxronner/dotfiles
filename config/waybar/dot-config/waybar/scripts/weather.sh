@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CITY=${CITY:-"mmx"}
+CITY=${CITY:-}
 base_url="https://wttr.in"
 
 if [[ -n "$CITY" ]]; then
