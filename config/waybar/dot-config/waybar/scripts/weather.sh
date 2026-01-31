@@ -19,5 +19,5 @@ if [[ -z "${response}" ]]; then
   exit 0
 fi
 
-jq -c '{text: "\(.attributes.temperature) \(.attributes.temperature_unit)", tooltip: .state, alt: .state}' \
+jq -c '{text: "\(.attributes.temperature)\(.attributes.temperature_unit)", tooltip: .state, alt: .state}' \
   <<<"$response" || echo "$fallback"
