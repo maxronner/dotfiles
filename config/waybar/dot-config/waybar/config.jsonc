@@ -25,9 +25,27 @@
         "battery"
     ],
     "custom/weather": {
-        "format": "{text}",
+        "format": "{icon} {text}",
+        "tooltip": true,
         "interval": 1800,
-        "exec": "CITY=Ystad ~/.config/waybar/scripts/weather.sh",
+        "exec": "~/.config/waybar/scripts/weather.sh",
+        "format-icons": {
+            "clear-night": "",
+            "cloudy": "",
+            "fog": "",
+            "hail": "",
+            "lightning": "",
+            "lightning-rainy": "⛈",
+            "partlycloudy": "󰖕",
+            "pouring": "󰖖",
+            "rainy": "",
+            "snowy": "",
+            "snowy-rainy": "󰙿",
+            "sunny": "",
+            "windy": "󰖝",
+            "windy-variant": "",
+            "exceptional": ""
+        },
         "return-type": "json"
     },
     "sway/workspaces": {
@@ -117,11 +135,11 @@
         ]
     },
     "custom/control-wrap": {
-	    "format": "{icon}",
-	    "format-icons": {
-		    "default": ""
-	    },
-	    "tooltip-format": "Control group"
+        "format": "{icon}",
+        "format-icons": {
+            "default": ""
+        },
+        "tooltip-format": "Control group"
     },
     "group/stats": {
         "orientation": "horizontal",
