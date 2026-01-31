@@ -119,6 +119,7 @@ input "type:touchpad" {
     bindsym $mod+Shift+m exec systemctl --user restart swaybg-update.service
     bindsym $mod+o exec $scripts/select-wallpaper.sh
     bindsym $mod+z exec $scripts/toggle-hide-cursor.sh
+    bindsym $mod+c exec hyprpicker --autocopy
 
     bindsym $mod+Shift+d exec dict
     bindsym $mod+Escape exec $scripts/scratch-toggle.sh --app-id "$home_app" -- chromium --app="https://home.ronner.dev/"
