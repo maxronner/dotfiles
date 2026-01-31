@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Configuration with defaults
-PREPROMPT=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in plaintext or markdown. Add +1 # when using #"}
+PREPROMPT=${LLM_PREPROMPT:-"Keep it dense, concise and informative without going off-topic. Output should be in plaintext or markdown."}
 PROVIDER=${LLM_PROVIDER:-"gemini"}
 
 case "$PROVIDER" in
@@ -178,8 +178,8 @@ save_to_state() {
   [[ -z "$state_path" ]] && return
 
   {
-    printf "## Me:\n%s\n\n" "$prompt"
-    printf "## Model:\n%s\n\n" "$response"
+    printf "## Me\n%s\n\n" "$prompt"
+    printf "## Model (%s)\n%s\n\n" "$MODEL" "$response"
   } >> "$state_path"
 }
 
