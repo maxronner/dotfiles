@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $(basename "$0") /dev/sdX"
+  exit 2
+fi
+
+TARGET="$1"
+
+if [[ ! -b "$TARGET" ]]; then
+  echo "Error: $TARGET is not a block device."
+  exit 2
+fi
+
+echo "WARNING: This will irreversibly overwrite $TARGET"
+lsblk -dpno NAME,SIZE,MODEL,TRAN "$TARGET"
+read -r -p "Proceed? [y/N]: " ans
+case "$ans" in
+  [yY]) ;;
+  *) echo "Aborted."; exit 1 ;;
+esac
+
+BASE_URL="https://geo.mirror.pkgbuild.com/iso/latest"
+ISO="archlinux-x86_64.iso"
+SHA="sha256sums.txt"
+
+OUTDIR="/var/tmp/archiso"
+mkdir -p "$OUTDIR"
+cd "$OUTDIR"
+
+CURL_OPTS=(--location --retry 3 --retry-delay 2)
+REMOTE_SUMS_TMP="$(mktemp)"
+cleanup() {
+  if [[ -n "${REMOTE_SUMS_TMP:-}" && -f "$REMOTE_SUMS_TMP" ]]; then
+    rm -f "$REMOTE_SUMS_TMP"
+  fi
+}
+trap cleanup EXIT
+
+curl "${CURL_OPTS[@]}" -o "$REMOTE_SUMS_TMP" "${BASE_URL}/${SHA}"
+if ! grep -E "^[0-9a-fA-F]{64}[[:space:]]+${ISO}$" "$REMOTE_SUMS_TMP" > "$SHA"; then
+  echo "Error: upstream checksum file missing ${ISO} entry."
+  exit 1
+fi
+
+SKIP_DL=0
+if [[ -f "$ISO" ]]; then
+  if sha256sum -c "$SHA"; then
+    echo "ISO and checksum already up to date; skipping download."
+    SKIP_DL=1
+  else
+    echo "Local ISO checksum failed; re-downloading."
+  fi
+fi
+
+if [[ $SKIP_DL -ne 1 ]]; then
+  curl "${CURL_OPTS[@]}" -O "${BASE_URL}/${ISO}"
+  sha256sum -c "${SHA}"
+fi
+
+echo "Transferring ISO to $TARGET. This may take a while."
+sudo dd if="${ISO}" of="$TARGET" bs=4M conv=fsync
+sync
