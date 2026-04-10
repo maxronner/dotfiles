@@ -19,9 +19,11 @@ done
 
 info "Stowing local lib to ${HOME_DIR}/.local/lib..."
 mkdir -p "${HOME_DIR}/.local/lib"
-for lib_file in "${REPO_ROOT}/local/dot-local/lib"/*; do
-	if [[ -f "$lib_file" ]]; then
-		ln -sf "$lib_file" "${HOME_DIR}/.local/lib/"
+for lib_entry in "${REPO_ROOT}/local/dot-local/lib"/*; do
+	if [[ -f "$lib_entry" ]]; then
+		ln -sf "$lib_entry" "${HOME_DIR}/.local/lib/"
+	elif [[ -d "$lib_entry" ]]; then
+		ln -sfn "$lib_entry" "${HOME_DIR}/.local/lib/$(basename "$lib_entry")"
 	fi
 done
 
