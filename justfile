@@ -14,13 +14,28 @@ user env='':
   @bash install/user/finalize.sh
   @bash install/user/services.sh
 
-extras name:
+extras name='':
   #!/usr/bin/env bash
-  if [ ! -f install/extras/{{name}}.sh ]; then echo "Unknown extra: {{name}}"; exit 1; fi
-  bash install/extras/{{name}}.sh
+  if [ -z "{{name}}" ]; then
+    echo "Available extras:"
+    for f in install/extras/*.sh; do
+      basename "$f" .sh
+    done
+    exit 0
+  fi
+  if [ ! -f "install/extras/{{name}}.sh" ]; then
+    echo "Unknown extra: {{name}}"
+    echo ""
+    echo "Available extras:"
+    for f in install/extras/*.sh; do
+      basename "$f" .sh
+    done
+    exit 1
+  fi
+  bash "install/extras/{{name}}.sh"
 
 unlink env='':
-  @bash install/extras/unlink.sh {{env}}
+  @bash install/lib/unlink.sh {{env}}
 
 lint:
   @missing=0; \
