@@ -21,6 +21,12 @@ stow -d /usr/share/vim/vimfiles -t "${HOME_DIR}/.local/share/nvim/site/spell" sp
 info "Creating zsh data directory..."
 mkdir -p "${HOME_DIR}/.local/share/zsh"
 
-# Activate theme
-info "Setting theme to auto..."
-python3 "${REPO_ROOT}/local/thememanager/thememanager" set auto
+# Seed palette if no live palette exists, then render themed configs
+info "Applying theme from palette..."
+THEME_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/theme"
+PALETTE_SEED="${XDG_CONFIG_HOME:-$HOME/.config}/thememanager/palette.seed.json"
+mkdir -p "$THEME_DATA_DIR"
+if [[ ! -f "$THEME_DATA_DIR/palette.json" ]] && [[ -f "$PALETTE_SEED" ]]; then
+    cp "$PALETTE_SEED" "$THEME_DATA_DIR/palette.json"
+fi
+theme-apply-all
