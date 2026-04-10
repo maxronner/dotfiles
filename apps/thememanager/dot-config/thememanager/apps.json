@@ -14,8 +14,7 @@
   "waybar": {
     "type": "template",
     "source": "~/.config/thememanager/templates/waybar/style.css.tmpl",
-    "target": "~/.config/waybar/style.css",
-    "reload": "pkill -SIGUSR2 waybar"
+    "target": "~/.config/waybar/style.css"
   },
   "swaylock": {
     "type": "template",
