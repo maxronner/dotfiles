@@ -1,4 +1,5 @@
 {
+  "schema_version": "1",
   "theme_name": "rosepine.dark",
   "bg": "#232136",
   "fg": "#e0def4",
