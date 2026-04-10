@@ -75,11 +75,11 @@ assign [app_id="gamescope"]  workspace 4
 #
 #
 exec swayidle -w \
-	timeout 300 '$lock' \
-	timeout 420 'swaymsg "output * dpms off"' \
-	resume 'swaymsg "output * dpms on"; \
-	timeout 600 'systemctl suspend' \
-	before-sleep 'playerctl pause; $lock' \
+    timeout 300 '$lock' \
+    timeout 420 'swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"' \
+    timeout 600 'systemctl suspend' \
+    before-sleep 'playerctl pause; $lock' \
     after-resume 'swaymsg "seat * hide_cursor $cursor_hide_timeout"'
 
 ### Input configuration
