@@ -1,72 +1,31 @@
 {
   "ghostty": {
+    "type": "direct",
+    "key": "terminal_palette",
     "target": "~/.config/ghostty/themes/color256-theme",
-    "reload": "~/.config/thememanager/reload-ghostty.sh",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/ghostty/theme.conf.tmpl",
-        "target": "~/.config/ghostty/themes/color256-theme"
-      }
-    }
-  },
-  "tmux": {
-    "target": "~/.config/tmux/theme.conf",
-    "reload": "tmux source-file ~/.config/tmux/tmux.conf",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/tmux/theme.conf.tmpl"
-      }
-    }
+    "reload": "~/.config/thememanager/reload-ghostty.sh"
   },
   "sway": {
+    "type": "template",
+    "source": "~/.config/thememanager/templates/sway/theme.config.tmpl",
     "target": "~/.config/sway/theme.config",
-    "reload": "swaymsg reload",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/sway/theme.config.tmpl"
-      }
-    }
+    "reload": "swaymsg reload"
   },
   "waybar": {
+    "type": "template",
+    "source": "~/.config/thememanager/templates/waybar/style.css.tmpl",
     "target": "~/.config/waybar/style.css",
-    "reload": "pkill -SIGUSR2 waybar",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/waybar/style.css.tmpl"
-      }
-    }
+    "reload": "pkill -SIGUSR2 waybar"
   },
   "swaylock": {
-    "target": "~/.config/swaylock/config",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/swaylock/config.tmpl"
-      }
-    }
+    "type": "template",
+    "source": "~/.config/thememanager/templates/swaylock/config.tmpl",
+    "target": "~/.config/swaylock/config"
   },
   "mako": {
+    "type": "template",
+    "source": "~/.config/thememanager/templates/mako/theme.ini.tmpl",
     "target": "~/.config/mako/theme.ini",
-    "reload": "makoctl reload",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/mako/theme.ini.tmpl"
-      }
-    }
-  },
-  "foot": {
-    "target": "~/.config/foot/theme.ini",
-    "reload": "~/.config/thememanager/reload-foot.sh",
-    "modes": {
-      "auto": {
-        "type": "template",
-        "source": "~/.config/thememanager/templates/foot/theme.ini.tmpl"
-      }
-    }
+    "reload": "makoctl reload"
   }
 }

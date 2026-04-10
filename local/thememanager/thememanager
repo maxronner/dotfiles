@@ -198,30 +198,8 @@ class ThemeManager:
 
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
-        self._setup_directories()
-        self.app_configs = self._load_app_configs()
-
-    @staticmethod
-    def _is_path_within(path, base, resolve_symlinks=True):
-        path_str = str(path)
-        base_str = str(base)
-        if resolve_symlinks:
-            path_str = os.path.realpath(path_str)
-            base_str = os.path.realpath(base_str)
-        else:
-            path_str = os.path.abspath(path_str)
-            base_str = os.path.abspath(base_str)
-        return os.path.commonpath([path_str, base_str]) == base_str
-
-    def _ensure_home_target(self, app, path):
-        if not self._is_path_within(path, HOME, resolve_symlinks=True):
-            logger.error(f"Refusing to write outside HOME for {app}: {path}")
-            return False
-        return True
-
-    def _setup_directories(self):
-        """Ensure necessary directories exist."""
         THEME_MANAGER_DIR.mkdir(parents=True, exist_ok=True)
+        self.app_configs = self._load_app_configs()
 
     def _load_app_configs(self):
         app_config = APP_CONFIG_FILE
@@ -240,73 +218,28 @@ class ThemeManager:
 
         configs = {}
         for app, conf in raw.items():
-            mode_map = self._normalize_app_modes(app, conf)
-            if mode_map:
-                configs[app] = mode_map
+            if not isinstance(conf, dict):
+                logger.warning(f"Skipping {app}: config must be an object.")
+                continue
+            expanded = conf.copy()
+            for key in ("source", "target"):
+                if key in expanded:
+                    expanded[key] = Path(os.path.expanduser(str(expanded[key])))
+            configs[app] = expanded
         logger.debug(f"Loaded app configs: {list(configs.keys())}")
         return configs
 
     @staticmethod
-    def _expand_app_paths(config):
-        expanded = config.copy()
-        for key in ("path", "source", "target"):
-            if key in expanded:
-                expanded[key] = Path(os.path.expanduser(str(expanded[key])))
-        return expanded
+    def _is_path_within(path, base):
+        path_str = os.path.realpath(str(path))
+        base_str = os.path.realpath(str(base))
+        return os.path.commonpath([path_str, base_str]) == base_str
 
-    def _normalize_app_modes(self, app, conf):
-        if not isinstance(conf, dict):
-            logger.warning(f"Skipping {app}: config must be an object.")
-            return {}
-
-        if isinstance(conf.get("modes"), dict):
-            mode_defs = conf["modes"]
-            base = {
-                k: v
-                for k, v in conf.items()
-                if k not in {"modes", "reload", "reload_shell"}
-            }
-            root_reload = conf.get("reload")
-            root_reload_shell = conf.get("reload_shell")
-
-            normalized = {}
-            for mode, mode_conf in mode_defs.items():
-                if not isinstance(mode_conf, dict):
-                    logger.warning(
-                        f"Skipping {app}/{mode}: mode config must be an object."
-                    )
-                    continue
-                merged = base.copy()
-                merged.update(mode_conf)
-
-                if "reload" not in merged:
-                    if isinstance(root_reload, dict):
-                        if mode in root_reload:
-                            merged["reload"] = root_reload[mode]
-                    elif root_reload is not None:
-                        merged["reload"] = root_reload
-
-                if "reload_shell" not in merged:
-                    if isinstance(root_reload_shell, dict):
-                        if mode in root_reload_shell:
-                            merged["reload_shell"] = root_reload_shell[mode]
-                    elif root_reload_shell is not None:
-                        merged["reload_shell"] = root_reload_shell
-
-                normalized[mode] = self._expand_app_paths(merged)
-            return normalized
-
-        legacy = self._expand_app_paths(conf)
-        modes = conf.get("modes")
-        if modes is None:
-            return {"set": legacy}
-        if isinstance(modes, str):
-            return {modes: legacy}
-        if isinstance(modes, list):
-            return {str(mode): legacy.copy() for mode in modes}
-
-        logger.warning(f"Skipping {app}: invalid 'modes' declaration.")
-        return {}
+    def _ensure_home_target(self, app, path):
+        if not self._is_path_within(path, HOME):
+            logger.error(f"Refusing to write outside HOME for {app}: {path}")
+            return False
+        return True
 
     def _color256_themes_dir(self):
         env_dir = os.environ.get("COLOR256_THEMES_DIR")
@@ -476,15 +409,32 @@ class ThemeManager:
                 pass
         return "none"
 
+    def _apply_theme(self, palette):
+        """Apply palette to all configured apps and reload."""
+        if self.dry_run:
+            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
+        else:
+            PALETTE_FILE.write_text(json.dumps(palette, indent=2) + "\n")
+
+        changed_any = False
+        for app, config in self.app_configs.items():
+            app_type = config.get("type")
+            if app_type == "template":
+                changed_any = self._apply_template(app, config, palette) or changed_any
+            elif app_type == "direct":
+                changed_any = self._apply_direct(app, config, palette) or changed_any
+            else:
+                logger.debug(f"Skipping unknown type '{app_type}' for {app}")
+
+        if changed_any:
+            self._reload_apps()
+        return changed_any
+
     def set_theme(self, theme_name):
         """Set the system-wide theme to the one specified."""
         if theme_name == "auto":
-            logger.info("Theme mode set to 'auto'.")
             self.auto_theme_from_wallpaper(force=True)
             return
-
-        if self.dry_run:
-            logger.info("Dry-run mode enabled — no changes will be written.")
 
         theme_files = self._list_color256_theme_files()
         theme_path = theme_files.get(theme_name)
@@ -506,25 +456,8 @@ class ThemeManager:
             logger.error(f"Failed to build palette for '{theme_name}': {e}")
             return
 
-        if self.dry_run:
-            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
-        else:
-            PALETTE_FILE.write_text(json.dumps(palette, indent=2) + "\n")
-
         logger.info(f"Setting theme to '{theme_name}'...")
-        changed_any = False
-        for app, mode_configs in self.app_configs.items():
-            config = mode_configs.get("auto")
-            if not config or config.get("type") != "template":
-                continue
-            changed_any = self._apply_template(app, config, palette) or changed_any
-
-        self._reload_apps()
-
-        logger.info(f"Successfully switched to theme '{theme_name}'.")
-        if changed_any:
-            logger.info("Rendered template-based theme targets for set mode.")
-        logger.info("Please restart or reload applications for changes to take effect.")
+        self._apply_theme(palette)
 
     def auto_theme_from_wallpaper(self, wallpaper=None, force=False):
         current = self.get_current_theme()
@@ -538,7 +471,6 @@ class ThemeManager:
         if not wallpaper_path:
             logger.warning("No wallpaper found; skipping wallpaper-based theming.")
             return
-
         if not wallpaper_path.is_file():
             logger.warning(f"Wallpaper file not found: {wallpaper_path}")
             return
@@ -553,30 +485,8 @@ class ThemeManager:
             logger.error(f"Failed to generate auto palette: {e}")
             return
 
-        palette_json = json.dumps(palette, indent=2) + "\n"
-        if self.dry_run:
-            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
-        else:
-            PALETTE_FILE.write_text(palette_json)
-
-        changed_any = False
-        for app, mode_configs in self.app_configs.items():
-            config = mode_configs.get("auto")
-            if not config:
-                continue
-            t = config.get("type")
-            if t == "template":
-                changed_any = self._apply_template(app, config, palette) or changed_any
-            else:
-                logger.debug(
-                    f"Skipping non-template auto mode type '{t}' for app '{app}'"
-                )
-
-        if changed_any:
-            self._reload_apps(mode="auto")
-            logger.info("Wallpaper-based auto theme applied.")
-        else:
-            logger.info("No auto theme targets changed.")
+        logger.info("Applying wallpaper-based auto theme...")
+        self._apply_theme(palette)
 
     def _resolve_wallpaper_path(self, wallpaper=None):
         candidates = []
@@ -594,6 +504,36 @@ class ThemeManager:
                 return candidate.resolve()
         return None
 
+    def _apply_direct(self, app, config, palette):
+        """Write a single palette value directly to the target file."""
+        key = config.get("key")
+        target_path = config.get("target")
+        if not key or not target_path:
+            logger.warning(f"Skipping {app}: direct type requires 'key' and 'target'.")
+            return False
+
+        value = palette.get(key, "")
+        if not value:
+            logger.warning(f"Skipping {app}: palette key '{key}' is empty.")
+            return False
+
+        if not self._ensure_home_target(app, target_path):
+            return False
+
+        content = str(value) + "\n"
+        original = target_path.read_text() if target_path.is_file() else ""
+        if original == content:
+            logger.debug(f"No changes needed for {app}.")
+            return False
+
+        if self.dry_run:
+            logger.info(f"[dry-run] Would write {app}: {target_path}")
+        else:
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_text(content)
+            logger.info(f"Applied {app} theme via direct write.")
+        return True
+
     def _apply_template(self, app, config, palette):
         source_path = config.get("source")
         target_path = config.get("target")
@@ -610,21 +550,11 @@ class ThemeManager:
         if not self._ensure_home_target(app, target_path):
             return False
 
-        if target_path.exists() and target_path.is_dir():
-            logger.error(f"Refusing to replace directory for {app}: {target_path}")
-            return False
-
         try:
             template = source_path.read_text()
-            rendered = self._render_template(template, palette)
-
-            if target_path.is_symlink():
-                if self.dry_run:
-                    logger.info(
-                        f"[dry-run] Would replace symlink with rendered file for {app}: {target_path}"
-                    )
-                else:
-                    target_path.unlink(missing_ok=True)
+            rendered = template
+            for key, value in palette.items():
+                rendered = rendered.replace("{{" + key + "}}", str(value))
 
             original = target_path.read_text() if target_path.is_file() else ""
             if original == rendered:
@@ -644,46 +574,18 @@ class ThemeManager:
             logger.error(f"Error applying template theme for {app}: {e}")
             return False
 
-    @staticmethod
-    def _render_template(template, palette):
-        rendered = template
-        for key, value in palette.items():
-            rendered = rendered.replace("{{" + key + "}}", str(value))
-        return rendered
-
-    def _ensure_parent_directory(self, directory):
-        if (directory.exists() and not directory.is_dir()) or (
-            directory.is_symlink() and not directory.is_dir()
-        ):
-            logger.warning(f"Replacing non-directory path with directory: {directory}")
-            directory.unlink(missing_ok=True)
-        directory.mkdir(parents=True, exist_ok=True)
-        return True
-
-    def _reload_apps(self, mode=None):
+    def _reload_apps(self):
         """Reload applications that support theme hot-reloading."""
-        logger.info("Reloading apps that support it...")
-        for app, mode_configs in self.app_configs.items():
-            if mode:
-                conf = mode_configs.get(mode)
-                if not conf:
-                    continue
-            else:
-                conf = None
-                for candidate in mode_configs.values():
-                    if candidate.get("reload"):
-                        conf = candidate
-                        break
-                if not conf:
-                    continue
-            reload_cmd = conf.get("reload")
+        logger.info("Reloading apps...")
+        for app, config in self.app_configs.items():
+            reload_cmd = config.get("reload")
             if not reload_cmd:
                 continue
             try:
                 if self.dry_run:
                     logger.info(f"[dry-run] Would run: {reload_cmd}")
                 else:
-                    allow_shell = conf.get("reload_shell", False)
+                    allow_shell = config.get("reload_shell", False)
                     if self._run_command(app, reload_cmd, allow_shell=allow_shell):
                         logger.info(f"Reloaded {app}")
             except subprocess.CalledProcessError as e:
