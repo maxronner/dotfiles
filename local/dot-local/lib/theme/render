@@ -129,7 +129,7 @@ fi
 # Scan output for any remaining {{...}} tokens (covers malformed placeholders).
 
 if [[ $STRICT -eq 1 ]]; then
-  UNRESOLVED=$(printf '%s\n' "$RESULT" | grep -oP '\{\{[^}]*\}\}' || true)
+  UNRESOLVED=$(printf '%s\n' "$RESULT" | grep -oE '\{\{[^}]*\}\}' || true)
   if [[ -n "$UNRESOLVED" ]]; then
     echo "render: unresolved placeholders (strict mode):" >&2
     printf '%s\n' "$UNRESOLVED" | sort -u >&2
@@ -144,6 +144,8 @@ if [[ -z "$OUTPUT" || "$OUTPUT" == "-" ]]; then
 else
   OUTDIR=$(dirname "$OUTPUT")
   TMPFILE=$(mktemp "$OUTDIR/.render.XXXXXXXXXX")
+  trap 'rm -f "$TMPFILE"' EXIT
   printf '%s\n' "$RESULT" > "$TMPFILE"
   mv "$TMPFILE" "$OUTPUT"
+  trap - EXIT
 fi
