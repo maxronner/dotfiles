@@ -23,7 +23,7 @@ if [[ "${THEME_LOCK_HELD:-}" != "1" ]]; then
   flock -n 9 || { echo "theme-apply-all: already running" >&2; exit 0; }
 fi
 
-apps=(sway waybar swaylock mako ghostty)
+apps=(sway waybar swaylock mako ghostty foot)
 applied=0
 skipped=0
 failed=0
