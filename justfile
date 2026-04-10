@@ -14,7 +14,7 @@ user env='':
   @bash install/user/finalize.sh
   @bash install/user/services.sh
 
-extras name='':
+extra name='':
   #!/usr/bin/env bash
   if [ -z "{{name}}" ]; then
     echo "Available extras:"

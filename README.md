@@ -11,22 +11,22 @@ This repository contains my system configuration, application settings, and inst
 - **`devices/`** - Device-specific configurations
 - **`optional/`** - Optional configurations and tweaks
 - **`local/`** - Local machine-specific settings
-- **`install/`** - Installation phases and setup scripts
+- **`install/`** - Installation scripts organized by privilege boundary
+  - **`lib/`** - Shared utilities and step scripts
+  - **`system/`** - Privileged phases (packages, system config, device setup)
+  - **`user/`** - Unprivileged phases (dotfiles, user services, post-deploy setup)
+  - **`extras/`** - Optional add-ons (dev tools, nvim, ly)
+  - **`specifics/`** - Device-profile scripts
 
 ## Usage
 
 This project uses [just](https://github.com/casey/just) as a task runner. Supported commands:
 
 ```bash
-just bootstrap [env]      # Run bootstrap phase
-just preflight            # Check prerequisites
-just packages [env]       # Install base packages
-just packages-aur [env]   # Install AUR packages (Arch Linux)
-just device [env]         # Device-specific setup
-just activate [env]       # Activate configuration
-just stow-system [env]    # Apply home directory symlinks
-just services             # Enable systemd services
-just theme                # Set system theme
-just pam-u2f              # Setup PAM U2F authentication
-just swayfx-nvidia        # Configure Sway with NVIDIA support
+just bootstrap [env]      # Full setup: system + user
+just system [env]         # Privileged: packages, system config, device setup
+just user [env]           # Unprivileged: dotfiles, user services, post-deploy
+just extra <name>        # Optional add-ons (dev, nvim, ly)
+just unlink [env]         # Remove managed symlinks
+just lint                 # Validate package manifests
 ```
