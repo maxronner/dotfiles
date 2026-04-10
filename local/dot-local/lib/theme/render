@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+# render - {{key}} template substitution against a JSON palette file
+# Usage: render [--strict] <palette.json> <template> [output]
+
+set -euo pipefail
+
+# --- argument parsing ---
+
+STRICT=0
+if [[ "${1:-}" == "--strict" ]]; then
+  STRICT=1
+  shift
+fi
+
+if [[ $# -lt 2 ]]; then
+  echo "usage: render [--strict] <palette.json> <template> [output]" >&2
+  exit 1
+fi
+
+PALETTE="$1"
+TEMPLATE="$2"
+OUTPUT="${3:-}"
+
+# --- input validation ---
+
+if [[ ! -f "$PALETTE" ]]; then
+  echo "render: palette not found: $PALETTE" >&2
+  exit 1
+fi
+
+if [[ ! -f "$TEMPLATE" ]]; then
+  echo "render: template not found: $TEMPLATE" >&2
+  exit 1
+fi
+
+# Validate JSON and extract key\x01value pairs (one entry per logical line).
+# \x01 is the field separator — safe for all normal string values.
+if ! KV_DATA=$(jq -r 'to_entries[] | .key + "\u0001" + .value' "$PALETTE" 2>/dev/null); then
+  echo "render: failed to parse palette JSON: $PALETTE" >&2
+  exit 1
+fi
+
+# --- awk substitution ---
+# awk handles multi-line values and special chars (/, &, \) safely.
+# Missing valid-key placeholders: left as-is, key written to $MISSING_FILE.
+# Malformed placeholders (bad key grammar): left as-is silently.
+
+MISSING_FILE=$(mktemp)
+trap 'rm -f "$MISSING_FILE"' EXIT
+
+RESULT=$(
+  awk -v kv_data="$KV_DATA" -v missing_file="$MISSING_FILE" '
+BEGIN {
+  # Parse key\x01value pairs.
+  # Values may contain literal newlines (jq -r emits them that way).
+  # A line containing \x01 starts a new entry; lines without it extend the value.
+  n = split(kv_data, lines, "\n")
+  cur_key = ""
+  cur_val = ""
+  for (i = 1; i <= n; i++) {
+    ln = lines[i]
+    pos = index(ln, "\001")
+    if (pos > 0) {
+      if (cur_key != "") palette[cur_key] = cur_val
+      cur_key = substr(ln, 1, pos - 1)
+      cur_val = substr(ln, pos + 1)
+    } else {
+      if (cur_key != "") cur_val = cur_val "\n" ln
+    }
+  }
+  if (cur_key != "") palette[cur_key] = cur_val
+}
+{
+  ln = $0
+  out = ""
+  while (length(ln) > 0) {
+    opos = index(ln, "{{")
+    if (opos == 0) {
+      out = out ln
+      ln = ""
+      break
+    }
+    out = out substr(ln, 1, opos - 1)
+    rest = substr(ln, opos)
+
+    cpos = index(rest, "}}")
+    if (cpos == 0) {
+      out = out rest
+      ln = ""
+      break
+    }
+
+    inner = substr(rest, 3, cpos - 3)
+    full_token = substr(rest, 1, cpos + 1)
+    ln = substr(rest, cpos + 2)
+
+    # Trim surrounding whitespace from inner
+    gsub(/^[[:space:]]+|[[:space:]]+$/, "", inner)
+
+    if (inner ~ /^[A-Za-z0-9_]+$/) {
+      if (inner in palette) {
+        out = out palette[inner]
+      } else {
+        # Valid key syntax but missing from palette — leave as-is, record miss
+        print inner >> missing_file
+        out = out full_token
+      }
+    } else {
+      # Malformed placeholder — leave as-is silently
+      out = out full_token
+    }
+  }
+  print out
+}
+' "$TEMPLATE"
+)
+
+# --- check for missing keys ---
+
+if [[ -s "$MISSING_FILE" ]]; then
+  echo "render: missing palette keys:" >&2
+  sort -u "$MISSING_FILE" | while IFS= read -r key; do
+    echo "  {{$key}}" >&2
+  done
+  exit 2
+fi
+
+# --- strict mode check ---
+# Scan output for any remaining {{...}} tokens (covers malformed placeholders).
+
+if [[ $STRICT -eq 1 ]]; then
+  UNRESOLVED=$(printf '%s\n' "$RESULT" | grep -oP '\{\{[^}]*\}\}' || true)
+  if [[ -n "$UNRESOLVED" ]]; then
+    echo "render: unresolved placeholders (strict mode):" >&2
+    printf '%s\n' "$UNRESOLVED" | sort -u >&2
+    exit 2
+  fi
+fi
+
+# --- output ---
+
+if [[ -z "$OUTPUT" || "$OUTPUT" == "-" ]]; then
+  printf '%s\n' "$RESULT"
+else
+  OUTDIR=$(dirname "$OUTPUT")
+  TMPFILE=$(mktemp "$OUTDIR/.render.XXXXXXXXXX")
+  printf '%s\n' "$RESULT" > "$TMPFILE"
+  mv "$TMPFILE" "$OUTPUT"
+fi
