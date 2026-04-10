@@ -9,11 +9,15 @@ Separate the install system into two distinct execution flows based on privilege
 
 A composite `bootstrap` target runs both. Optional extras are self-contained add-ons.
 
+## Invocation Model
+
+Scripts are run as the invoking user, never via `sudo just ...`. Individual privileged commands inside system scripts use `sudo` as needed. This preserves the invoking user's identity for AUR builds, `$HOME` resolution, and `systemctl --user` operations.
+
 ## Directory Structure
 
 ```
 install/
-  lib/                          # shared plumbing, reusable primitives
+  lib/                          # shared utilities and narrowly scoped step scripts
     common.sh                   # logging, package helpers, profile resolution
     preflight.sh                # git submodule init
     install-terminal.sh         # pacman package install from pkg.txt
@@ -22,7 +26,7 @@ install/
     enable-system-services.sh   # systemctl enable for system units
     setup-timesyncd.sh          # NTP config + timezone
     configure-sway-desktop.sh   # sway .desktop entry (XDG, nvidia)
-    stow-system.sh              # stow apps/ to $HOME
+    stow-apps.sh                # stow apps/ to $HOME
     stow-device.sh              # stow devices/{env} to $HOME
     stow-scripts.sh             # symlink local scripts/libs to ~/.local/
     stow-themes.sh              # symlink theme assets to ~/.local/share/themes/
@@ -79,6 +83,8 @@ lint:
   # validate all package dirs have pkg.txt
 ```
 
+Note: `preflight` runs in both `bootstrap` and `user`. This is intentional — it is idempotent, and standalone `just user` must remain safe without assuming `just system` ran first. The duplicate is acceptable for simplicity.
+
 ### Target Graph
 
 ```
@@ -92,7 +98,7 @@ bootstrap [env]
   |           +-- specifics/setup-{env}.sh (if exists)
   |
   +-- user [env]
-        +-- preflight
+        +-- preflight (idempotent, safe to rerun)
         +-- user/dotfiles.sh [env]
         +-- user/finalize.sh
         +-- user/services.sh
@@ -132,13 +138,12 @@ bootstrap [env]
 - Installs repo packages from all matching `pkg.txt` files via pacman
 - Bootstraps yay if absent
 - Installs AUR packages from all matching `pkg.txt` files via yay
-- Sets up vim spell symlinks, creates `~/.local/share/zsh`
 
 **Idempotency:** Safe to run repeatedly. Package managers handle already-installed packages.
 
-**Sudo:** Yes (pacman, makepkg).
+**Sudo:** Yes (pacman requires sudo). AUR builds run as the invoking user via yay/makepkg; only the final package install step elevates. This is a cross-boundary workflow — the outcome is machine-wide package installation, but AUR building intentionally runs unprivileged.
 
-**Must not:** Deploy dotfiles or modify user config.
+**Must not:** Deploy dotfiles or modify `$HOME`. User-facing runtime layout (e.g., vim spell symlinks, `~/.local/share/zsh`) belongs in `user/finalize.sh`.
 
 ---
 
@@ -199,7 +204,7 @@ bootstrap [env]
 
 ### install/user/finalize.sh
 
-**Purpose:** Post-deploy user setup in `$HOME`.
+**Purpose:** Post-deploy user setup in `$HOME`. Prepares user-facing runtime layout for installed software.
 
 **Inputs:** Existing stowed dotfiles. Network access only if TPM is missing.
 
@@ -209,6 +214,8 @@ bootstrap [env]
 - Symlink local libs to `~/.local/lib/`
 - Create `~/.config/sway/scripts/` if absent
 - Clone TPM into `$HOME` if absent
+- Set up vim spell symlinks
+- Create `~/.local/share/zsh`
 - Run `thememanager set auto`
 
 **Idempotency:** Safe to run repeatedly.
@@ -225,7 +232,7 @@ bootstrap [env]
 
 **Inputs:** None.
 
-**Effects:** Enables explicit list of user services and timers via `systemctl --user enable --now`.
+**Effects:** Enables explicit list of user services and timers via `systemctl --user enable --now`. Fails with a clear message if an expected unit file is missing.
 
 **Managed units:**
 - `mako.service`
@@ -273,7 +280,7 @@ bootstrap [env]
 
 **Scope:** User.
 
-**Purpose:** Remove filesystem links managed by the user flow. Reverse of `user/dotfiles.sh` and the symlink operations in `user/finalize.sh`.
+**Purpose:** Remove managed filesystem links. This is the reverse of the link-deployment operations in `user/dotfiles.sh` and `user/finalize.sh` — it is not a full reversal of the entire user flow.
 
 **Inputs:** Optional `env` profile name.
 
@@ -283,16 +290,41 @@ bootstrap [env]
 - Removes manually-linked scripts from `~/.local/bin/`
 - Removes manually-linked theme assets from `~/.local/share/themes/`
 
-**Does not:** Disable user services, undo post-stow hooks, or reverse system-level changes. It only removes managed filesystem links.
+**Does not:** Disable user services, remove TPM, undo directory creation, or reverse system-level changes.
 
 **Sudo:** No.
+
+## Boundary Model
+
+### System flow may:
+- Install packages
+- Write under `/etc`, `/usr`, `/var`
+- Enable system units
+- Call device-specific system scripts
+- Read repo files
+
+### System flow may not:
+- Write under `$HOME`
+- Enable `systemctl --user`
+- Stow or symlink user config
+
+### User flow may:
+- Write under `$HOME`
+- Stow dotfiles
+- Enable `systemctl --user`
+- Run user-scoped post-setup hooks
+
+### User flow may not:
+- Call `sudo`
+- Install machine packages
+- Mutate `/etc` or `/usr`
 
 ## Invariants
 
 1. **No `user/*` script may require sudo.** If a user-flow script needs privilege escalation, it belongs in `system/` or `extras/` with declared system scope.
 2. **No `system/*` script may mutate user dotfiles in `$HOME`.** System scripts install software and configure the OS; they do not deploy user config.
 3. **Every `extras/` script must declare its scope** (`system` or `user`) as a comment at the top of the file.
-4. **`lib/` contains reusable primitives only.** Nothing in `lib/` is a user-facing phase. A `lib/` script must be callable from multiple places or encapsulate one narrowly defined operation.
+4. **`lib/` contains shared utilities and narrowly scoped step scripts** composed by phase scripts. Nothing in `lib/` is a user-facing phase or top-level install flow.
 5. **`unlink` only removes managed links** — symlinks explicitly created by this repo's stow and manual linking operations.
 6. **All scripts use `set -euo pipefail`.** Fail fast on errors.
 7. **All scripts source `lib/common.sh`** for logging and shared utilities.
@@ -309,19 +341,29 @@ bootstrap [env]
 - All scripts use `set -euo pipefail` — fail fast, no partial silent progress.
 - Logging uses `info`, `success`, `warn`, `error` from `lib/common.sh`.
 - "No-op if absent" conditions (e.g., no device profile, no AUR packages) are reported via `warn` and exit cleanly.
+- `user/services.sh` fails with a clear message if an expected unit file is missing, rather than silently skipping.
 
 ## Migration Plan
 
-Behavior-preserving moves first, semantic changes second:
+Phase wrappers first to establish the new public API, then refactor internals behind stable entry points:
 
 1. Create directory layout (`lib/`, `system/`, `user/`, `extras/`, `specifics/`)
-2. Move numbered scripts into `lib/` (rename, drop numeric prefixes)
-3. Write `system/packages.sh`, `system/config.sh`, `system/device.sh` as new phase scripts calling into `lib/`
-4. Write `user/dotfiles.sh`, `user/finalize.sh`, `user/services.sh` as new phase scripts calling into `lib/`
-5. Extract `lib/preflight.sh` from old `phases/preflight.sh`
+2. Extract `lib/common.sh` and `lib/preflight.sh`
+3. Write new phase scripts (`system/packages.sh`, `system/config.sh`, `system/device.sh`, `user/dotfiles.sh`, `user/finalize.sh`, `user/services.sh`) as wrappers calling existing numbered scripts
+4. Move and rename numbered scripts into `lib/` behind those wrappers (drop numeric prefixes, rename `stow-system.sh` -> `stow-apps.sh`)
+5. Move `$HOME` mutations (vim spell symlinks, `~/.local/share/zsh`) from old `install-terminal.sh` into `user/finalize.sh`
 6. Write `extras/dev.sh`, `extras/nvim.sh`, `extras/ly.sh`, `extras/unlink.sh`
 7. Move `specifics/` into new location
 8. Update justfile to new targets
 9. Narrow `user/services.sh` to explicit unit list (remove auto-discovery)
 10. Remove old `phases/` directory and old numbered scripts
-11. Verify all flows work: `just bootstrap`, `just system`, `just user`, `just extras dev`, `just unlink`
+11. Verify all flows: `just bootstrap`, `just system`, `just user`, `just system laptop`, `just user laptop`, `just extras dev`, `just extras nvim`, `just unlink laptop`
+
+### Verification Criteria
+
+For each flow, verify:
+- No unexpected sudo prompt in `user`
+- No `$HOME` mutations in `system`
+- Rerun is clean and idempotent
+- Missing env profile is a clean no-op with warning
+- Missing optional package lists are a clean no-op with warning
