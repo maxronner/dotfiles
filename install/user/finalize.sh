@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+# Stow themes and symlink local scripts/libs
+bash "${SCRIPT_DIR}/../lib/stow-scripts.sh"
+
+# Create sway config directory if absent
+bash "${SCRIPT_DIR}/../lib/create-sway-config-dir.sh"
+
+# Install TPM if absent
+bash "${SCRIPT_DIR}/../lib/install-tpm.sh"
+
+# Prepare user-facing runtime layout for installed software
+info "Setting up vim spell symlinks..."
+mkdir -p "${HOME_DIR}/.local/share/nvim/site/spell"
+stow -d /usr/share/vim/vimfiles -t "${HOME_DIR}/.local/share/nvim/site/spell" spell
+
+info "Creating zsh data directory..."
+mkdir -p "${HOME_DIR}/.local/share/zsh"
+
+# Activate theme
+info "Setting theme to auto..."
+python3 "${REPO_ROOT}/local/thememanager/thememanager" set auto
