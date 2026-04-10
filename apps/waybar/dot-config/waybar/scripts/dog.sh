@@ -3,15 +3,7 @@ set -euo pipefail
 
 WALK_THRESHOLD=240
 
-basename="${0##*/}"
-basename="${basename%.sh}"
-
-fallback() {
-  jq -cn --arg text "N/A" --arg tooltip "$basename unavailable" --arg class "default" \
-    '{text:$text, tooltip:$tooltip, class:$class}'
-}
-
-throw() { fallback; exit 0; }
+throw() { exit 0; }
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
