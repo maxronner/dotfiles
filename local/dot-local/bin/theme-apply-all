@@ -27,6 +27,11 @@ apps=(sway waybar swaylock mako ghostty)
 applied=0
 skipped=0
 failed=0
+pids=()
+pid_app=()
+
+arg=""
+(( check )) && arg="--check"
 
 for app in "${apps[@]}"; do
   script="$CONFIG_DIR/$app/scripts/apply-theme"
@@ -34,21 +39,17 @@ for app in "${apps[@]}"; do
     skipped=$((skipped + 1))
     continue
   fi
+  "$script" $arg &
+  pids+=($!)
+  pid_app+=("$app")
+done
 
-  if (( check )); then
-    if "$script" --check; then
-      applied=$((applied + 1))
-    else
-      echo "theme-apply-all: FAIL $app" >&2
-      failed=$((failed + 1))
-    fi
+for i in "${!pids[@]}"; do
+  if wait "${pids[$i]}"; then
+    applied=$((applied + 1))
   else
-    if "$script"; then
-      applied=$((applied + 1))
-    else
-      echo "theme-apply-all: FAIL $app" >&2
-      failed=$((failed + 1))
-    fi
+    echo "theme-apply-all: FAIL ${pid_app[$i]}" >&2
+    failed=$((failed + 1))
   fi
 done
 
