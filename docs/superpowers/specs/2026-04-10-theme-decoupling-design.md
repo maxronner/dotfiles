@@ -278,11 +278,25 @@ Only placeholder substitution. This keeps the primitive trivially replaceable.
 | Malformed placeholder (e.g. `{{foo bar}}`, `{{% x }}`) | Left as-is (not a placeholder) |
 | Output write fails | Exit 2 |
 
+### Strict mode
+
+```
+render --strict <palette.json> <template> [output]
+```
+
+In strict mode, after substitution the renderer scans the output for any
+remaining tokens matching `\{\{[^}]*\}\}`. If any are found, it exits 2.
+
+This catches template typos like `{{ foo-bar }}` (hyphen not in key grammar)
+that normal mode would leave untouched.
+
+Per-app `--check` invokes the renderer with `--strict`. Normal apply does not.
+
 ### Exit codes
 
 - 0: success
 - 1: usage/input error (missing args, missing files, bad JSON)
-- 2: render error (missing key, write failure)
+- 2: render error (missing key, write failure, unresolved placeholder in strict mode)
 
 ### Implementation notes
 
@@ -338,13 +352,22 @@ apply-theme [--check]
 
 **Check mode (`--check`):**
 
-1. Same as normal mode steps 1-3, but render to stdout or /dev/null.
+1. Same as normal mode steps 1-3, but render with `--strict` to /dev/null.
 2. Skip reload entirely.
-3. Exit 0 if render would succeed.
+3. Exit 0 if render would succeed. Exit non-zero if render fails or
+   unresolved placeholders remain (strict mode).
 
-In check mode, the renderer is called with `-` (stdout) so no files are
-written. `theme-apply-all --check` validates that all templates render
-cleanly against the current palette.
+### stdout/stderr discipline
+
+- stdout is reserved for rendered output (used in `--check` piping).
+- stderr is reserved for diagnostics and reload messages.
+- Normal mode should not emit rendered content to stdout.
+
+### Output directory creation
+
+Apply scripts must `mkdir -p` the target's parent directory before writing.
+This ensures first-install robustness when generated config directories do
+not yet exist (e.g. `~/.config/ghostty/themes/`).
 
 ### Failure semantics summary
 
@@ -405,36 +428,59 @@ Adding an app means editing this list.
 
 ### Concurrency
 
-`theme-apply-all` uses `flock` on a user-local lockfile to prevent overlapping
-runs from interleaving writes and reloads:
+A single lockfile guards both palette writes and theme application:
 
 ```bash
-exec 9>"${XDG_RUNTIME_DIR:-/tmp}/theme-apply-all.lock"
+THEME_LOCK="${XDG_RUNTIME_DIR:-/tmp}/theme.${UID}.lock"
+```
+
+`theme-apply-all` acquires this lock before processing apps:
+
+```bash
+exec 9>"$THEME_LOCK"
 flock -n 9 || { echo "theme-apply-all: already running" >&2; exit 0; }
 ```
+
+`thememanager` acquires the **same lock** before writing `palette.json` and
+holds it through the `theme-apply-all` invocation:
+
+```python
+lock_path = os.environ.get("XDG_RUNTIME_DIR", "/tmp") + f"/theme.{os.getuid()}.lock"
+lock_fd = os.open(lock_path, os.O_CREAT | os.O_WRONLY)
+fcntl.flock(lock_fd, fcntl.LOCK_EX)
+# ... write palette.json ...
+# ... call theme-apply-all (which will skip flock since fd is inherited) ...
+fcntl.flock(lock_fd, fcntl.LOCK_UN)
+```
+
+This prevents the race where `thememanager` writes a new palette while an
+in-flight `theme-apply-all` has already started rendering with the old one.
+
+The lockfile is per-user (`${UID}`) to avoid conflicts in multi-user
+environments.
 
 This matters because the orchestrator can be invoked from:
 - Bootstrap (`finalize.sh`)
 - `thememanager` after palette generation
 - Manual user invocation
 
-Without locking, concurrent runs could interleave template writes and reload
-commands.
+Without locking, concurrent runs could interleave palette writes, template
+renders, and reload commands.
 
 ### Bootstrap tolerance
 
 The orchestrator never stops on first failure. It always processes all apps.
 This keeps bootstrap resilient even if one app has a broken template.
 
-### Check mode strictness
+### Check mode
 
 When `--check` is passed, `theme-apply-all` runs each apply script with
-`--check`. After all apps are processed, it additionally scans rendered output
-(from stdout) for unresolved placeholder-like tokens matching `\{\{[^}]+\}\}`.
-If any remain, it reports them as warnings to stderr.
+`--check`. Each apply script invokes the renderer in `--strict` mode, which
+catches both missing keys and unresolved placeholder-like tokens.
 
-This catches template typos like `{{ foo-bar }}` (hyphen not in key grammar)
-that would silently pass through the renderer.
+Unresolved placeholders are **fatal** in check mode — they mark the app as
+failed. This makes `theme-apply-all --check` usable as a validator for CI
+and schema migrations.
 
 ---
 
@@ -461,21 +507,33 @@ that would silently pass through the renderer.
   (`$XDG_DATA_HOME/theme/palette.json`)
 - CLI: `list`, `get`, `set`, `auto` subcommands
 
-### Palette write
+### Palette write and apply
 
-`thememanager` writes `palette.json` atomically (temp file in same directory +
-`os.rename`). This is critical because direct readers like nvim may observe
-the file at any time.
-
-### New behavior after palette write
-
-After writing `palette.json`, thememanager calls `theme-apply-all` best-effort:
+`thememanager` acquires the shared theme lock, writes `palette.json` atomically
+(temp file in same directory + `os.rename`), then calls `theme-apply-all`
+best-effort, all under the same lock:
 
 ```python
-apply_cmd = shutil.which("theme-apply-all")
-if apply_cmd:
-    subprocess.run([apply_cmd], check=False)
+import fcntl
+
+lock_path = os.environ.get("XDG_RUNTIME_DIR", "/tmp") + f"/theme.{os.getuid()}.lock"
+lock_fd = os.open(lock_path, os.O_CREAT | os.O_WRONLY)
+fcntl.flock(lock_fd, fcntl.LOCK_EX)
+try:
+    # atomic write palette.json (temp + os.rename)
+    ...
+    # best-effort apply
+    apply_cmd = shutil.which("theme-apply-all")
+    if apply_cmd:
+        subprocess.run([apply_cmd], check=False)
+finally:
+    fcntl.flock(lock_fd, fcntl.LOCK_UN)
+    os.close(lock_fd)
 ```
+
+The atomic write is critical because direct readers like nvim may observe
+the file at any time. The lock ensures palette write and theme application
+are a single atomic operation from the perspective of concurrent invocations.
 
 If `theme-apply-all` is not found, thememanager does not fail. This keeps the
 decoupling intact — thememanager's job is producing a palette, not applying it.
