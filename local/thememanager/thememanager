@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import fcntl
 import json
 import logging
 import math
@@ -41,8 +42,8 @@ HOME = Path.home()
 THEME_MANAGER_DIR = Path(
     os.environ.get("THEME_MANAGER_DIR", HOME / ".config" / "thememanager")
 )
-APP_CONFIG_FILE = THEME_MANAGER_DIR / "apps.json"
-PALETTE_FILE = THEME_MANAGER_DIR / "palette.json"
+XDG_DATA_HOME = Path(os.environ.get("XDG_DATA_HOME", HOME / ".local" / "share"))
+PALETTE_FILE = XDG_DATA_HOME / "theme" / "palette.json"
 COLOR256_THEMES_DIR = HOME / ".local" / "share" / "themes"
 
 
@@ -121,6 +122,7 @@ def _build_semantic_palette(base16_hex, theme_name):
     accent = colors[4]
 
     palette = {
+        "schema_version": "1",
         "theme_name": theme_name,
         "bg": bg,
         "fg": fg,
@@ -199,47 +201,6 @@ class ThemeManager:
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
         THEME_MANAGER_DIR.mkdir(parents=True, exist_ok=True)
-        self.app_configs = self._load_app_configs()
-
-    def _load_app_configs(self):
-        app_config = APP_CONFIG_FILE
-        if not app_config.is_file():
-            app_config = Path(__file__).parent / "apps.json"
-            if not app_config.is_file():
-                logger.error(f"Missing app config file at '{app_config}'")
-                sys.exit(1)
-
-        try:
-            with open(app_config, "r") as f:
-                raw = json.load(f)
-        except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in '{app_config}': {e}")
-            sys.exit(1)
-
-        configs = {}
-        for app, conf in raw.items():
-            if not isinstance(conf, dict):
-                logger.warning(f"Skipping {app}: config must be an object.")
-                continue
-            expanded = conf.copy()
-            for key in ("source", "target"):
-                if key in expanded:
-                    expanded[key] = Path(os.path.expanduser(str(expanded[key])))
-            configs[app] = expanded
-        logger.debug(f"Loaded app configs: {list(configs.keys())}")
-        return configs
-
-    @staticmethod
-    def _is_path_within(path, base):
-        path_str = os.path.realpath(str(path))
-        base_str = os.path.realpath(str(base))
-        return os.path.commonpath([path_str, base_str]) == base_str
-
-    def _ensure_home_target(self, app, path):
-        if not self._is_path_within(path, HOME):
-            logger.error(f"Refusing to write outside HOME for {app}: {path}")
-            return False
-        return True
 
     def _color256_themes_dir(self):
         env_dir = os.environ.get("COLOR256_THEMES_DIR")
@@ -409,27 +370,6 @@ class ThemeManager:
                 pass
         return "none"
 
-    def _apply_theme(self, palette):
-        """Apply palette to all configured apps and reload."""
-        if self.dry_run:
-            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
-        else:
-            PALETTE_FILE.write_text(json.dumps(palette, indent=2) + "\n")
-
-        changed_any = False
-        for app, config in self.app_configs.items():
-            app_type = config.get("type")
-            if app_type == "template":
-                changed_any = self._apply_template(app, config, palette) or changed_any
-            elif app_type == "direct":
-                changed_any = self._apply_direct(app, config, palette) or changed_any
-            else:
-                logger.debug(f"Skipping unknown type '{app_type}' for {app}")
-
-        if changed_any:
-            self._reload_apps()
-        return changed_any
-
     def set_theme(self, theme_name):
         """Set the system-wide theme to the one specified."""
         if theme_name == "auto":
@@ -457,7 +397,7 @@ class ThemeManager:
             return
 
         logger.info(f"Setting theme to '{theme_name}'...")
-        self._apply_theme(palette)
+        self._write_and_apply(palette)
 
     def auto_theme_from_wallpaper(self, wallpaper=None, force=False):
         current = self.get_current_theme()
@@ -486,7 +426,7 @@ class ThemeManager:
             return
 
         logger.info("Applying wallpaper-based auto theme...")
-        self._apply_theme(palette)
+        self._write_and_apply(palette)
 
     def _resolve_wallpaper_path(self, wallpaper=None):
         candidates = []
@@ -504,121 +444,31 @@ class ThemeManager:
                 return candidate.resolve()
         return None
 
-    def _apply_direct(self, app, config, palette):
-        """Write a single palette value directly to the target file."""
-        key = config.get("key")
-        target_path = config.get("target")
-        if not key or not target_path:
-            logger.warning(f"Skipping {app}: direct type requires 'key' and 'target'.")
-            return False
-
-        value = palette.get(key, "")
-        if not value:
-            logger.warning(f"Skipping {app}: palette key '{key}' is empty.")
-            return False
-
-        if not self._ensure_home_target(app, target_path):
-            return False
-
-        content = str(value) + "\n"
-        original = target_path.read_text() if target_path.is_file() else ""
-        if original == content:
-            logger.debug(f"No changes needed for {app}.")
-            return False
-
-        if self.dry_run:
-            logger.info(f"[dry-run] Would write {app}: {target_path}")
-        else:
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            target_path.write_text(content)
-            logger.info(f"Applied {app} theme via direct write.")
-        return True
-
-    def _apply_template(self, app, config, palette):
-        source_path = config.get("source")
-        target_path = config.get("target")
-        if not source_path or not target_path:
-            logger.warning(f"Skipping {app}: template source/target missing.")
-            return False
-
-        if not source_path.is_file():
-            logger.warning(
-                f"Skipping {app}: template source not found at '{source_path}'."
-            )
-            return False
-
-        if not self._ensure_home_target(app, target_path):
-            return False
-
+    def _write_and_apply(self, palette):
+        """Write palette atomically under lock, then trigger theme-apply-all."""
+        lock_path = os.environ.get("XDG_RUNTIME_DIR", "/tmp") + f"/theme.{os.getuid()}.lock"
+        lock_fd = os.open(lock_path, os.O_CREAT | os.O_WRONLY)
+        fcntl.flock(lock_fd, fcntl.LOCK_EX)
         try:
-            template = source_path.read_text()
-            rendered = template
-            for key, value in palette.items():
-                rendered = rendered.replace("{{" + key + "}}", str(value))
-
-            original = target_path.read_text() if target_path.is_file() else ""
-            if original == rendered:
-                logger.debug(f"No template changes needed for {app}.")
-                return False
-
+            PALETTE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            content = json.dumps(palette, indent=2) + "\n"
             if self.dry_run:
-                logger.info(
-                    f"[dry-run] Would render template for {app}: {source_path} -> {target_path}"
-                )
+                logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
             else:
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                target_path.write_text(rendered)
-                logger.info(f"Applied {app} theme via template rendering.")
-            return True
-        except Exception as e:
-            logger.error(f"Error applying template theme for {app}: {e}")
-            return False
+                tmp = PALETTE_FILE.with_suffix(".tmp")
+                tmp.write_text(content)
+                tmp.rename(PALETTE_FILE)
 
-    def _reload_apps(self):
-        """Reload applications that support theme hot-reloading."""
-        logger.info("Reloading apps...")
-        for app, config in self.app_configs.items():
-            reload_cmd = config.get("reload")
-            if not reload_cmd:
-                continue
-            try:
-                if self.dry_run:
-                    logger.info(f"[dry-run] Would run: {reload_cmd}")
+            if not self.dry_run:
+                apply_cmd = shutil.which("theme-apply-all")
+                if apply_cmd:
+                    logger.info("Running theme-apply-all...")
+                    subprocess.run([apply_cmd], check=False)
                 else:
-                    allow_shell = config.get("reload_shell", False)
-                    if self._run_command(app, reload_cmd, allow_shell=allow_shell):
-                        logger.info(f"Reloaded {app}")
-            except subprocess.CalledProcessError as e:
-                logger.error(f"Failed to reload {app}: {e}")
-
-    def _run_command(self, app, cmd, allow_shell=False):
-        cmd_str = None
-        argv = None
-        if isinstance(cmd, list):
-            argv = [str(part) for part in cmd]
-        else:
-            cmd_str = str(cmd or "").strip()
-            if not cmd_str:
-                return False
-            argv = shlex.split(cmd_str)
-
-        if allow_shell:
-            if not cmd_str:
-                cmd_str = " ".join(shlex.quote(arg) for arg in argv)
-            subprocess.run(cmd_str, shell=True, check=True)
-            return True
-
-        if cmd_str and (re.search(r"[;&|<>`]", cmd_str) or re.search(r"\$\(", cmd_str)):
-            logger.error(
-                f"Refusing to run shell command for {app} without allow_shell=true"
-            )
-            return False
-
-        argv = [os.path.expandvars(os.path.expanduser(part)) for part in argv]
-        if not argv:
-            return False
-        subprocess.run(argv, check=True)
-        return True
+                    logger.debug("theme-apply-all not found, skipping apply")
+        finally:
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            os.close(lock_fd)
 
 
 def _extract_global_flags(argv):
