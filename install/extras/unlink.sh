@@ -36,6 +36,16 @@ for f in "$REPO_ROOT"/local/dot-local/bin/* "$REPO_ROOT"/scripts/dot-local/bin/*
     fi
 done
 
+echo "Removing manually linked local libs..."
+for f in "$REPO_ROOT"/local/dot-local/lib/*; do
+    if [ -f "$f" ]; then
+        target="$HOME/.local/lib/$(basename "$f")"
+        if [ -L "$target" ] && [ "$(readlink -f "$target")" = "$f" ]; then
+            rm -f "$target"
+        fi
+    fi
+done
+
 echo "Removing manually linked theme assets..."
 for f in "$HOME/.local/share/themes"/*.txt; do
     if [ -L "$f" ] && [ "$(readlink -f "$f")" != "$f" ] && [[ "$(readlink -f "$f")" == "$REPO_ROOT"/local/thememanager/color256/themes/* ]]; then

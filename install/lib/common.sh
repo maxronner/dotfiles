@@ -3,7 +3,7 @@
 set -euo pipefail
 
 readonly COMMON_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-readonly REPO_ROOT="$(cd -- "${COMMON_DIR}/.." && pwd)"
+readonly REPO_ROOT="$(cd -- "${COMMON_DIR}/../.." && pwd)"
 readonly HOME_DIR="${HOME:-/home/$(whoami)}"
 readonly DEVICES_DIR="${REPO_ROOT}/devices"
 
@@ -70,14 +70,14 @@ resolve_profile() {
     fi
 
     if [[ ! -d "${DEVICES_DIR}/${requested_profile}" ]]; then
-        error "Unknown profile: ${requested_profile}"
-        error "Available profiles:"
+        warn "Unknown profile: ${requested_profile} — falling back to baseline"
+        warn "Available profiles:"
         local profile_dir
         for profile_dir in "${DEVICES_DIR}"/*; do
             [[ -d "$profile_dir" ]] || continue
-            error "- $(basename "$profile_dir")"
+            warn "- $(basename "$profile_dir")"
         done
-        return 1
+        return 0
     fi
 
     profile_ref="$requested_profile"

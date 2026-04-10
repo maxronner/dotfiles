@@ -4,11 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-SWAY_CONFIG_DIR="$HOME/.config/sway"
-SCRIPTS_DIR="$SWAY_CONFIG_DIR/scripts"
+SCRIPTS_DIR="${HOME_DIR}/.config/sway/scripts"
 
-if [[ -d "$SWAY_CONFIG_DIR" ]]; then
-    info "Sway config directory already exists, skipping..."
+if [[ -d "$SCRIPTS_DIR" ]]; then
+    info "Sway scripts directory already exists, skipping..."
     exit 0
 fi
 
