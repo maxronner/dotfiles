@@ -1,21 +1,26 @@
 bootstrap env='':
-  @bash install/phases/bootstrap.sh {{env}}
+  @bash install/lib/preflight.sh
+  just system {{env}}
+  just user {{env}}
 
-preflight:
-  @bash install/phases/preflight.sh
+system env='':
+  @bash install/system/packages.sh {{env}}
+  @bash install/system/config.sh {{env}}
+  @bash install/system/device.sh {{env}}
 
-packages env='':
-  @bash install/phases/packages.sh {{env}}
+user env='':
+  @bash install/lib/preflight.sh
+  @bash install/user/dotfiles.sh {{env}}
+  @bash install/user/finalize.sh
+  @bash install/user/services.sh
 
-activate env='':
-  @bash install/phases/activate.sh {{env}}
+extras name:
+  #!/usr/bin/env bash
+  if [ ! -f install/extras/{{name}}.sh ]; then echo "Unknown extra: {{name}}"; exit 1; fi
+  bash install/extras/{{name}}.sh
 
-home env='':
-  @bash install/phases/apply-home.sh {{env}}
-  @bash install/phases/apply-hooks.sh
-
-unstow env='':
-  @bash install/phases/unstow.sh {{env}}
+unlink env='':
+  @bash install/extras/unlink.sh {{env}}
 
 lint:
   @missing=0; \
