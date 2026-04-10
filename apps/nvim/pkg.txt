@@ -1,0 +1,7 @@
+neovim
+npm
+python
+ruby
+tree-sitter-cli
+vim-spell-en
+vim-spell-sv

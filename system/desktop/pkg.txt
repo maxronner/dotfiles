@@ -1,0 +1,11 @@
+blueman
+chromium
+cmatrix
+firefox
+gimp
+gnome-themes-extra
+hyprpicker
+ly
+vlc
+xdg-desktop-portal-gtk
+xdg-desktop-portal-wlr

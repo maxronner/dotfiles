@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+session="${1:-$(basename "$PWD")}"
+
+command -v tmux >/dev/null || {
+    echo "tmux not found in PATH" >&2
+    exit 1
+}
+
+tmux attach >/dev/null 2>&1 || tmux new-session -s "$session"

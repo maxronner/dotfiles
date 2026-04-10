@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+awk '
+FNR==1 {
+    if (NR > 1) print "\n"
+    printf "===== %s =====\n", FILENAME
+}
+{ print }
+' "$@"

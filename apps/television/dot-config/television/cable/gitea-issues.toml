@@ -1,0 +1,48 @@
+[metadata]
+name = "gitea-issues"
+description = "List Gitea issues"
+requirements = ["tea", "jq"]
+
+[source]
+command = '''
+tea issues list --state open --limit 100 --output json |
+jq -r '
+  .[] |
+  [
+    .index,
+    .owner,
+    .repo,
+    .author,
+    .title
+  ] | @tsv
+'
+'''
+ansi = false
+output = "{strip_ansi}"
+
+[ui]
+layout = "portrait"
+
+[preview]
+command = "tea issues {strip_ansi|split:\t:0} --repo {strip_ansi|split:\t:1}/{strip_ansi|split:\t:2}"
+
+[keybindings]
+shortcut = "f6"
+enter = "actions:open"
+ctrl-d = "actions:close"
+ctrl-i = "actions:comment"
+
+[actions.open]
+description = "Open in browser"
+command = "tea open {strip_ansi|split:\t:0} --repo {strip_ansi|split:\t:1}/{strip_ansi|split:\t:2}"
+mode = "fork"
+
+[actions.close]
+description = "Close issue"
+command = "tea issues close {strip_ansi|split:\t:0} --repo {strip_ansi|split:\t:1}/{strip_ansi|split:\t:2}"
+mode = "fork"
+
+[actions.comment]
+description = "Comment on issue"
+command = "tea comment {strip_ansi|split:\t:0} --repo {strip_ansi|split:\t:1}/{strip_ansi|split:\t:2}"
+mode = "execute"

@@ -1,0 +1,9 @@
+aur:rose-pine-cursor
+aur:tofi
+autotiling
+grim
+slurp
+swaybg
+swayidle
+swaylock
+wl-clipboard

@@ -1,0 +1,12 @@
+[Unit]
+Description=Play sound on notification
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/notify-sound-listener
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+

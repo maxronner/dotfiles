@@ -1,0 +1,28 @@
+set $base           {{bg}}
+set $surface        {{color0}}
+set $overlay        {{color8}}
+set $muted          {{color8}}
+set $subtle         {{color7}}
+set $text           {{fg}}
+set $love           {{color1}}
+set $gold           {{color3}}
+set $rose           {{color6}}
+set $pine           {{color4}}
+set $foam           {{color2}}
+set $iris           {{color5}}
+set $highlightlow   {{color0}}
+set $highlightmed   {{color8}}
+set $highlighthigh  {{color7}}
+
+set $hll $highlightlow
+set $hlm $highlightmed
+set $hlh $highlighthigh
+set $indicator      {{accent}}
+
+client.focused           $muted     $muted     $text     $muted      $muted
+client.focused_tab_title $muted     $muted     $text
+client.focused_inactive  $hll       $surface   $text     $hll        $hll
+client.unfocused         $hll       $surface   $text     $hll        $hll
+client.urgent            $love      $love      $text     $love       $love
+client.placeholder       $base      $base      $text     $base       $base
+client.background        $base

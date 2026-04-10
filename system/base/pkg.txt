@@ -1,0 +1,14 @@
+7zip
+bat
+dosfstools
+duf
+dust
+inotify-tools
+libfido2
+lvm2
+man-db
+pacman-contrib
+pam-u2f
+stow
+sudo
+unzip

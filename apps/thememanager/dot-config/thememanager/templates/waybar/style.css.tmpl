@@ -1,0 +1,168 @@
+@define-color base            {{base}};
+@define-color surface         {{surface}};
+@define-color overlay         {{overlay}};
+
+@define-color muted           {{muted}};
+@define-color subtle          {{subtle}};
+@define-color text            {{text}};
+@define-color primary         {{primary}};
+@define-color secondary       {{secondary}};
+@define-color success         {{success}};
+@define-color warning         {{warning}};
+@define-color critical        {{critical}};
+@define-color info            {{info}};
+@define-color indicator       {{indicator}};
+
+@define-color highlightLow    {{highlightlow}};
+@define-color highlightMed    {{highlightmed}};
+@define-color highlightHigh   {{highlighthigh}};
+
+* {
+    font-family: Jetbrains Mono Nerd Font, Hack Nerd Font, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+window#waybar {
+    all: unset;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    color: @text;
+}
+
+tooltip,
+tooltip label {
+    color: @text;
+    padding: 0px;
+    margin: 0px;
+    background: alpha(@base,.8);
+}
+
+tooltip {
+    border: none;
+}
+
+tooltip label {
+    background-color: transparent;
+}
+
+.module{
+    padding: 0px 5px;
+    transition: all .3s ease;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+.module:hover {
+    transition: all .3s ease;
+    color: @secondary;
+}
+
+.modules-left,
+.modules-right,
+.modules-center,
+tooltip {
+    padding:7px;
+    border-radius:10px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, .6);
+}
+
+.modules-left,
+.modules-right,
+.modules-center {
+    background: alpha(@base,.6);
+}
+
+.modules-left {
+    margin: 10px 0px 5px 10px;
+}
+.modules-right {
+    margin: 10px 10px 5px 0px;
+}
+.modules-center {
+    margin: 10px 0px 5px 0px;
+}
+
+#mode {
+    font-size: 14px;
+}
+
+#workspaces {
+    padding: 0px 5px;
+}
+#workspaces button {
+    all:unset;
+    padding: 0px 5px;
+    color: @muted;
+    transition: all .2s ease;
+}
+#workspaces button:last-child {
+    transition: all .5s ease;
+    padding: 0px 8px 0px 5px;
+}
+#workspaces button:hover {
+    color: @text;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+    transition: all .5s ease;
+}
+#workspaces button.focused {
+    color: @primary;
+    border: none;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+}
+#workspaces button.urgent {
+    color: @critical;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+}
+#workspaces button.empty {
+    color: @overlay;
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
+}
+#workspaces button.empty:hover {
+    color: rgba(0,0,0,0);
+    border: none;
+    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
+    transition: all 1s ease;
+}
+#workspaces button.empty.active {
+    border: none;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+}
+
+#battery {
+    padding: 0px 10px 0px 5px;
+}
+#battery.charging {
+    color: @success;
+}
+#battery.warning:not(.charging) {
+    color: @warning;
+}
+#battery.critical:not(.charging) {
+    color: @critical;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+#network {
+    padding: 0px 8px 0px 0px;
+}
+
+#custom-notification.active,
+#idle_inhibitor.activated {
+    color: @warning;
+}
+#custom-dog.warning {
+    color: @warning;
+}
+#custom-dog.critical {
+    color: @critical;
+}
+.group-item .module {
+    padding: 0px 10px;
+}

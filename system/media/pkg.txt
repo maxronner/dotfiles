@@ -1,0 +1,5 @@
+chafa
+imagemagick
+feh
+mpv
+pastel

@@ -1,0 +1,808 @@
+#!/usr/bin/env python3
+"""
+A script to manage themes for various applications.
+
+Themes are sourced from color256 .txt palette files (for named themes) or
+derived from the current wallpaper via matugen (for auto mode). App configs
+are rendered from templates using {{key}} substitution against the palette.
+
+Usage:
+- `thememanager list`: List available themes.
+- `thememanager get`: Show the current theme.
+- `thememanager set <theme_name>`: Switch to a named theme.
+- `thememanager set auto`: Enable wallpaper-based auto mode.
+- `thememanager auto [--wallpaper /path/to/image]`: Re-render auto templates from wallpaper via matugen.
+- `thememanager -v set <theme_name>`: Set theme with debug logging.
+"""
+
+import argparse
+import json
+import logging
+import math
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+# Configure logging (default level ERROR)
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger(__name__)
+
+# Define base paths
+HOME = Path.home()
+THEME_MANAGER_DIR = Path(
+    os.environ.get("THEME_MANAGER_DIR", HOME / ".config" / "thememanager")
+)
+APP_CONFIG_FILE = THEME_MANAGER_DIR / "apps.json"
+PALETTE_FILE = THEME_MANAGER_DIR / "palette.json"
+COLOR256_THEMES_DIR = HOME / ".local" / "share" / "themes"
+
+
+# ---------------------------------------------------------------------------
+# LCH colour helpers (CIE LAB, D65 illuminant — same as color256.py)
+# ---------------------------------------------------------------------------
+
+
+def _hex_to_lch(hex_str):
+    """Convert a hex colour string to CIE LCH (L, C, H in degrees)."""
+    h = hex_str.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+    # sRGB → linear
+    def linearize(c):
+        c /= 255.0
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    rl, gl, bl = linearize(r), linearize(g), linearize(b)
+    # linear RGB → XYZ (D65)
+    X = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375
+    Y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750
+    Z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
+
+    # XYZ → LAB
+    def f(t):
+        return t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+
+    L = 116 * f(Y / 1.00000) - 16
+    a = 500 * (f(X / 0.95047) - f(Y / 1.00000))
+    b_ = 200 * (f(Y / 1.00000) - f(Z / 1.08883))
+    C = math.sqrt(a**2 + b_**2)
+    H = math.degrees(math.atan2(b_, a)) % 360
+    return L, C, H
+
+
+def _lch_to_hex(L, C, H):
+    """Convert CIE LCH back to a hex colour string, clamping to sRGB gamut."""
+    a = C * math.cos(math.radians(H))
+    b_ = C * math.sin(math.radians(H))
+    # LAB → XYZ
+    fy = (L + 16) / 116
+    fx = a / 500 + fy
+    fz = fy - b_ / 200
+
+    def finv(t):
+        return t**3 if t > 0.206897 else (t - 16 / 116) / 7.787
+
+    X = finv(fx) * 0.95047
+    Y = finv(fy) * 1.00000
+    Z = finv(fz) * 1.08883
+    # XYZ → linear RGB
+    rl = 3.2404542 * X - 1.5371385 * Y - 0.4985314 * Z
+    gl = -0.9692660 * X + 1.8760108 * Y + 0.0415560 * Z
+    bl = 0.0556434 * X - 0.2040259 * Y + 1.0572252 * Z
+
+    # linear → sRGB (clamp to [0, 1])
+    def gamma(c):
+        c = max(0.0, min(1.0, c))
+        return 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+
+    r, g, b = (round(gamma(c) * 255) for c in (rl, gl, bl))
+    return "#%02x%02x%02x" % (r, g, b)
+
+
+def _build_semantic_palette(base16_hex, theme_name):
+    """Build the palette dict that thememanager writes to palette.json.
+
+    base16_hex is a dict with keys: background, foreground, color0..color15
+    (hex strings with leading #).  This mirrors what color256.py's
+    generate_semantic_json used to produce via subprocess.
+    """
+    bg = base16_hex["background"]
+    fg = base16_hex["foreground"]
+    colors = [base16_hex[f"color{i}"] for i in range(16)]
+    accent = colors[4]
+
+    palette = {
+        "theme_name": theme_name,
+        "bg": bg,
+        "fg": fg,
+        "accent": accent,
+        "bg_nh": bg.lstrip("#"),
+        "fg_nh": fg.lstrip("#"),
+        "accent_nh": accent.lstrip("#"),
+    }
+
+    for i, color in enumerate(colors):
+        palette[f"color{i}"] = color
+        palette[f"color{i}_nh"] = color.lstrip("#")
+
+    palette.update(
+        {
+            "base": colors[0],
+            "surface": colors[0],
+            "overlay": colors[8],
+            "muted": colors[8],
+            "subtle": fg,
+            "text": fg,
+            "primary": colors[4],
+            "secondary": colors[5],
+            "success": colors[2],
+            "warning": colors[3],
+            "critical": colors[1],
+            "info": colors[6],
+            "highlightlow": colors[0],
+            "highlightmed": colors[8],
+            "highlighthigh": colors[7],
+            "indicator": accent,
+        }
+    )
+
+    return palette
+
+
+def _hue_rotate_base16(base16, source_hex):
+    """Re-space the 6 chromatic ANSI hues equidistantly around the colour wheel.
+
+    The wallpaper's dominant hue (from matugen's source_color) anchors the
+    red slot.  The remaining 5 chromatic slots are assigned hues 60° apart in
+    hue-wheel order (red → yellow → green → cyan → blue → magenta).  Lightness
+    and chroma are preserved from the original matugen colours so the
+    wallpaper's tonal character is retained.  Neutral slots (0, 7, 8, 15,
+    background, foreground) are left untouched.
+    """
+    _, _, H0 = _hex_to_lch(source_hex)
+
+    # Chromatic slots in hue-wheel order, paired with their bright counterparts
+    # and the hue offset (multiples of 60°) from the anchor.
+    chromatic_slots = [
+        ("color1", "color9", 0),  # red
+        ("color3", "color11", 60),  # yellow
+        ("color2", "color10", 120),  # green
+        ("color6", "color14", 180),  # cyan
+        ("color4", "color12", 240),  # blue
+        ("color5", "color13", 300),  # magenta
+    ]
+
+    result = dict(base16)
+    for dim, bright, offset in chromatic_slots:
+        target_H = (H0 + offset) % 360
+        for slot in (dim, bright):
+            if slot not in result:
+                continue
+            L, C, _ = _hex_to_lch(result[slot])
+            result[slot] = _lch_to_hex(L, C, target_H)
+
+    return result
+
+
+class ThemeManager:
+    """Manages theme application and configuration."""
+
+    def __init__(self, dry_run=False):
+        self.dry_run = dry_run
+        self._setup_directories()
+        self.app_configs = self._load_app_configs()
+
+    @staticmethod
+    def _is_path_within(path, base, resolve_symlinks=True):
+        path_str = str(path)
+        base_str = str(base)
+        if resolve_symlinks:
+            path_str = os.path.realpath(path_str)
+            base_str = os.path.realpath(base_str)
+        else:
+            path_str = os.path.abspath(path_str)
+            base_str = os.path.abspath(base_str)
+        return os.path.commonpath([path_str, base_str]) == base_str
+
+    def _ensure_home_target(self, app, path):
+        if not self._is_path_within(path, HOME, resolve_symlinks=True):
+            logger.error(f"Refusing to write outside HOME for {app}: {path}")
+            return False
+        return True
+
+    def _setup_directories(self):
+        """Ensure necessary directories exist."""
+        THEME_MANAGER_DIR.mkdir(parents=True, exist_ok=True)
+
+    def _load_app_configs(self):
+        app_config = APP_CONFIG_FILE
+        if not app_config.is_file():
+            app_config = Path(__file__).parent / "apps.json"
+            if not app_config.is_file():
+                logger.error(f"Missing app config file at '{app_config}'")
+                sys.exit(1)
+
+        try:
+            with open(app_config, "r") as f:
+                raw = json.load(f)
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in '{app_config}': {e}")
+            sys.exit(1)
+
+        configs = {}
+        for app, conf in raw.items():
+            mode_map = self._normalize_app_modes(app, conf)
+            if mode_map:
+                configs[app] = mode_map
+        logger.debug(f"Loaded app configs: {list(configs.keys())}")
+        return configs
+
+    @staticmethod
+    def _expand_app_paths(config):
+        expanded = config.copy()
+        for key in ("path", "source", "target"):
+            if key in expanded:
+                expanded[key] = Path(os.path.expanduser(str(expanded[key])))
+        return expanded
+
+    def _normalize_app_modes(self, app, conf):
+        if not isinstance(conf, dict):
+            logger.warning(f"Skipping {app}: config must be an object.")
+            return {}
+
+        if isinstance(conf.get("modes"), dict):
+            mode_defs = conf["modes"]
+            base = {
+                k: v
+                for k, v in conf.items()
+                if k not in {"modes", "reload", "reload_shell"}
+            }
+            root_reload = conf.get("reload")
+            root_reload_shell = conf.get("reload_shell")
+
+            normalized = {}
+            for mode, mode_conf in mode_defs.items():
+                if not isinstance(mode_conf, dict):
+                    logger.warning(
+                        f"Skipping {app}/{mode}: mode config must be an object."
+                    )
+                    continue
+                merged = base.copy()
+                merged.update(mode_conf)
+
+                if "reload" not in merged:
+                    if isinstance(root_reload, dict):
+                        if mode in root_reload:
+                            merged["reload"] = root_reload[mode]
+                    elif root_reload is not None:
+                        merged["reload"] = root_reload
+
+                if "reload_shell" not in merged:
+                    if isinstance(root_reload_shell, dict):
+                        if mode in root_reload_shell:
+                            merged["reload_shell"] = root_reload_shell[mode]
+                    elif root_reload_shell is not None:
+                        merged["reload_shell"] = root_reload_shell
+
+                normalized[mode] = self._expand_app_paths(merged)
+            return normalized
+
+        legacy = self._expand_app_paths(conf)
+        modes = conf.get("modes")
+        if modes is None:
+            return {"set": legacy}
+        if isinstance(modes, str):
+            return {modes: legacy}
+        if isinstance(modes, list):
+            return {str(mode): legacy.copy() for mode in modes}
+
+        logger.warning(f"Skipping {app}: invalid 'modes' declaration.")
+        return {}
+
+    def _color256_themes_dir(self):
+        env_dir = os.environ.get("COLOR256_THEMES_DIR")
+        if env_dir:
+            return Path(os.path.expanduser(env_dir))
+        return COLOR256_THEMES_DIR
+
+    def _list_color256_theme_files(self):
+        themes_dir = self._color256_themes_dir()
+        if not themes_dir.is_dir():
+            return {}
+        out = {}
+        for entry in themes_dir.iterdir():
+            if not entry.is_file() or entry.suffix != ".txt":
+                continue
+            out[entry.stem] = entry
+        return dict(sorted(out.items(), key=lambda item: item[0]))
+
+    def _palette_from_color256_theme(self, theme_path, theme_name=None):
+        """Build a palette dict from a color256 theme file.
+
+        Calls color256.py --generate ghostty once to get the full 256-colour
+        terminal palette string.  The 16 base colours and bg/fg are parsed
+        from that same output so no second subprocess is needed.
+        """
+        cmd = self._color256_cmd() + ["--generate", "ghostty", str(theme_path)]
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        ghostty_text = result.stdout.strip()
+
+        # Parse bg, fg and color0..color15 out of the ghostty output.
+        base16_hex = {}
+        for line in ghostty_text.splitlines():
+            line = line.strip()
+            if line.startswith("background"):
+                base16_hex["background"] = line.split("=", 1)[1].strip()
+            elif line.startswith("foreground"):
+                base16_hex["foreground"] = line.split("=", 1)[1].strip()
+            elif line.startswith("palette"):
+                # "palette = N = #rrggbb"
+                parts = line.split("=")
+                idx = int(parts[1].strip())
+                if 0 <= idx <= 15:
+                    base16_hex[f"color{idx}"] = parts[2].strip()
+
+        palette = _build_semantic_palette(base16_hex, theme_name or theme_path.stem)
+        palette["terminal_palette"] = ghostty_text
+        return palette
+
+    @staticmethod
+    def _color256_cmd():
+        raw = os.environ.get("COLOR256_CMD", "color256.py")
+        cmd = shlex.split(raw)
+        if not cmd:
+            raise FileNotFoundError("COLOR256_CMD is empty")
+
+        exe = os.path.expanduser(cmd[0])
+        if os.path.sep in exe:
+            exe_path = Path(exe)
+            if not exe_path.is_file():
+                raise FileNotFoundError(f"color256 command not found: {exe_path}")
+            cmd[0] = str(exe_path)
+            return cmd
+
+        resolved = shutil.which(exe)
+        if not resolved and exe == "color256.py":
+            resolved = shutil.which("color256")
+        if not resolved:
+            raise FileNotFoundError(
+                "color256.py command not found in PATH. Set COLOR256_CMD if needed."
+            )
+        cmd[0] = resolved
+        return cmd
+
+    def _palette_from_matugen(self, wallpaper_path):
+        cmd = [
+            "matugen",
+            "image",
+            "-j",
+            "hex",
+            "-m",
+            "dark",
+            "--old-json-output",
+            "--source-color-index",
+            "0",
+            str(wallpaper_path),
+        ]
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        payload = json.loads(result.stdout)
+        colors = payload.get("colors", {})
+
+        def pick(name, fallback="#000000"):
+            value = colors.get(name, {})
+            return value.get("default") or value.get("dark") or fallback
+
+        base16 = {
+            # Backgrounds / neutrals
+            "background": pick("background", "#101010"),
+            "foreground": pick("on_background", "#e0e0e0"),
+            "color0": pick("surface_dim", "#0d0d0d"),  # black  — darkest bg shade
+            "color7": pick("on_surface_variant", "#c0c0c0"),  # white  — near-fg light
+            "color8": pick("outline", "#767676"),  # bright black — mid grey
+            "color15": pick("on_surface", "#ffffff"),  # bright white — brightest fg
+            # Reds (error family)
+            "color1": pick("error", "#ff6b6b"),  # red
+            "color9": pick(
+                "on_error_container", "#ff9b9b"
+            ),  # bright red (was error_container=#93000a, near-black!)
+            # Greens (tertiary family — gold/warm when wallpaper has no green)
+            "color2": pick("tertiary", "#7bd88f"),  # green
+            "color10": pick("tertiary_fixed_dim", "#a0d8a0"),  # bright green
+            # Yellows (tertiary fixed — most yellow-leaning role available)
+            "color3": pick(
+                "tertiary_fixed", "#f6c177"
+            ),  # yellow  (was secondary, now more golden)
+            "color11": pick("on_tertiary_container", "#ffd8a0"),  # bright yellow
+            # Blues (primary family — dominant wallpaper hue maps here)
+            "color4": pick("primary", "#7aa2f7"),  # blue
+            "color12": pick(
+                "on_primary_container", "#7aa2f7"
+            ),  # bright blue  (was primary_container, often dark)
+            # Magentas (secondary family)
+            "color5": pick(
+                "secondary", "#bb9af7"
+            ),  # magenta  (was on_tertiary_container, duplicate of C11)
+            "color13": pick("on_secondary_container", "#bb9af7"),  # bright magenta
+            # Cyans (outline_variant + secondary_fixed — most distinct remaining roles)
+            "color6": pick("outline_variant", "#7dcfff"),  # cyan
+            "color14": pick(
+                "secondary_fixed_dim", "#a0e0e0"
+            ),  # bright cyan  (was on_secondary_container, duplicate of C13)
+        }
+
+        # Re-space the 6 chromatic hues equidistantly around the colour wheel,
+        # anchored to the wallpaper's dominant hue.  This ensures the 256-colour
+        # cube generated by color256.py covers the full chromatic range even when
+        # the wallpaper (and therefore matugen) is near-monochromatic.
+        source_hex = pick("source_color", "#cc0403")
+        base16 = _hue_rotate_base16(base16, source_hex)
+
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as tmp:
+            tmp.write(json.dumps(base16))
+            tmp_path = Path(tmp.name)
+
+        try:
+            palette = self._palette_from_color256_theme(tmp_path, theme_name="auto")
+            palette["wallpaper"] = str(wallpaper_path)
+            return palette
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
+    def list_themes(self):
+        """Return a list of available theme names."""
+        themes = {"auto"}
+        themes.update(self._list_color256_theme_files().keys())
+        themes = sorted(themes, key=lambda t: (t != "auto", t))
+        logger.debug(f"Found themes: {themes}")
+        return themes
+
+    def get_current_theme(self):
+        """Return the name of the currently active theme."""
+        if PALETTE_FILE.is_file():
+            try:
+                current = json.loads(PALETTE_FILE.read_text()).get("theme_name", "none")
+                logger.debug(f"Current theme: {current}")
+                return current
+            except (json.JSONDecodeError, OSError):
+                pass
+        return "none"
+
+    def set_theme(self, theme_name):
+        """Set the system-wide theme to the one specified."""
+        if theme_name == "auto":
+            logger.info("Theme mode set to 'auto'.")
+            self.auto_theme_from_wallpaper(force=True)
+            return
+
+        if self.dry_run:
+            logger.info("Dry-run mode enabled — no changes will be written.")
+
+        theme_files = self._list_color256_theme_files()
+        theme_path = theme_files.get(theme_name)
+        if not theme_path:
+            logger.error(
+                f"Theme '{theme_name}' not found in {self._color256_themes_dir()}"
+            )
+            return
+
+        try:
+            palette = self._palette_from_color256_theme(
+                theme_path, theme_name=theme_name
+            )
+        except (
+            FileNotFoundError,
+            subprocess.CalledProcessError,
+            json.JSONDecodeError,
+        ) as e:
+            logger.error(f"Failed to build palette for '{theme_name}': {e}")
+            return
+
+        if self.dry_run:
+            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
+        else:
+            PALETTE_FILE.write_text(json.dumps(palette, indent=2) + "\n")
+
+        logger.info(f"Setting theme to '{theme_name}'...")
+        changed_any = False
+        for app, mode_configs in self.app_configs.items():
+            config = mode_configs.get("auto")
+            if not config or config.get("type") != "template":
+                continue
+            changed_any = self._apply_template(app, config, palette) or changed_any
+
+        self._reload_apps()
+
+        logger.info(f"Successfully switched to theme '{theme_name}'.")
+        if changed_any:
+            logger.info("Rendered template-based theme targets for set mode.")
+        logger.info("Please restart or reload applications for changes to take effect.")
+
+    def auto_theme_from_wallpaper(self, wallpaper=None, force=False):
+        current = self.get_current_theme()
+        if current != "auto" and not force:
+            logger.info(
+                f"Current theme is '{current}', not 'auto'; skipping wallpaper-based theming."
+            )
+            return
+
+        wallpaper_path = self._resolve_wallpaper_path(wallpaper)
+        if not wallpaper_path:
+            logger.warning("No wallpaper found; skipping wallpaper-based theming.")
+            return
+
+        if not wallpaper_path.is_file():
+            logger.warning(f"Wallpaper file not found: {wallpaper_path}")
+            return
+
+        try:
+            palette = self._palette_from_matugen(wallpaper_path)
+        except (
+            subprocess.CalledProcessError,
+            json.JSONDecodeError,
+            FileNotFoundError,
+        ) as e:
+            logger.error(f"Failed to generate auto palette: {e}")
+            return
+
+        palette_json = json.dumps(palette, indent=2) + "\n"
+        if self.dry_run:
+            logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")
+        else:
+            PALETTE_FILE.write_text(palette_json)
+
+        changed_any = False
+        for app, mode_configs in self.app_configs.items():
+            config = mode_configs.get("auto")
+            if not config:
+                continue
+            t = config.get("type")
+            if t == "template":
+                changed_any = self._apply_template(app, config, palette) or changed_any
+            else:
+                logger.debug(
+                    f"Skipping non-template auto mode type '{t}' for app '{app}'"
+                )
+
+        if changed_any:
+            self._reload_apps(mode="auto")
+            logger.info("Wallpaper-based auto theme applied.")
+        else:
+            logger.info("No auto theme targets changed.")
+
+    def _resolve_wallpaper_path(self, wallpaper=None):
+        candidates = []
+        if wallpaper:
+            candidates.append(Path(os.path.expanduser(str(wallpaper))))
+        env_wallpaper = os.environ.get("WALLPAPER_IMAGE")
+        if env_wallpaper:
+            candidates.append(Path(os.path.expanduser(env_wallpaper)))
+        candidates.append(HOME / ".config" / "sway" / "1.wallpaper")
+
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate.resolve()
+            if candidate.is_symlink() and candidate.exists():
+                return candidate.resolve()
+        return None
+
+    def _apply_template(self, app, config, palette):
+        source_path = config.get("source")
+        target_path = config.get("target")
+        if not source_path or not target_path:
+            logger.warning(f"Skipping {app}: template source/target missing.")
+            return False
+
+        if not source_path.is_file():
+            logger.warning(
+                f"Skipping {app}: template source not found at '{source_path}'."
+            )
+            return False
+
+        if not self._ensure_home_target(app, target_path):
+            return False
+
+        if target_path.exists() and target_path.is_dir():
+            logger.error(f"Refusing to replace directory for {app}: {target_path}")
+            return False
+
+        try:
+            template = source_path.read_text()
+            rendered = self._render_template(template, palette)
+
+            if target_path.is_symlink():
+                if self.dry_run:
+                    logger.info(
+                        f"[dry-run] Would replace symlink with rendered file for {app}: {target_path}"
+                    )
+                else:
+                    target_path.unlink(missing_ok=True)
+
+            original = target_path.read_text() if target_path.is_file() else ""
+            if original == rendered:
+                logger.debug(f"No template changes needed for {app}.")
+                return False
+
+            if self.dry_run:
+                logger.info(
+                    f"[dry-run] Would render template for {app}: {source_path} -> {target_path}"
+                )
+            else:
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                target_path.write_text(rendered)
+                logger.info(f"Applied {app} theme via template rendering.")
+            return True
+        except Exception as e:
+            logger.error(f"Error applying template theme for {app}: {e}")
+            return False
+
+    @staticmethod
+    def _render_template(template, palette):
+        rendered = template
+        for key, value in palette.items():
+            rendered = rendered.replace("{{" + key + "}}", str(value))
+        return rendered
+
+    def _ensure_parent_directory(self, directory):
+        if (directory.exists() and not directory.is_dir()) or (
+            directory.is_symlink() and not directory.is_dir()
+        ):
+            logger.warning(f"Replacing non-directory path with directory: {directory}")
+            directory.unlink(missing_ok=True)
+        directory.mkdir(parents=True, exist_ok=True)
+        return True
+
+    def _reload_apps(self, mode=None):
+        """Reload applications that support theme hot-reloading."""
+        logger.info("Reloading apps that support it...")
+        for app, mode_configs in self.app_configs.items():
+            if mode:
+                conf = mode_configs.get(mode)
+                if not conf:
+                    continue
+            else:
+                conf = None
+                for candidate in mode_configs.values():
+                    if candidate.get("reload"):
+                        conf = candidate
+                        break
+                if not conf:
+                    continue
+            reload_cmd = conf.get("reload")
+            if not reload_cmd:
+                continue
+            try:
+                if self.dry_run:
+                    logger.info(f"[dry-run] Would run: {reload_cmd}")
+                else:
+                    allow_shell = conf.get("reload_shell", False)
+                    if self._run_command(app, reload_cmd, allow_shell=allow_shell):
+                        logger.info(f"Reloaded {app}")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Failed to reload {app}: {e}")
+
+    def _run_command(self, app, cmd, allow_shell=False):
+        cmd_str = None
+        argv = None
+        if isinstance(cmd, list):
+            argv = [str(part) for part in cmd]
+        else:
+            cmd_str = str(cmd or "").strip()
+            if not cmd_str:
+                return False
+            argv = shlex.split(cmd_str)
+
+        if allow_shell:
+            if not cmd_str:
+                cmd_str = " ".join(shlex.quote(arg) for arg in argv)
+            subprocess.run(cmd_str, shell=True, check=True)
+            return True
+
+        if cmd_str and (re.search(r"[;&|<>`]", cmd_str) or re.search(r"\$\(", cmd_str)):
+            logger.error(
+                f"Refusing to run shell command for {app} without allow_shell=true"
+            )
+            return False
+
+        argv = [os.path.expandvars(os.path.expanduser(part)) for part in argv]
+        if not argv:
+            return False
+        subprocess.run(argv, check=True)
+        return True
+
+
+def _extract_global_flags(argv):
+    verbose = 0
+    dry_run = False
+    remaining = []
+
+    for arg in argv:
+        if arg == "--dry-run":
+            dry_run = True
+            continue
+        if arg in ("-v", "--verbose"):
+            verbose += 1
+            continue
+        if re.fullmatch(r"-v{2,}", arg):
+            verbose += len(arg) - 1
+            continue
+        remaining.append(arg)
+
+    return verbose, dry_run, remaining
+
+
+def main():
+    """Parse command-line arguments and execute the corresponding action."""
+    extracted_verbose, extracted_dry_run, argv = _extract_global_flags(sys.argv[1:])
+
+    parser = argparse.ArgumentParser(description="Manage application themes.")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity (use -v, -vv for more)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making any changes.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("list", help="List all available themes.")
+    subparsers.add_parser("get", help="Get the current theme name.")
+    set_parser = subparsers.add_parser("set", help="Set the active theme.")
+    set_parser.add_argument("theme", help="The name of the theme to set.")
+    auto_parser = subparsers.add_parser(
+        "auto", help="Apply wallpaper-based theming (only when current theme is auto)."
+    )
+    auto_parser.add_argument(
+        "--wallpaper", help="Wallpaper image path to use for palette extraction."
+    )
+    auto_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Apply wallpaper-based theming even if current theme is not auto.",
+    )
+    args = parser.parse_args(argv)
+    args.verbose = extracted_verbose
+    args.dry_run = extracted_dry_run
+
+    # Adjust logging level based on verbosity
+    if args.verbose == 1:
+        logger.setLevel(logging.INFO)
+    elif args.verbose == 2:
+        logger.setLevel(logging.DEBUG)
+    elif args.verbose >= 3:
+        logger.setLevel(logging.NOTSET)
+    else:
+        logger.setLevel(logging.ERROR)
+
+    manager = ThemeManager(dry_run=args.dry_run)
+
+    if args.command == "list":
+        themes = manager.list_themes()
+        if themes:
+            for t in themes:
+                print(t)
+        else:
+            logger.warning(f"No themes found in '{manager._color256_themes_dir()}'")
+    elif args.command == "get":
+        print(manager.get_current_theme())
+    elif args.command == "set":
+        manager.set_theme(args.theme)
+    elif args.command == "auto":
+        manager.auto_theme_from_wallpaper(wallpaper=args.wallpaper, force=args.force)
+
+
+if __name__ == "__main__":
+    main()

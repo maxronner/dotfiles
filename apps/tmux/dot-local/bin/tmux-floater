@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ "$#" -eq 0 ]; then
+  echo "usage: tmux-popup <command> [args...]" >&2
+  exit 1
+fi
+
+session="__$1"
+current="$(tmux display-message -p '#S' 2>/dev/null)"
+
+tmux has-session -t "$session" 2>/dev/null || {
+  tmux new-session -d -s "$session" "$@"
+  tmux set-option -t "$session" status off
+}
+
+if [ "$current" = "$session" ]; then
+  tmux detach-client
+else
+  tmux display-popup -w 80% -h 80% -E "tmux attach -t $session"
+fi

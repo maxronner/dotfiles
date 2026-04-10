@@ -1,0 +1,330 @@
+// -*- mode: jsonc -*-
+{
+  // "layer": "top", // Waybar at top layer
+  // "position": "bottom", // Waybar position (top|bottom|left|right)
+  "reload_style_on_change": true,
+  "height": 30, // Waybar height (to be removed for auto height)
+  // "width": 1280, // Waybar width
+  "spacing": 10, // Gaps between modules (4px)
+  "modules-left": [
+    "custom/dog",
+    "clock",
+    "custom/weather",
+    "group/control",
+    "sway/scratchpad",
+    "sway/mode"
+  ],
+  "modules-center": ["sway/workspaces"],
+  "modules-right": [
+    "idle_inhibitor",
+    "group/stats",
+    "pulseaudio",
+    "battery",
+    "custom/notification"
+  ],
+  "custom/weather": {
+    "format": "{icon} {text}",
+    "format-alt": "{icon}",
+    "tooltip": true,
+    "interval": 1800,
+    "exec": "~/.config/waybar/scripts/weather.sh",
+    "format-icons": {
+      "clear-night": "󰖔",
+      "cloudy": "󰅟",
+      "fog": "",
+      "hail": "",
+      "lightning": "",
+      "lightning-rainy": "⛈",
+      "partlycloudy": "󰖕",
+      "pouring": "󰖖",
+      "rainy": "",
+      "snowy": "",
+      "snowy-rainy": "󰙿",
+      "sunny": "",
+      "windy": "󰖝",
+      "windy-variant": "",
+      "exceptional": ""
+    },
+    "return-type": "json"
+  },
+  "sway/workspaces": {
+    "disable-scroll": false,
+    "all-outputs": true,
+    "warp-on-scroll": true,
+    "format": "{icon}",
+    "format-icons": {
+      "active": "",
+      "default": "",
+      "empty": "",
+      "urgent": ""
+    }
+  },
+  "custom/notification": {
+    "tooltip": true,
+    "format": "{icon}",
+    "format-icons": {
+      "active": "",
+      "default": "󰂚"
+    },
+    "on-click": "makoctl restore",
+    "escape": true,
+    "tooltip-format": "Display recent notifications"
+  },
+  "custom/pacman": {
+    "format": "{icon} {}",
+    "format-icons": {
+      "default": "󰚰"
+    },
+    "interval": 300,
+    "exec": "~/.config/waybar/scripts/pacman-updates.sh",
+    "exec-if": "exit 0",
+    "on-click": "foot sh -c 'yay -Syu; echo Done - Press enter to exit; read'; pkill -SIGRTMIN+8 waybar",
+    "signal": 8,
+    "tooltip": true,
+    "tooltip-format": "Install {} pending updates"
+  },
+  "custom/gammastep": {
+    "format": "{icon} {text}",
+    "format-icons": {
+      "off": "󰖨",
+      "on": "󱠩",
+      "auto": "󰔉"
+    },
+    "exec": "~/.config/waybar/scripts/gammastep-status.sh",
+    "interval": 5,
+    "on-click": "gammastep-toggle.sh",
+    "tooltip": true,
+    "tooltip-format": "Toggle gammastep",
+    "return-type": "json"
+  },
+  "group/control": {
+    "orientation": "horizontal",
+    "drawer": {
+      "children-class": "group-item",
+      "transition-duration": 300,
+      "transition-to-left": false,
+      "click-to-reveal": true
+    },
+    "modules": [
+      "custom/control-wrap",
+      "custom/gammastep",
+      "bluetooth",
+      "network"
+    ]
+  },
+  "custom/control-wrap": {
+    "format": "{icon}",
+    "format-icons": {
+      "default": ""
+    },
+    "tooltip-format": "System controls"
+  },
+  "group/stats": {
+    "orientation": "horizontal",
+    "drawer": {
+      "children-class": "group-item",
+      "transition-duration": 300,
+      "transition-to-left": true,
+      "click-to-reveal": true
+    },
+    "modules": ["cpu", "memory", "temperature", "custom/coolant"]
+  },
+  "keyboard-state": {
+    "numlock": true,
+    "capslock": true,
+    "format": "{name} {icon}",
+    "format-icons": {
+      "locked": "",
+      "unlocked": ""
+    }
+  },
+  "sway/mode": {
+    "format": "<span style=\"italic\">{}</span>"
+  },
+  "sway/scratchpad": {
+    "format": "{icon} {count}",
+    "show-empty": false,
+    "format-icons": ["", ""],
+    "tooltip": true,
+    "tooltip-format": "{app}: {title}"
+  },
+  "mpd": {
+    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+    "format-disconnected": "Disconnected ",
+    "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+    "unknown-tag": "N/A",
+    "interval": 5,
+    "consume-icons": {
+      "on": " "
+    },
+    "random-icons": {
+      "off": "<span color=\"#f53c3c\"></span> ",
+      "on": " "
+    },
+    "repeat-icons": {
+      "on": " "
+    },
+    "single-icons": {
+      "on": "1 "
+    },
+    "state-icons": {
+      "paused": "",
+      "playing": ""
+    },
+    "tooltip-format": "MPD (connected)",
+    "tooltip-format-disconnected": "MPD (disconnected)"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": "󰒲"
+    },
+    "tooltip-format-activated": "Idle inhibitor: on",
+    "tooltip-format-deactivated": "Idle inhibitor: off"
+  },
+  "tray": {
+    // "icon-size": 21,
+    "spacing": 10
+    // "icons": {
+    //   "blueman": "bluetooth",
+    //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+    // }
+  },
+  "bluetooth": {
+    "format": "",
+    "format-on": " none",
+    "format-off": "󰂲 off",
+    "format-connected": " {device_alias}",
+    "format-connected-battery": " {device_alias} {device_battery_percentage}%",
+    // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "on-click": "blueman-manager",
+    "on-click-right": "~/.config/waybar/scripts/bluetooth-toggle.sh"
+  },
+  "clock": {
+    "timezone": "Europe/Stockholm",
+    "locale": "sv_SE.UTF-8",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "on-click-right": "mode",
+      "format": {
+        "months": "<span color='#e0def4'><b>{}</b></span>",
+        "days": "<span color='#9ccfd8'><b>{}</b></span>",
+        "weeks": "<span color='#3e8fb0'><b>v{}</b></span>",
+        "weekdays": "<span color='#f6c177'><b>{}</b></span>",
+        "today": "<span color='#ea9a97'><b><u>{}</u></b></span>"
+      }
+    },
+    "format-alt": "{:%Y-%m-%d}"
+  },
+  "cpu": {
+    "format": "{usage}% ",
+    "tooltip": true
+  },
+  "memory": {
+    "format": "{used:0.1f}G/{total:0.1f}G ",
+    "tooltip": true,
+    "tooltip-format": "Memory usage:\n{avail:0.1f}G free"
+  },
+  "temperature": {
+    "thermal-zone": 2,
+    "hwmon-path-abs": [
+      "/sys/devices/platform/coretemp.0/hwmon",
+      "/sys/devices/platform/k10temp.0/hwmon",
+      "/sys/devices/pci0000:00/0000:00:18.3/hwmon"
+    ],
+    "input-filename": "temp1_input",
+    "critical-threshold": 80,
+    "format-critical": "{temperatureC}°C {icon}",
+    "format": "{temperatureC}°C {icon}",
+    "format-icons": ["", "", ""],
+    "tooltip-format": "CPU Temp"
+  },
+  "custom/coolant": {
+    "exec": "~/.config/waybar/scripts/coolant.sh",
+    "interval": 60,
+    "return-type": "json",
+    "on-failure": "ignore",
+    "format": "{text} {icon}",
+    "format-icons": ["󰏈"]
+  },
+  "custom/dog": {
+    "exec": "~/.config/waybar/scripts/dog.sh",
+    "interval": 60,
+    "return-type": "json",
+    "format": "{icon}",
+    "format-alt": "{icon} {text}",
+    "format-icons": [""]
+  },
+  "backlight": {
+    // "device": "acpi_video1",
+    "format": "{percent}% {icon}",
+    "format-icons": ["", "", "", "", "", "", "", "", ""]
+  },
+  "battery": {
+    "states": {
+      // "good": 95,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{capacity}% {icon}",
+    "format-full": "{capacity}% {icon}",
+    "format-charging": "{capacity}% 󰂄",
+    "format-plugged": "{capacity}% ",
+    "format-alt": "{time} {icon}",
+    // "format-good": "", // An empty format will hide the module
+    // "format-full": "",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+  "network": {
+    // "interface": "wlp2*", // (Optional) To force the use of this interface
+    "format-wifi": "󱚽 {essid}({signalStrength}%)",
+    "format-ethernet": "󰱔 {ipaddr}/{cidr}",
+    "tooltip-format": "{ifname} via {gwaddr}",
+    "format-linked": "󰱟 {ifname} (No IP)",
+    "format-disconnected": " Disconnected",
+    "format-alt": "{ifname}: {ipaddr}/{cidr}"
+  },
+  "pulseaudio": {
+    // "scroll-step": 1, // %, can be a float
+    "format": "{volume}% {icon} {format_source}",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": "󰝟 {format_source}",
+    "format-source": " {volume}% ",
+    "format-source-muted": " ",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "󱡏",
+      "headset": "󰋎",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
+    },
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+    "on-middle-click": "pavucontrol",
+    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +1%",
+    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -1%"
+  }
+}

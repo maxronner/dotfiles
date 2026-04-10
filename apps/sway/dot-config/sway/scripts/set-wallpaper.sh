@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/personal/wallpapers}"
+WALLPAPER_PATH="${WALLPAPER_PATH:-$HOME/.config/sway/1.wallpaper}"
+LOCK_WALLPAPER_PATH="${LOCK_WALLPAPER_PATH:-$HOME/.config/sway/lock.wallpaper}"
+
+need_cmd() { command -v "$1" >/dev/null 2>&1 || { echo "$1 is required but not installed." >&2; exit 1; }; }
+need_cmd magick
+need_cmd shuf
+need_cmd systemd-run
+
+EXTENSIONS=(jpg jpeg png gif bmp)
+
+pick_random() {
+  if command -v fd >/dev/null 2>&1; then
+    fd_args=()
+    for ext in "${EXTENSIONS[@]}"; do
+      fd_args+=(-e "$ext")
+    done
+    fd "${fd_args[@]}" -d 1 . "$WALLPAPER_DIR" | shuf -n 1
+  else
+    find_expr=()
+    for ext in "${EXTENSIONS[@]}"; do
+      find_expr+=(-iname "*.$ext" -o)
+    done
+    unset 'find_expr[-1]'
+    find "$WALLPAPER_DIR" -maxdepth 1 -type f \( "${find_expr[@]}" \) | shuf -n 1
+  fi
+}
+
+resolve_input() {
+  local arg="$1"
+
+  [[ -z "$arg" ]] && return 1
+
+  if [[ -f "$arg" ]]; then
+    printf '%s\n' "$(realpath "$arg")"
+    return 0
+  fi
+
+  if [[ -f "$WALLPAPER_DIR/$arg" ]]; then
+    printf '%s\n' "$(realpath "$WALLPAPER_DIR/$arg")"
+    return 0
+  fi
+
+  return 1
+}
+
+selected="${WALLPAPER_IMAGE:-${1-}}"
+
+if [[ -n "$selected" ]]; then
+  if ! selected="$(resolve_input "$selected")"; then
+    echo "Wallpaper not found: $1" >&2
+    exit 1
+  fi
+else
+  selected="$(pick_random)"
+fi
+
+if [[ -z "$selected" ]]; then
+  echo "No wallpapers found in $WALLPAPER_DIR" >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$WALLPAPER_PATH")" "$(dirname "$LOCK_WALLPAPER_PATH")"
+if [[ -L "$WALLPAPER_PATH" ]]; then
+  if [[ "$(readlink "$WALLPAPER_PATH")" == "$selected" ]]; then
+    exit 0
+  fi
+  rm "$WALLPAPER_PATH"
+fi
+ln -s "$selected" "$WALLPAPER_PATH"
+
+systemd-run --user --unit=lockimage-gen.service --collect --quiet \
+  magick "$selected" -blur 0x48 "$LOCK_WALLPAPER_PATH"
+
+if command -v thememanager >/dev/null 2>&1; then
+  thememanager auto --wallpaper "$selected" || true
+fi

@@ -1,0 +1,15 @@
+[metadata]
+name = "emojis"
+description = "Select emojis"
+requirements = ["bat"]
+
+[source]
+command = "bat $XDG_DATA_HOME/emoji.txt"
+
+[keybindings]
+shortcut = "f5"
+enter = "actions:copy"
+
+[actions.copy]
+command = "awk '{printf \"%s\", $1}' <<< \"{}\" | wl-copy"
+mode = "execute"

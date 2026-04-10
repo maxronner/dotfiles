@@ -1,0 +1,4 @@
+gamescope
+gamemode
+steam
+aur:swayfx

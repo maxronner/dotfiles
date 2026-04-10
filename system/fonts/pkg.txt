@@ -1,0 +1,4 @@
+noto-fonts
+noto-fonts-emoji
+ttf-hack-nerd
+ttf-jetbrains-mono-nerd

@@ -1,0 +1,8 @@
+alsa-ucm-conf
+aur:kmonad
+bluez
+bluez-utils
+brightnessctl
+networkmanager
+sof-firmware
+sway

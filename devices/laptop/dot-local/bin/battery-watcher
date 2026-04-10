@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+battery_root="${BATTERY_WATCHER_BATTERY_ROOT:-/sys/class/power_supply}"
+state_dir="${BATTERY_WATCHER_STATE_DIR:-${XDG_STATE_HOME:-${HOME}/.local/state}/battery-watcher}"
+notify_send_bin="${BATTERY_WATCHER_NOTIFY_SEND_BIN:-notify-send}"
+low_threshold="${BATTERY_WATCHER_LOW_THRESHOLD:-15}"
+critical_threshold="${BATTERY_WATCHER_CRITICAL_THRESHOLD:-5}"
+
+shopt -s nullglob
+
+if ! command -v "${notify_send_bin}" >/dev/null 2>&1; then
+  exit 0
+fi
+
+if ! [[ "${low_threshold}" =~ ^[0-9]+$ && "${critical_threshold}" =~ ^[0-9]+$ ]]; then
+  printf 'Battery thresholds must be integers: low=%s critical=%s\n' "${low_threshold}" "${critical_threshold}" >&2
+  exit 1
+fi
+
+if (( critical_threshold > low_threshold )); then
+  printf 'Battery critical threshold must be less than or equal to low threshold: low=%s critical=%s\n' "${low_threshold}" "${critical_threshold}" >&2
+  exit 1
+fi
+
+battery_path=""
+for candidate in "${battery_root}"/BAT*; do
+  if [[ -d "${candidate}" && -r "${candidate}/capacity" && -r "${candidate}/status" ]]; then
+    battery_path="${candidate}"
+    break
+  fi
+done
+
+if [[ -z "${battery_path}" ]]; then
+  exit 0
+fi
+
+capacity="$(<"${battery_path}/capacity")"
+status="$(<"${battery_path}/status")"
+battery_name="$(basename "${battery_path}")"
+low_stamp="${state_dir}/${battery_name}.low"
+
+if [[ ! "${capacity}" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid battery capacity in %s/capacity: %s\n' "${battery_path}" "${capacity}" >&2
+  exit 1
+fi
+
+mkdir -p -m 700 "${state_dir}"
+
+if [[ "${status}" != "Discharging" ]]; then
+  rm -f "${low_stamp}"
+  exit 0
+fi
+
+if (( capacity > low_threshold )); then
+  rm -f "${low_stamp}"
+  exit 0
+fi
+
+if (( capacity <= critical_threshold )); then
+  touch "${low_stamp}"
+  exec "${notify_send_bin}" \
+    --app-name=battery-watcher \
+    --urgency=critical \
+    --expire-time=0 \
+    "Battery critical (${capacity}%)" \
+    "Plug in power immediately."
+fi
+
+if [[ -e "${low_stamp}" ]]; then
+  exit 0
+fi
+
+touch "${low_stamp}"
+exec "${notify_send_bin}" \
+  --app-name=battery-watcher \
+  --urgency=normal \
+  --expire-time=10000 \
+  "Battery low (${capacity}%)" \
+  "Plug in power soon."

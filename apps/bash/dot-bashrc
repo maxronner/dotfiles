@@ -1,0 +1,123 @@
+iatest=$(expr index "$-" i)
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# enable vim mode
+set -o vi
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+export HISTFILESIZE=10000
+export HISTSIZE=500
+export HISTTIMEFORMAT="%F %T  " # add timestamp to history
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+#force_color_prompt=yes
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+    	color_prompt=
+    fi
+fi
+
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+}
+
+parse_git_status() {
+  local git_status=$(git status --porcelain 2>/dev/null)
+  local untracked=$(echo "$git_status" | grep "^??" | wc -l)
+  local modified=$(echo "$git_status" | grep "^ M" | wc -l)
+  local staged=$(echo "$git_status" | grep "^M " | wc -l)
+  local stash=$(git stash show 2>/dev/null | wc -l)
+
+  local status_string=""
+  if [[ "$stash" -gt 0 ]]; then
+    status_string+="$"
+  fi
+  if [[ "$untracked" -gt 0 ]]; then
+    status_string+="?($untracked)"
+  fi
+  if [[ "$modified" -gt 0 ]]; then
+    status_string+="!($modified)"
+  fi
+  if [[ "$staged" -gt 0 ]]; then
+    status_string+="+($staged)"
+  fi
+
+  if [[ -n "$status_string" ]]; then
+    echo " [$status_string]"
+  fi
+}
+
+# ANSI Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[0;37m'
+NC='\033[0m' # No Color
+
+PS1=""
+# Construct the prompt
+if [[ "$SSH_CONNECTION" != "" ]]; then
+    PS1="\[\e[38;5;27m\]\u@\h\[\e[m\]:"  # username@host:
+fi
+PS1+="\[\e[34m\]\w\[\e[m\]"
+PS1+="\[$MAGENTA\] \$(parse_git_branch)\[$NC\]" # Git branch
+PS1+="\[$YELLOW\]\$(parse_git_status)\[$NC\]" # Git status
+PS1+="\\$ "   # Prompt character ($ or #)
+
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# Enable case-insensitive tab completion
+[[ $- == *i* ]] && bind "set completion-ignore-case on"
+
+# Show completion list on ambiguous input without needing double Tab
+[[ $- == *i* ]] && bind "set show-all-if-ambiguous on"
+
+[ -f "$XDG_CONFIG_HOME/shell/interactive-shell-configs.sh" ] && \
+    source "$XDG_CONFIG_HOME/shell/interactive-shell-configs.sh"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi

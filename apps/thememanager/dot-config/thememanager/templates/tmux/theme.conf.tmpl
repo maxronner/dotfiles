@@ -1,0 +1,38 @@
+set -g status-style "fg=colour30,bg=default"
+set -g window-status-style "fg=colour30,bg=default"
+set -g window-status-current-style "fg=colour5,bg=default"
+set -g window-status-activity-style "fg=colour1,bg=default"
+
+set -g message-style "fg=colour24,bg=default"
+
+set -g pane-border-style "fg=colour8"
+set -g pane-active-border-style "fg=colour4"
+
+setw -g window-status-format "#[italics,fg=colour30]#I: #W"
+setw -g window-status-current-format "#[bold,italics,fg=colour5]#I: #[fg=colour24]#W"
+setw -g window-status-separator "  "
+set -g status-justify centre
+
+set -g status-left " \
+#[fg=#{?client_prefix,colour3,colour30}] \
+#[bold,fg=colour5]#S  \
+#[fg=colour30]󰥔 %H:%M \
+#{?#{!=:#{pomodoro_status},},#[fg=colour30]| #{pomodoro_status},} \
+"
+set -g status-left-length 32
+
+set -g status-right " \
+#[fg=colour30]#(cpu-stat) | \
+#[fg=colour30]#h 󰌘 \
+#(tmux-battery) \
+"
+set -g status-right-length 100
+
+setw -g clock-mode-colour colour1
+setw -g mode-style "fg=colour3"
+
+set -g @pomodoro_on "#[fg=colour30] "
+set -g @pomodoro_complete "#[fg=colour4] "
+set -g @pomodoro_pause "#[fg=colour4] "
+set -g @pomodoro_prompt_break "#[fg=colour1]󰥔 ?"
+set -g @pomodoro_prompt_pomodoro "#[fg=colour1]󰥔 ?"

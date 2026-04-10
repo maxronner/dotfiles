@@ -1,0 +1,31 @@
+[metadata]
+name = "pass"
+description = "Password store selection"
+requirements = ["pass", "fd", "less"]
+
+[ui]
+input_header = "Search credentials:"
+
+[source]
+command = "fd --glob '*.gpg' $PASSWORD_STORE_DIR | sed -e \"s:$PASSWORD_STORE_DIR/::gi\" -e 's:.gpg$::gi'"
+
+[keybindings]
+shortcut = "f4"
+enter = "actions:copy"
+ctrl-o = "actions:otp"
+ctrl-s = "actions:show"
+
+[actions.copy]
+command = "pass show -c '{}'"
+description = "Copy password to clipboard"
+mode = "execute"
+
+[actions.otp]
+command = "pass otp -c '{}'"
+description = "Copy OTP to clipboard"
+mode = "execute"
+
+[actions.show]
+command = "pass show '{}' | less"
+description = "Inspect password"
+mode = "execute"

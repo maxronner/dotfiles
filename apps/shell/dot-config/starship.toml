@@ -1,0 +1,84 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$git_metrics\
+$cmd_duration\
+${custom.conditional_line_break}\
+$go\
+$python\
+$character"""
+
+[directory]
+style = "bold blue"
+
+[fill]
+symbol = " "
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](cyan)"
+
+[hostname]
+ssh_only = true
+format = '$hostname '
+
+[git_status]
+style = "red"
+format = '[$all_status$ahead_behind]($style) '
+up_to_date = '[✓](green)'
+untracked = '[?\($count\)](yellow)'
+stashed = '[\$](cyan)'
+modified = '[!\($count\)](yellow)'
+renamed = '[»\($count\)](magenta)'
+deleted = '[✘\($count\)](style)'
+staged = '[++\($count\)](yellow)'
+ahead = '[↑\(${count}\)](green)'
+diverged = '↕[\[]($style)[⇡\(${ahead_count}\)](green)[⇣\(${behind_count}\)](cyan)[\]]($style)'
+behind = '[↓\(${count}\)](cyan)'
+
+[git_branch]
+format = "on [$branch(:$remote_branch)]($style) "
+style = "bold purple"
+truncation_symbol = "⋯"
+truncation_length = 11
+only_attached = true
+
+[git_metrics]
+format = '([+$added]($added_style))([-$deleted]($deleted_style)) '
+only_nonzero_diffs = true
+added_style = 'italic dimmed green'
+deleted_style = 'italic dimmed red'
+ignore_submodules = true
+disabled = false
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "dimmed"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "dimmed"
+
+[golang]
+format = "[$symbol$version]($style) "
+disabled = false
+style = "dimmed"
+symbol = " "
+
+[python]
+format = "[$virtualenv]($style) "
+style = "dimmed"
+disabled = false
+detect_extensions = []
+detect_files = []
+detect_folders = []
+
+[custom.conditional_line_break]
+when = "git rev-parse --is-inside-work-tree"
+command = "echo"
+format = "\n"

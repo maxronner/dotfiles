@@ -1,0 +1,7 @@
+[Unit]
+Description=Pick new wallpaper and restart swaybg
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/sway/scripts/set-wallpaper.sh
+ExecStartPost=/bin/systemctl --user restart swaybg.service

@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+# Strict error handling
+set -euo pipefail
+
+# Force English locale to ensure 'nmcli' keywords (wifi, connected, disabled) match standard strings.
+export LC_ALL=C
+
+# --- Configuration ---
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RESET='\033[0m'
+
+for cmd in nmcli fzf awk sed grep; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo -e "${RED}Error: Required command '$cmd' is not installed.${RESET}"
+        exit 1
+    fi
+done
+
+IFACE=$(nmcli --get-values DEVICE,TYPE dev status | awk -F: '$2=="wifi"{print $1; exit}')
+if [[ -z "$IFACE" ]]; then
+    echo -e "${RED}Error: No WiFi interface found.${RESET}"
+    exit 1
+fi
+
+if nmcli radio wifi | grep -q "disabled"; then
+    echo -e "${YELLOW}WiFi is disabled. Enabling...${RESET}"
+    nmcli radio wifi on
+    sleep 2
+fi
+
+echo -e "${YELLOW}Scanning networks on $IFACE...${RESET}"
+
+WIFI_LIST=$(nmcli --color=yes -f IN-USE,BSSID,SSID,BARS,SECURITY dev wifi list ifname "$IFACE")
+if [[ -z "$WIFI_LIST" ]]; then
+    echo -e "${RED}No WiFi networks found.${RESET}"
+    exit 0
+fi
+
+SELECTED_LINE=$(echo "$WIFI_LIST" | fzf --ansi \
+    --header-lines=1 \
+    --reverse \
+    --prompt="WiFi ($IFACE) > " \
+    --height=40% \
+    --border)
+
+[[ -z "$SELECTED_LINE" ]] && exit 0
+
+# Strip ANSI codes for processing
+CLEAN_LINE=$(sed 's/\x1b\[[0-9;]*m//g' <<< "$SELECTED_LINE")
+
+# 2. Robust Extraction: Use Regex to find the BSSID (MAC Address).
+# This ignores spaces in SSIDs or column misalignment.
+# Pattern: Two hex digits followed by colon, repeated 5 times, ending with two hex digits.
+BSSID=$(echo "$CLEAN_LINE" | grep -oE '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' | head -n1)
+
+if [[ -z "$BSSID" ]]; then
+    echo -e "${RED}Error: Could not parse BSSID from selection.${RESET}"
+    exit 1
+fi
+
+if [[ "$CLEAN_LINE" =~ ^[[:space:]]*\* ]]; then
+    ALREADY_CONNECTED=true
+else
+    ALREADY_CONNECTED=false
+fi
+
+# Look up the specific SSID using the BSSID we just extracted safely
+SSID=$(nmcli -g SSID dev wifi list bssid "$BSSID" | head -n1)
+
+# 3. Handle Hidden Networks (Empty SSID)
+if [[ -z "$SSID" ]]; then
+    echo -e "${YELLOW}Hidden network detected.${RESET}"
+    read -rp "Enter SSID manually: " SSID
+fi
+
+if [[ "$ALREADY_CONNECTED" == "true" ]]; then
+    echo -e "${GREEN}Already connected to '$SSID'.${RESET}"
+    exit 0
+fi
+
+echo -e "Connecting to ${GREEN}$SSID${RESET}..."
+
+# Try connecting non-interactively (uses saved secrets if they exist)
+set +e
+nmcli dev wifi connect "$SSID" ifname "$IFACE" >/dev/null 2>&1
+STATUS=$?
+set -e
+
+if [[ $STATUS -eq 0 ]]; then
+    echo -e "${GREEN}Success! Connected to $SSID.${RESET}"
+else
+    echo -e "${YELLOW}Connection info required or failed. Retrying with prompt...${RESET}"
+    # Note: --ask requires a terminal. It works here, but would fail in a background script.
+    if nmcli dev wifi connect "$SSID" ifname "$IFACE" --ask; then
+        echo -e "${GREEN}Success! Connected to $SSID.${RESET}"
+    else
+        echo -e "${RED}Failed to connect to $SSID.${RESET}"
+        exit 1
+    fi
+fi

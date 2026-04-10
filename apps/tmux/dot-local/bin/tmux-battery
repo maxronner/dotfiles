@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Print battery segment for tmux status-right. No output if no battery is present.
+
+bat=""
+for p in /sys/class/power_supply/*; do
+    [[ -e "$p/type" ]] || continue
+    if [[ "$(<"$p/type")" == "Battery" ]]; then
+        bat="$p"
+        break
+    fi
+done
+
+[[ -n "$bat" ]] || exit 0
+
+{ read -r capacity <"$bat/capacity"; } 2>/dev/null || exit 0
+read -r status <"$bat/status" 2>/dev/null || status=""
+
+printf -v capacity_fmt '%2d%%' "$capacity"
+
+if [[ "$capacity" -lt 16 ]]; then
+    color="colour1"
+elif [[ "$capacity" -lt 31 ]]; then
+    color="colour3"
+else
+    color="colour30"
+fi
+
+case "$status" in
+Charging) icon="󰂄" color="colour2" ;;
+Full) icon="󰁹" ;;
+Discharging) icon="󰂃" ;;
+*) icon="󰂑" ;;
+esac
+
+out="#[fg=colour30]| "
+if [[ "$capacity" -lt 31 ]] || [[ "$status" == "Charging" ]]; then
+    out+="#[fg=${color}]${capacity_fmt} ${icon}"
+else
+    out+="#[fg=colour30]${capacity_fmt} #[fg=${color}]${icon}"
+fi
+
+printf '%s\n' "$out"

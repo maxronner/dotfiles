@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input="${1-}"
+if [ -z "$input" ]; then
+  exit 1
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  python3 - "$input" <<'PY'
+import math
+import re
+import sys
+
+expr = sys.argv[1]
+
+# Allow numbers, operators, whitespace, parentheses, commas, dots, and "math".
+tmp = re.sub(r"\bmath\b", "", expr)
+if re.search(r"[A-Za-z_]", tmp):
+  raise SystemExit("error: invalid characters")
+
+expr = expr.replace("^", "**")
+print(eval(expr, {"__builtins__": {}}, {"math": math}))
+PY
+elif command -v bc >/dev/null 2>&1; then
+  printf '%s\n' "$input" | bc -l
+else
+  echo "missing python3/bc" >&2
+  exit 1
+fi

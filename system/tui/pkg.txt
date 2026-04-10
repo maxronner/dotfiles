@@ -1,0 +1,8 @@
+astroterm
+aur:claude-code
+bluetui
+btop
+opencode
+tealdeer
+termshark
+vim

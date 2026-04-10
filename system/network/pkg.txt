@@ -1,0 +1,6 @@
+inetutils
+nmap
+nss-mdns
+openssh
+rsync
+wget

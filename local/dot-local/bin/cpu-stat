@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Linux-only: reads aggregate CPU counters from /proc/stat.
+
+read_cpu_sample() {
+  local cpu user nice system idle iowait irq softirq steal guest guest_nice
+
+  if ! read -r cpu user nice system idle iowait irq softirq steal guest guest_nice _ < /proc/stat; then
+    return 1
+  fi
+
+  if [[ $cpu != cpu ]]; then
+    return 1
+  fi
+
+  for value in "$user" "$nice" "$system" "$idle" "$iowait" "$irq" "$softirq" "$steal"; do
+    [[ $value =~ ^[0-9]+$ ]] || return 1
+  done
+
+  printf '%s %s\n' "$((idle + iowait))" "$((user + nice + system + idle + iowait + irq + softirq + steal))"
+}
+
+if ! read -r prev_idle prev_total < <(read_cpu_sample); then
+  printf 'CPU: n/a\n'
+  exit 1
+fi
+
+sleep 0.5
+
+if ! read -r curr_idle curr_total < <(read_cpu_sample); then
+  printf 'CPU: n/a\n'
+  exit 1
+fi
+
+idle_delta=$((curr_idle - prev_idle))
+total_delta=$((curr_total - prev_total))
+
+if (( total_delta <= 0 || idle_delta < 0 || idle_delta > total_delta )); then
+  printf 'CPU: n/a\n'
+  exit 1
+fi
+
+usage=$(awk -v idle_delta="$idle_delta" -v total_delta="$total_delta" 'BEGIN { printf("%.0f", ((total_delta - idle_delta) / total_delta) * 100) }')
+printf '%3d%% \n' "$usage"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Run battery watcher periodically
+
+[Timer]
+Unit=battery-watcher.service
+OnBootSec=2m
+OnUnitActiveSec=2m
+AccuracySec=1m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

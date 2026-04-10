@@ -1,0 +1,3 @@
+tmux
+aur:sesh-bin
+zoxide

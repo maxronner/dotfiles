@@ -1,0 +1,8 @@
+[Unit]
+Description=Check battery level and send notifications
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+SyslogIdentifier=battery-watcher
+ExecStart=%h/.local/bin/battery-watcher

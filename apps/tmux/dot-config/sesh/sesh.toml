@@ -1,0 +1,45 @@
+#:schema https://raw.githubusercontent.com/joshmedeski/sesh/refs/heads/main/sesh.schema.json
+blacklist = ["scratch"]
+cache = false
+
+[default_session]
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "mail"
+path = "~/"
+startup_command = "neomutt"
+
+[[session]]
+name = "downloads"
+path = "~/Downloads"
+startup_command = "l"
+
+[[session]]
+name = "notebook"
+path = "~/personal/notebook"
+startup_command = "v"
+
+[[session]]
+name = "nvim"
+path = "~/.dotfiles/apps/nvim/dot-config/nvim"
+startup_command = "v"
+
+[[session]]
+name = "dotfiles"
+path = "~/.dotfiles"
+startup_command = "v"
+
+[[session]]
+name = "work"
+path = "~/personal/work"
+startup_command = "v"
+
+[[wildcard]]
+pattern = "~/personal/dev/**/*"
+startup_command = "v"
+windows = [ "git" ]
+
+[[window]]
+name = "git"
+startup_script = "gs && git pull"

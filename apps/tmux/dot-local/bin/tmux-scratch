@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+marker="scratch"
+marker_set=0
+small=0
+vertical=0
+kill=0
+window_mode=0
+window_scoped=1
+
+cmd=()
+pos_args=()
+session=""
+src_idx=""
+origin_idx=""
+pane_id=""
+last_pane_idx=""
+current_dir=""
+new_pane=""
+pane_name=""
+window_name=""
+
+usage() {
+  cat <<-EOF
+Create quick and dirty scratch panes in tmux
+
+Usage: $(basename "$0") [-m MARKER] [-v] [-s] [-k] [-w] [--] [COMMAND...]
+
+Options:
+  -m, --marker MARKER    Name of the pane to find/create (default: $marker)
+  -v, --vertical         Use a vertical split (top/bottom). Default is horizontal.
+  -s, --small            Use 20%/25% size pane instead of half
+  -k, --kill             Don't pause after command exits (no '; read' appended)
+  -w, --window           Use window mode instead of a pane
+  -h, --help             Show this help message and exit
+
+Everything after '--' is treated as the COMMAND to run in the pane;
+e.g.:
+
+  $(basename "$0") -m ai -v -- tgpt --chat --model gpt-4
+EOF
+}
+
+parse_args() {
+  while (($#)); do
+    case "$1" in
+    -m | --marker)
+      marker=$2
+      marker_set=1
+      window_scoped=0
+      shift 2
+      ;;
+    -s | --small)
+      small=1
+      shift
+      ;;
+    -v | --vertical)
+      vertical=1
+      shift
+      ;;
+    -k | --kill)
+      kill=1
+      shift
+      ;;
+    -w | --window)
+      window_mode=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "unknown option: $1" >&2
+      exit 1
+      ;;
+    *) break ;;
+    esac
+  done
+
+  pane_name="__${marker}__"
+  window_name="$marker"
+
+  if (($#)); then
+    pane_name="$*"
+    ((marker_set)) || window_name="$1"
+    cmd=("$@")
+    if ((!kill && !window_mode)); then
+      cmd+=("; read")
+    fi
+  fi
+}
+
+build_split_args() {
+  if ((small)); then
+    ((vertical)) && pos_args=(-fv -l 30%) || pos_args=(-fh -l 30%)
+  else
+    ((vertical)) && pos_args=(-fv) || pos_args=(-fh)
+  fi
+}
+
+find_scratch_pane() {
+  if ((window_scoped)); then
+    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{@scratch_name} #{@scratch_origin}" |
+      awk -v s="$session" -v m="$pane_name" -v oi="$src_idx" '
+        index($0, s ":") == 1 {
+          pane = $1; name = $2; origin = $3
+          if (name == m && origin == oi) { print pane " " origin; exit }
+        }')
+  else
+    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{@scratch_name}" |
+      awk -v s="$session" -v m="$pane_name" '
+        index($0, s ":") == 1 {
+          pane = $1; name = $0
+          sub(/^[^ ]+ /, "", name)
+          if (name == m) { print pane; exit }
+        }')
+  fi
+
+  if [[ -n $pane_id && $pane_id == *\ * ]]; then
+    origin_idx="${pane_id##* }"
+    pane_id="${pane_id%% *}"
+  fi
+}
+
+handle_window_mode() {
+  ((!${#cmd[@]})) && exit 1
+  session=$(tmux display -p '#S')
+  current_dir=$(tmux display -p -F '#{pane_current_path}')
+  tmux select-window -t "$session:$window_name" 2>/dev/null ||
+    tmux new-window -n "$window_name" -c "$current_dir" "${cmd[@]}"
+  exit 0
+}
+
+break_or_move_pane() {
+  local win_idx break_idx break_window_name last_index
+
+  win_idx=${pane_id#*:}
+  win_idx=${win_idx%%.*}
+
+  if ((win_idx == src_idx)); then
+    ((last_pane_idx == 1)) && exit || true
+    if ((window_scoped)); then
+      break_idx="${origin_idx:-$src_idx}"
+      break_window_name="${window_name}-${break_idx}"
+    else
+      break_window_name="${window_name}"
+    fi
+    tmux break-pane -d -s "$pane_id" -n "$break_window_name"
+    last_index=$(tmux list-windows -F '#{window_index}' | tail -n1)
+    tmux select-window -t :"$last_index"
+    tmux select-window -t "$session:$src_idx"
+  else
+    tmux move-pane -s "$pane_id" -t "$session:$src_idx.$last_pane_idx" "${pos_args[@]}"
+    tmux select-window -t "$session:$src_idx"
+  fi
+}
+
+create_scratch_pane() {
+  current_dir=$(tmux display -p -F '#{pane_current_path}')
+  if ((!${#cmd[@]})); then
+    new_pane=$(tmux split-window -P -F '#{pane_id}' \
+      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${pos_args[@]}")
+  else
+    new_pane=$(tmux split-window -P -F '#{pane_id}' \
+      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${pos_args[@]}" "${cmd[@]}")
+  fi
+  tmux set-option -pt "$new_pane" @scratch_name "$pane_name"
+  tmux set-option -pt "$new_pane" @scratch_origin "$src_idx"
+  tmux select-pane -t "$new_pane" -T "$pane_name"
+}
+
+main() {
+  parse_args "$@"
+
+  if ((window_mode)); then
+    handle_window_mode
+  fi
+
+  exec &>/dev/null
+
+  session=$(tmux display -p '#S')
+  src_idx=$(tmux display -p '#I')
+
+  build_split_args
+  find_scratch_pane
+  last_pane_idx=$(tmux list-panes -t "$session:$src_idx" -F '#{pane_index}' | tail -n1)
+
+  if [[ -n $pane_id ]]; then
+    break_or_move_pane
+  else
+    create_scratch_pane
+  fi
+}
+
+main "$@"
