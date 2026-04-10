@@ -463,7 +463,9 @@ class ThemeManager:
                 apply_cmd = shutil.which("theme-apply-all")
                 if apply_cmd:
                     logger.info("Running theme-apply-all...")
-                    subprocess.run([apply_cmd], check=False)
+                    env = os.environ.copy()
+                    env["THEME_LOCK_HELD"] = "1"
+                    subprocess.run([apply_cmd], check=False, env=env)
                 else:
                     logger.debug("theme-apply-all not found, skipping apply")
         finally:
