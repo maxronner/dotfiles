@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+# scope: user
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/../common.sh"
+source "${SCRIPT_DIR}/../lib/common.sh"
 
 STOW_CONFIG_DIR="${REPO_ROOT}/apps"
 STOW_DEVICES_DIR="${REPO_ROOT}/devices"
