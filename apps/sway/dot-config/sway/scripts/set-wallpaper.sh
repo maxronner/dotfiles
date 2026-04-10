@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/personal/wallpapers}"
+WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/.local/share/wallpapers}"
 WALLPAPER_PATH="${WALLPAPER_PATH:-$HOME/.config/sway/1.wallpaper}"
 LOCK_WALLPAPER_PATH="${LOCK_WALLPAPER_PATH:-$HOME/.config/sway/lock.wallpaper}"
 
-need_cmd() { command -v "$1" >/dev/null 2>&1 || { echo "$1 is required but not installed." >&2; exit 1; }; }
+need_cmd() { command -v "$1" >/dev/null 2>&1 || {
+  echo "$1 is required but not installed." >&2
+  exit 1
+}; }
 need_cmd magick
 need_cmd shuf
 need_cmd systemd-run
