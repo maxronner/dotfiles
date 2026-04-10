@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-A script to manage themes for various applications.
+Palette producer for the theming system.
 
-Themes are sourced from color256 .txt palette files (for named themes) or
-derived from the current wallpaper via matugen (for auto mode). App configs
-are rendered from templates using {{key}} substitution against the palette.
+Generates palette.json from color256 .txt palette files (named themes) or
+from the current wallpaper via matugen (auto mode). After writing the palette,
+optionally triggers theme-apply-all to render per-app configs.
 
 Usage:
 - `thememanager list`: List available themes.
 - `thememanager get`: Show the current theme.
 - `thememanager set <theme_name>`: Switch to a named theme.
 - `thememanager set auto`: Enable wallpaper-based auto mode.
-- `thememanager auto [--wallpaper /path/to/image]`: Re-render auto templates from wallpaper via matugen.
+- `thememanager auto [--wallpaper /path/to/image]`: Regenerate palette from wallpaper.
 - `thememanager -v set <theme_name>`: Set theme with debug logging.
 """
 
