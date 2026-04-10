@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEME_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/theme"
+PALETTE_FILE="${THEME_DATA_DIR}/palette.json"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+THEME_LOCK="${XDG_RUNTIME_DIR:-/tmp}/theme.${UID}.lock"
+
+check=0
+if [[ "${1:-}" == "--check" ]]; then
+  check=1
+fi
+
+if [[ ! -f "$PALETTE_FILE" ]]; then
+  echo "theme-apply-all: no palette at $PALETTE_FILE, skipping" >&2
+  exit 0
+fi
+
+# Acquire lock (non-blocking — exit if already held)
+exec 9>"$THEME_LOCK"
+flock -n 9 || { echo "theme-apply-all: already running" >&2; exit 0; }
+
+apps=(sway waybar swaylock mako ghostty)
+applied=0
+skipped=0
+failed=0
+
+for app in "${apps[@]}"; do
+  script="$CONFIG_DIR/$app/scripts/apply-theme"
+  if [[ ! -x "$script" ]]; then
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  if (( check )); then
+    if "$script" --check; then
+      applied=$((applied + 1))
+    else
+      echo "theme-apply-all: FAIL $app" >&2
+      failed=$((failed + 1))
+    fi
+  else
+    if "$script"; then
+      applied=$((applied + 1))
+    else
+      echo "theme-apply-all: FAIL $app" >&2
+      failed=$((failed + 1))
+    fi
+  fi
+done
+
+echo "theme-apply-all: applied=$applied skipped=$skipped failed=$failed" >&2
+
+if (( failed )); then
+  exit 1
+fi
