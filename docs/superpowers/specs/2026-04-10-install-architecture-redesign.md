@@ -74,7 +74,9 @@ user env='':
   @bash install/user/services.sh
 
 extras name:
-  @bash install/extras/{{name}}.sh
+  #!/usr/bin/env bash
+  if [ ! -f install/extras/{{name}}.sh ]; then echo "Unknown extra: {{name}}"; exit 1; fi
+  bash install/extras/{{name}}.sh
 
 unlink env='':
   @bash install/extras/unlink.sh {{env}}
@@ -135,9 +137,11 @@ bootstrap [env]
 **Inputs:** Optional `env` profile name.
 
 **Effects:**
-- Installs repo packages from all matching `pkg.txt` files via pacman
+- Installs repo packages from baseline `pkg.txt` files via pacman
 - Bootstraps yay if absent
-- Installs AUR packages from all matching `pkg.txt` files via yay
+- Installs AUR packages from baseline `pkg.txt` files via yay
+
+Package manifest discovery is limited to the baseline system flow and selected profile inputs. Optional extras manage their own package manifests and are never installed by the baseline system flow.
 
 **Idempotency:** Safe to run repeatedly. Package managers handle already-installed packages.
 
@@ -200,6 +204,8 @@ bootstrap [env]
 
 **Must not:** Install packages or modify system state.
 
+Profile-specific user customization is expressed through `devices/{env}/` overlays, not through profile-dispatch scripts.
+
 ---
 
 ### install/user/finalize.sh
@@ -216,7 +222,7 @@ bootstrap [env]
 - Clone TPM into `$HOME` if absent
 - Set up vim spell symlinks
 - Create `~/.local/share/zsh`
-- Run `thememanager set auto`
+- Run `thememanager set auto` (`thememanager` is a baseline package — hard fail if missing)
 
 **Idempotency:** Safe to run repeatedly.
 
@@ -328,6 +334,8 @@ bootstrap [env]
 5. **`unlink` only removes managed links** — symlinks explicitly created by this repo's stow and manual linking operations.
 6. **All scripts use `set -euo pipefail`.** Fail fast on errors.
 7. **All scripts source `lib/common.sh`** for logging and shared utilities.
+8. **All scripts resolve paths relative to the repository or script location, not the caller's working directory.**
+9. **A provided but unknown `env` value emits a warning; an omitted `env` is treated as normal baseline execution.**
 
 ## Decision Rule for New Scripts
 
