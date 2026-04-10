@@ -92,7 +92,7 @@
     },
     "exec": "~/.config/waybar/scripts/gammastep-status.sh",
     "interval": 5,
-    "on-click": "gammastep-toggle.sh",
+    "on-click": "$XDG_CONFIG_HOME/sway/scripts/gammastep-toggle.sh",
     "tooltip": true,
     "tooltip-format": "Toggle gammastep",
     "return-type": "json"
