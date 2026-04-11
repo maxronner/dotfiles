@@ -1,7 +1,7 @@
 bootstrap env='':
-  @bash install/lib/preflight.sh
   just system {{env}}
   just user {{env}}
+  just extra nvim
 
 system env='':
   @bash install/system/packages.sh {{env}}
@@ -9,7 +9,6 @@ system env='':
   @bash install/system/device.sh {{env}}
 
 user env='':
-  @bash install/lib/preflight.sh
   @bash install/user/dotfiles.sh {{env}}
   @bash install/user/finalize.sh
   @bash install/user/services.sh
