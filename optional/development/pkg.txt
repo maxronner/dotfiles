@@ -27,5 +27,6 @@ stylua
 terraform
 typescript-language-server
 yaml-language-server
+yamlfmt
 yq
 zig
