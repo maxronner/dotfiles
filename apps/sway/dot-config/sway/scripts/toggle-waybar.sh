@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-if pgrep -x waybar >/dev/null; then
-	pkill -x waybar
+if systemctl --user is-active --quiet waybar.service; then
+	systemctl --user stop waybar.service
 else
-	exec waybar
+	systemctl --user start waybar.service
 fi

@@ -141,7 +141,7 @@ input "type:touchpad" {
     bindsym $mod+Shift+c reload
 
     # Reload waybar
-    bindsym $mod+Shift+x exec pkill -SIGUSR2 waybar
+    bindsym $mod+Shift+x exec systemctl --user reload waybar.service
     bindsym $mod+x exec $scripts/toggle-waybar.sh
 
 #
