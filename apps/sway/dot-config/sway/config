@@ -341,7 +341,7 @@ bindsym $mod+Shift+e mode "$mode_system"
 #        urgent_workspace $love $love $text
 #    }
 # }
-exec test -x $scripts/start-waybar.sh && $scripts/start-waybar.sh || waybar
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP && systemctl --user start sway-session.target
 
 include /etc/sway/config.d/*
 
