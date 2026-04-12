@@ -169,6 +169,9 @@ def _hue_rotate_base16(base16, source_hex):
     and chroma are preserved from the original matugen colours so the
     wallpaper's tonal character is retained.  Neutral slots (0, 7, 8, 15,
     background, foreground) are left untouched.
+
+    Minimum lightness and chroma floors are enforced so that matugen's often
+    desaturated dark-mode roles produce visible, colourful terminal colours.
     """
     _, _, H0 = _hex_to_lch(source_hex)
 
@@ -183,6 +186,11 @@ def _hue_rotate_base16(base16, source_hex):
         ("color5", "color13", 300),  # magenta
     ]
 
+    # Minimum lightness / chroma so colours stay vivid on a dark background.
+    MIN_L_DIM = 55
+    MIN_L_BRIGHT = 70
+    MIN_C = 35
+
     result = dict(base16)
     for dim, bright, offset in chromatic_slots:
         target_H = (H0 + offset) % 360
@@ -190,6 +198,9 @@ def _hue_rotate_base16(base16, source_hex):
             if slot not in result:
                 continue
             L, C, _ = _hex_to_lch(result[slot])
+            min_L = MIN_L_BRIGHT if slot == bright else MIN_L_DIM
+            L = max(L, min_L)
+            C = max(C, MIN_C)
             result[slot] = _lch_to_hex(L, C, target_H)
 
     return result
@@ -332,6 +343,22 @@ class ThemeManager:
                 "secondary_fixed_dim", "#a0e0e0"
             ),  # bright cyan  (was on_secondary_container, duplicate of C13)
         }
+
+        # Lift neutral slots so the background isn't near-black.  Matugen's
+        # dark-mode surface roles often land at L≈5-8; ~15-18 reads as dark
+        # without being a black hole.
+        _neutral_floors = {
+            "background": 15,
+            "color0": 12,
+            "color8": 40,
+            "color7": 70,
+            "foreground": 80,
+            "color15": 90,
+        }
+        for slot, min_L in _neutral_floors.items():
+            L, C, H = _hex_to_lch(base16[slot])
+            if L < min_L:
+                base16[slot] = _lch_to_hex(min_L, C, H)
 
         # Re-space the 6 chromatic hues equidistantly around the colour wheel,
         # anchored to the wallpaper's dominant hue.  This ensures the 256-colour
