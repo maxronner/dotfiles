@@ -12,6 +12,8 @@ readonly LAPTOP_PKGS=(
 
 install_aur_packages "${LAPTOP_PKGS[@]}"
 
+readonly LAPTOP_DIR="${SCRIPT_DIR}/../../devices/laptop"
+
 info "Allow uinput access for kmonad"
 sudo tee /etc/udev/rules.d/90-uinput.rules <<'EOF'
 KERNEL=="uinput", GROUP="input", MODE="0660", OPTIONS+="static_node=uinput"
@@ -22,3 +24,9 @@ sudo usermod -aG input "$USER"
 
 sudo udevadm control --reload-rules
 sudo udevadm trigger
+
+info "Installing kmonad system config"
+sudo install -Dm644 "${LAPTOP_DIR}/etc/kmonad/qwerty-homerowmods.kbd" /etc/kmonad/qwerty-homerowmods.kbd
+sudo install -Dm644 "${LAPTOP_DIR}/etc/systemd/system/kmonad@.service" /etc/systemd/system/kmonad@.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now kmonad@qwerty-homerowmods.service
