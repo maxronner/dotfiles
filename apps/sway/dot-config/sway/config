@@ -114,7 +114,7 @@ input "type:touchpad" {
 
     bindsym $mod+d exec $menu
     bindsym $mod+u exec $browser
-    bindsym $mod+g exec gammastep-toggle.sh
+    bindsym $mod+g exec $scripts/gammastep-toggle.sh
     bindsym $mod+Shift+w exec $lock
 
     bindsym $mod+c exec hyprpicker --autocopy
