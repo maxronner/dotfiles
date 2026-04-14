@@ -4,7 +4,7 @@ description = "Session manager integrating tmux sessions, zoxide directories, an
 requirements = [ "sesh", "fd",]
 
 [source]
-command = [ "sesh list --icons", "fd -d 3 -t d -E .Trash -E Downloads . ~", "sesh list -z --icons", "sesh list -c --icons", "sesh list -t --icons",]
+command = [ "sesh list --icons", "fd -d 3 -t d -E .Trash -E Downloads . ~ | sed 's/^/ /'", "sesh list -z --icons", "sesh list -c --icons", "sesh list -t --icons",]
 no_sort = true
 ansi = true
 output = "{strip_ansi|split: :1..|join: }"
