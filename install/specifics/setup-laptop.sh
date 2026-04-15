@@ -1,18 +1,10 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/../lib/common.sh"
+source "${SCRIPT_DIR}/../lib.sh"
 
-readonly LAPTOP_PKGS=(
-    kmonad
-    sway
-)
-
-install_aur_packages "${LAPTOP_PKGS[@]}"
-
-readonly LAPTOP_DIR="${SCRIPT_DIR}/../../devices/laptop"
+LAPTOP_DIR="${DOTS_DIR}/devices/laptop"
 
 info "Allow uinput access for kmonad"
 sudo tee /etc/udev/rules.d/90-uinput.rules <<'EOF'

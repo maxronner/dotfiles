@@ -109,6 +109,23 @@ def _lch_to_hex(L, C, H):
     return "#%02x%02x%02x" % (r, g, b)
 
 
+def _compute_wallpaper_luminance(image_path):
+    """Compute perceptual luminance of an image using ImageMagick.
+
+    Returns a float 0.0-1.0, or None if computation fails.
+    """
+    try:
+        result = subprocess.run(
+            ["convert", str(image_path), "-resize", "1x1!", "-format", "%[fx:luminance]", "info:"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return float(result.stdout.strip())
+    except (subprocess.TimeoutExpired, ValueError, FileNotFoundError):
+        pass
+    return None
+
+
 def _build_semantic_palette(base16_hex, theme_name):
     """Build the palette dict that thememanager writes to palette.json.
 
@@ -462,7 +479,7 @@ class ThemeManager:
         env_wallpaper = os.environ.get("WALLPAPER_IMAGE")
         if env_wallpaper:
             candidates.append(Path(os.path.expanduser(env_wallpaper)))
-        candidates.append(HOME / ".config" / "sway" / "1.wallpaper")
+        candidates.append(HOME / ".local" / "share" / "wallpaper" / "current")
 
         for candidate in candidates:
             if candidate.is_file():
@@ -478,6 +495,16 @@ class ThemeManager:
         fcntl.flock(lock_fd, fcntl.LOCK_EX)
         try:
             PALETTE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            # Compute wallpaper luminance if wallpaper path is available
+            wallpaper_path = palette.get("wallpaper") or self._resolve_wallpaper_path()
+            if wallpaper_path:
+                if isinstance(wallpaper_path, str):
+                    wallpaper_path = Path(wallpaper_path)
+                if wallpaper_path.is_file():
+                    lum = _compute_wallpaper_luminance(wallpaper_path)
+                    if lum is not None:
+                        palette["wallpaperLuminance"] = round(lum, 4)
+                        logger.info(f"Wallpaper luminance: {palette['wallpaperLuminance']}")
             content = json.dumps(palette, indent=2) + "\n"
             if self.dry_run:
                 logger.info(f"[dry-run] Would write palette to {PALETTE_FILE}")

@@ -23,9 +23,7 @@ if [[ "${THEME_LOCK_HELD:-}" != "1" ]]; then
   flock -n 9 || { echo "theme-apply-all: already running" >&2; exit 0; }
 fi
 
-apps=(sway waybar swaylock mako ghostty foot)
 applied=0
-skipped=0
 failed=0
 pids=()
 pid_app=()
@@ -33,12 +31,10 @@ pid_app=()
 arg=""
 (( check )) && arg="--check"
 
-for app in "${apps[@]}"; do
-  script="$CONFIG_DIR/$app/scripts/apply-theme"
-  if [[ ! -x "$script" ]]; then
-    skipped=$((skipped + 1))
-    continue
-  fi
+for script in "$CONFIG_DIR"/*/scripts/apply-theme; do
+  [[ -x "$script" ]] || continue
+  app="${script#"$CONFIG_DIR"/}"
+  app="${app%%/*}"
   "$script" $arg &
   pids+=($!)
   pid_app+=("$app")
@@ -53,7 +49,7 @@ for i in "${!pids[@]}"; do
   fi
 done
 
-echo "theme-apply-all: applied=$applied skipped=$skipped failed=$failed" >&2
+echo "theme-apply-all: applied=$applied failed=$failed" >&2
 
 if (( failed )); then
   exit 1

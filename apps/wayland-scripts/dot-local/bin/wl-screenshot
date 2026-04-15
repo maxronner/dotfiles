@@ -1,0 +1,43 @@
+#!/bin/bash
+
+mode="$1"
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -t 2000 "Screenshot $mode" "Copied to clipboard"
+  fi
+}
+
+case "$mode" in
+full)
+  if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+    monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
+  elif command -v swaymsg >/dev/null 2>&1 && [ -n "${SWAYSOCK:-}" ]; then
+    monitor=$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')
+  fi
+  if [ -n "${monitor:-}" ]; then
+    grim -o "$monitor" - | wl-copy && notify
+  else
+    grim - | wl-copy && notify
+  fi
+  ;;
+focused)
+  if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+    geometry=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+  elif command -v swaymsg >/dev/null 2>&1 && [ -n "${SWAYSOCK:-}" ]; then
+    geometry=$(swaymsg -t get_tree | jq -r '.. | (.nodes? // empty)[] | if (.focused) then select(.focused) | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height)" else (.floating_nodes? // empty)[] | select(.visible) | select(.focused) | "\(.rect.x),\(.rect.y) \(.rect.width)x\(.rect.height)" end')
+  else
+    geometry=$(slurp)
+  fi
+  [ -n "$geometry" ] && grim -g "$geometry" - | wl-copy && notify
+  ;;
+selection)
+  geometry=$(slurp -w 0)
+  if [ -n "$geometry" ]; then
+    grim -g "$geometry" - | wl-copy && notify
+  fi
+  ;;
+*)
+  echo "Usage: $(basename "$0") [full|focused|selection]"
+  exit 1
+  ;;
+esac

@@ -35,7 +35,7 @@ fi
 
 # Validate JSON and extract key\x01value pairs (one entry per logical line).
 # \x01 is the field separator — safe for all normal string values.
-if ! KV_DATA=$(jq -r 'to_entries[] | .key + "\u0001" + .value' "$PALETTE" 2>/dev/null); then
+if ! KV_DATA=$(jq -r 'to_entries[] | .key + "\u0001" + (.value | tostring)' "$PALETTE" 2>/dev/null); then
   echo "render: failed to parse palette JSON: $PALETTE" >&2
   exit 1
 fi
