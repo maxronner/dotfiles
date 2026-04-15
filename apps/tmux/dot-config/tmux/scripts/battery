@@ -4,11 +4,11 @@
 
 bat=""
 for p in /sys/class/power_supply/*; do
-    [[ -e "$p/type" ]] || continue
-    if [[ "$(<"$p/type")" == "Battery" ]]; then
-        bat="$p"
-        break
-    fi
+  [[ -e "$p/type" ]] || continue
+  if [[ "$(<"$p/type")" == "Battery" ]]; then
+    bat="$p"
+    break
+  fi
 done
 
 [[ -n "$bat" ]] || exit 0
@@ -18,26 +18,37 @@ read -r status <"$bat/status" 2>/dev/null || status=""
 
 printf -v capacity_fmt '%2d%%' "$capacity"
 
-if [[ "$capacity" -lt 16 ]]; then
-    color="colour1"
-elif [[ "$capacity" -lt 31 ]]; then
-    color="colour3"
-else
-    color="colour30"
-fi
+# sometimes reports above 100 for single tick, omit
+((capacity > 100 || capacity < 0)) && return 1
 
-case "$status" in
-Charging) icon="󰂄" color="colour2" ;;
+case $capacity in
+[0-9] | 1[0-5]) color="colour1" ;;
+1[6-9] | 2[0-9] | 30) color="colour3" ;;
+*) color="colour30" ;;
+esac
+
+case $status in
+Charging)
+  icon="󰂄"
+  color="colour2"
+  ;;
 Full) icon="󰁹" ;;
-Discharging) icon="󰂃" ;;
+Discharging)
+  if ((capacity < 31)); then
+    icon="󰂃"
+  else
+    icon="󰁹"
+  fi
+  ;;
 *) icon="󰂑" ;;
 esac
 
 out="#[fg=colour30]| "
-if [[ "$capacity" -lt 31 ]] || [[ "$status" == "Charging" ]]; then
-    out+="#[fg=${color}]${capacity_fmt} ${icon}"
+
+if ((capacity < 31)) || [[ $status == Charging ]]; then
+  out+="#[fg=$color]${capacity_fmt} $icon"
 else
-    out+="#[fg=colour30]${capacity_fmt} #[fg=${color}]${icon}"
+  out+="#[fg=colour30]${capacity_fmt} #[fg=$color]$icon"
 fi
 
 printf '%s\n' "$out"
