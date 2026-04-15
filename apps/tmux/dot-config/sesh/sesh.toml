@@ -22,7 +22,7 @@ startup_command = "v"
 
 [[session]]
 name = "nvim"
-path = "~/.dotfiles/apps/nvim/dot-config/nvim"
+path = "~/.config/nvim"
 startup_command = "v"
 
 [[session]]
