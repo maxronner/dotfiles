@@ -19,6 +19,7 @@ alias gcB='git checkout -B'
 
 alias gcl='git clone'
 alias gco='git checkout'
+alias gcom='git checkout main'
 
 alias gcp='git cherry-pick'
 alias gcpa='git cherry-pick --abort'
