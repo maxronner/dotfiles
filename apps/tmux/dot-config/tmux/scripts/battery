@@ -13,14 +13,13 @@ done
 
 [[ -n "$bat" ]] || exit 0
 
-{ read -r capacity <"$bat/capacity"; } 2>/dev/null || exit 0
+placeholder() { printf '%s\n' "#[fg=colour30]| ??% 󰂑"; exit 0; }
+
+{ read -r capacity <"$bat/capacity"; } 2>/dev/null || placeholder
 { read -r status <"$bat/status"; } 2>/dev/null || status=""
 
 # sysfs can briefly report garbage or >100; show placeholder
-if ! [[ $capacity =~ ^[0-9]+$ ]] || ((capacity > 100 || capacity < 0)); then
-  printf '%s\n' "#[fg=colour30]| ??% 󰂑"
-  exit 0
-fi
+[[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)) || placeholder
 
 printf -v capacity_fmt '%2d%%' "$capacity"
 
