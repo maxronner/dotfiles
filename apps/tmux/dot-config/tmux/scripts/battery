@@ -14,12 +14,13 @@ done
 [[ -n "$bat" ]] || exit 0
 
 { read -r capacity <"$bat/capacity"; } 2>/dev/null || exit 0
-read -r status <"$bat/status" 2>/dev/null || status=""
+{ read -r status <"$bat/status"; } 2>/dev/null || status=""
+
+# sysfs can briefly report garbage or >100; bail out
+[[ $capacity =~ ^[0-9]+$ ]] || exit 0
+((capacity > 100 || capacity < 0)) && exit 0
 
 printf -v capacity_fmt '%2d%%' "$capacity"
-
-# sometimes reports above 100 for single tick, omit
-((capacity > 100 || capacity < 0)) && exit 0
 
 case $capacity in
 [0-9] | 1[0-5]) color="colour1" ;;
