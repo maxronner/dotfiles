@@ -13,13 +13,24 @@ done
 
 [[ -n "$bat" ]] || exit 0
 
+cache="${XDG_RUNTIME_DIR:-/tmp}/tmux-battery"
 placeholder() { printf '%s\n' "#[fg=colour30]| ??% 󰂑"; exit 0; }
 
-{ read -r capacity <"$bat/capacity"; } 2>/dev/null || placeholder
+valid=1
+{ read -r capacity <"$bat/capacity"; } 2>/dev/null || valid=0
 { read -r status <"$bat/status"; } 2>/dev/null || status=""
 
-# sysfs can briefly report garbage or >100; show placeholder
-[[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)) || placeholder
+# sysfs can briefly report garbage or >100; fall back to last-known-good
+[[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)) || valid=0
+
+if ((valid)); then
+  printf '%s %s\n' "$capacity" "$status" >"$cache"
+elif [[ -r "$cache" ]] && read -r capacity status <"$cache" \
+  && [[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)); then
+  :
+else
+  placeholder
+fi
 
 printf -v capacity_fmt '%2d%%' "$capacity"
 
