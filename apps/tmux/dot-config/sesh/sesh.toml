@@ -19,6 +19,7 @@ startup_command = "l"
 name = "notebook"
 path = "~/personal/notebook"
 startup_command = "v"
+windows = [ "claude" ]
 
 [[session]]
 name = "nvim"
@@ -36,10 +37,14 @@ path = "~/personal/work"
 startup_command = "v"
 
 [[wildcard]]
-pattern = "~/personal/dev/**/*"
+pattern = "~/code/**/*"
 startup_command = "v"
-windows = [ "git" ]
+windows = [ "opencode", "git" ]
 
 [[window]]
 name = "git"
 startup_script = "gs && git pull"
+
+[[window]]
+name = "opencode"
+startup_script = "opencode"
