@@ -5,9 +5,9 @@ base-devel
 bash-language-server
 bats
 cloc
+delve
 direnv
 go
-delve
 gopls
 jq
 just
@@ -26,6 +26,7 @@ sqlite
 stylua
 terraform
 typescript-language-server
+vscode-json-languageserver
 yaml-language-server
 yamlfmt
 yq
