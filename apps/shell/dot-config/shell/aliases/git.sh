@@ -12,7 +12,8 @@ alias gba='git branch --all'
 alias gbd='git branch --delete'
 
 alias gc='git commit'
-alias gca='git commit --amend'
+alias gca='git commit -a'
+alias gcA='git commit --amend'
 
 alias gcb='git checkout -b'
 alias gcB='git checkout -B'
