@@ -180,20 +180,29 @@ def _build_semantic_palette(base16_hex, theme_name):
 def _hue_rotate_base16(base16, source_hex):
     """Re-space the 6 chromatic ANSI hues equidistantly around the colour wheel.
 
-    The wallpaper's dominant hue (from matugen's source_color) anchors the
-    red slot.  The remaining 5 chromatic slots are assigned hues 60° apart in
-    hue-wheel order (red → yellow → green → cyan → blue → magenta).  Lightness
-    and chroma are preserved from the original matugen colours so the
-    wallpaper's tonal character is retained.  Neutral slots (0, 7, 8, 15,
-    background, foreground) are left untouched.
+    The wallpaper's dominant hue (from matugen's source_color) provides the
+    initial L and C for each slot.  The hue is then rotated so that slot 1
+    (offset 0°, red) always lands nearest to 0° on the hue wheel, preserving
+    baseline's slot-to-hue contract regardless of wallpaper dominant hue.
+    The remaining 5 chromatic slots are assigned hues 60° apart in hue-wheel
+    order (red → yellow → green → cyan → blue → magenta).  Lightness and
+    chroma are preserved from the original matugen colours so the wallpaper's
+    tonal character is retained.  Neutral slots (0, 7, 8, 15, background,
+    foreground) are left untouched.
 
     Minimum lightness and chroma floors are enforced so that matugen's often
     desaturated dark-mode roles produce visible, colourful terminal colours.
     """
     _, _, H0 = _hex_to_lch(source_hex)
 
+    # Rotate H0 so that slot 1 (offset 0°) always lands nearest red (0°).
+    # This preserves equidistant spacing while anchoring the ladder to baseline's
+    # hue order regardless of wallpaper dominant hue.  H0 becomes 0° after this.
+    correction = -H0 if H0 <= 180 else (360 - H0)
+    H0 = (H0 + correction) % 360
+
     # Chromatic slots in hue-wheel order, paired with their bright counterparts
-    # and the hue offset (multiples of 60°) from the anchor.
+    # and the hue offset (multiples of 60°) from the anchor (always 0°).
     chromatic_slots = [
         ("color1", "color9", 0),  # red
         ("color3", "color11", 60),  # yellow
@@ -331,34 +340,21 @@ class ThemeManager:
             "color7": pick("on_surface_variant", "#c0c0c0"),  # white  — near-fg light
             "color8": pick("outline", "#767676"),  # bright black — mid grey
             "color15": pick("on_surface", "#ffffff"),  # bright white — brightest fg
-            # Reds (error family)
-            "color1": pick("error", "#ff6b6b"),  # red
-            "color9": pick(
-                "on_error_container", "#ff9b9b"
-            ),  # bright red (was error_container=#93000a, near-black!)
-            # Greens (tertiary family — gold/warm when wallpaper has no green)
-            "color2": pick("tertiary", "#7bd88f"),  # green
-            "color10": pick("tertiary_fixed_dim", "#a0d8a0"),  # bright green
-            # Yellows (tertiary fixed — most yellow-leaning role available)
-            "color3": pick(
-                "tertiary_fixed", "#f6c177"
-            ),  # yellow  (was secondary, now more golden)
-            "color11": pick("on_tertiary_container", "#ffd8a0"),  # bright yellow
-            # Blues (primary family — dominant wallpaper hue maps here)
-            "color4": pick("primary", "#7aa2f7"),  # blue
-            "color12": pick(
-                "on_primary_container", "#7aa2f7"
-            ),  # bright blue  (was primary_container, often dark)
-            # Magentas (secondary family)
-            "color5": pick(
-                "secondary", "#bb9af7"
-            ),  # magenta  (was on_tertiary_container, duplicate of C11)
-            "color13": pick("on_secondary_container", "#bb9af7"),  # bright magenta
-            # Cyans (outline_variant + secondary_fixed — most distinct remaining roles)
-            "color6": pick("outline_variant", "#7dcfff"),  # cyan
-            "color14": pick(
-                "secondary_fixed_dim", "#a0e0e0"
-            ),  # bright cyan  (was on_secondary_container, duplicate of C13)
+            # Chromatic slots: matugen role provides initial L and C only.
+            # Hue is overridden by _hue_rotate_base16 so slot 1 always lands at
+            # red (0°) regardless of wallpaper.  Slots follow baseline offset order.
+            "color1": pick("error", "#ff6b6b"),  # red       → hue overridden to 0°
+            "color9": pick("on_error_container", "#ff9b9b"),  # bright red → 0°
+            "color2": pick("tertiary", "#7bd88f"),  # green     → hue overridden to 120°
+            "color10": pick("tertiary_fixed_dim", "#a0d8a0"),  # bright green → 120°
+            "color3": pick("tertiary_fixed", "#f6c177"),  # yellow   → hue overridden to 60°
+            "color11": pick("on_tertiary_container", "#ffd8a0"),  # bright yellow → 60°
+            "color4": pick("primary", "#7aa2f7"),  # blue      → hue overridden to 240°
+            "color12": pick("on_primary_container", "#7aa2f7"),  # bright blue → 240°
+            "color5": pick("secondary", "#bb9af7"),  # magenta  → hue overridden to 300°
+            "color13": pick("on_secondary_container", "#bb9af7"),  # bright magenta → 300°
+            "color6": pick("outline_variant", "#7dcfff"),  # cyan    → hue overridden to 180°
+            "color14": pick("secondary_fixed_dim", "#a0e0e0"),  # bright cyan → 180°
         }
 
         # Lift neutral slots so the background isn't near-black.  Matugen's
@@ -377,10 +373,10 @@ class ThemeManager:
             if L < min_L:
                 base16[slot] = _lch_to_hex(min_L, C, H)
 
-        # Re-space the 6 chromatic hues equidistantly around the colour wheel,
-        # anchored to the wallpaper's dominant hue.  This ensures the 256-colour
-        # cube generated by color256.py covers the full chromatic range even when
-        # the wallpaper (and therefore matugen) is near-monochromatic.
+        # Rotate chromatic hues so slot 1 lands at red (0°), then space the
+        # remaining 5 slots 60° apart around the wheel.  This guarantees the
+        # baseline slot-to-hue contract regardless of wallpaper dominant hue,
+        # while preserving L and C from the matugen roles above.
         source_hex = pick("source_color", "#cc0403")
         base16 = _hue_rotate_base16(base16, source_hex)
 
