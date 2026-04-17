@@ -1,66 +1,82 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GAMMASTEP=(gammastep -m wayland)
+# Cycle gammastep through off/auto/medium/high.
+# Lifecycle delegated to the packaged systemd user unit; per-mode args
+# applied via a runtime drop-in (tmpfs, auto-clean on logout).
+#
+# Usage:
+#   gammastep-toggle.sh            cycle to next mode
+#   gammastep-toggle.sh toggle     same as above
+#   gammastep-toggle.sh apply      re-apply the persisted mode (for autostart)
 
+UNIT=gammastep.service
 STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/gammastep-mode"
-LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/gammastep-toggle.lock"
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+DROPIN_DIR="$RUNTIME_DIR/systemd/user/${UNIT}.d"
+DROPIN="$DROPIN_DIR/mode.conf"
+LOCK_FILE="$RUNTIME_DIR/gammastep-toggle.lock"
 
 mkdir -p "$(dirname "$STATE_FILE")"
 
-get_mode() { [[ -f "$STATE_FILE" ]] && cat "$STATE_FILE" || echo off; }
+get_mode() { [[ -f "$STATE_FILE" ]] && cat "$STATE_FILE" || echo auto; }
 set_mode() { printf '%s\n' "$1" >"$STATE_FILE"; }
 
-stop_gammastep() {
-  pkill -x -TERM gammastep 2>/dev/null || true
-  for _ in {1..25}; do
-    pgrep -x gammastep >/dev/null || return 0
-    sleep 0.02
-  done
-  pkill -x -KILL gammastep 2>/dev/null || true
-  for _ in {1..10}; do
-    pgrep -x gammastep >/dev/null || return 0
-    sleep 0.02
-  done
+write_dropin() {
+  mkdir -p "$DROPIN_DIR"
+  {
+    printf '[Service]\n'
+    printf 'ExecStart=\n'
+    printf 'ExecStart=/usr/bin/gammastep -m wayland'
+    for arg in "$@"; do printf ' %s' "$arg"; done
+    printf '\n'
+  } >"$DROPIN"
+  systemctl --user daemon-reload
 }
 
-start_gammastep() {
-  "${GAMMASTEP[@]}" "$@" >/dev/null 2>&1 &
-  disown || true
+clear_dropin() {
+  rm -f "$DROPIN"
+  rmdir "$DROPIN_DIR" 2>/dev/null || true
+  systemctl --user daemon-reload 2>/dev/null || true
 }
 
-# --- one-shot lock (never block) ---
-exec 9>"$LOCK_FILE"
-flock -n -x 9 || exit 0
+apply_mode() {
+  case "$1" in
+    auto)   write_dropin ;;
+    medium) write_dropin -t 3500:3500 ;;
+    high)   write_dropin -t 2500:2500 -b 0.8:0.8 ;;
+    off)
+      systemctl --user stop "$UNIT" 2>/dev/null || true
+      clear_dropin
+      gammastep -x >/dev/null 2>&1 || true
+      return
+      ;;
+    *) echo "unknown mode: $1" >&2; exit 1 ;;
+  esac
+  systemctl --user restart "$UNIT"
+}
 
-mode="$(get_mode)"
-case "$mode" in
-  off)    next=auto ;;
-  auto)   next=medium ;;
-  medium) next=high ;;
-  high)   next=off ;;
-  *)      next=off ;;
+cmd="${1:-toggle}"
+case "$cmd" in
+  toggle)
+    exec 9>"$LOCK_FILE"
+    flock -n -x 9 || exit 0
+    case "$(get_mode)" in
+      off)    next=auto ;;
+      auto)   next=medium ;;
+      medium) next=high ;;
+      high)   next=off ;;
+      *)      next=auto ;;
+    esac
+    set_mode "$next"
+    flock -u 9
+    apply_mode "$next"
+    ;;
+  apply)
+    apply_mode "$(get_mode)"
+    ;;
+  *)
+    echo "usage: $0 [toggle|apply]" >&2
+    exit 2
+    ;;
 esac
-set_mode "$next"
-
-# release lock early: state is committed, avoid wedging future runs
-flock -u 9
-
-case "$next" in
-  auto)
-    start_gammastep
-    ;;
-  medium)
-    stop_gammastep
-    start_gammastep -t 3500:3500
-    ;;
-  high)
-    stop_gammastep
-    start_gammastep -t 2500:2500 -b 0.8:0.8
-    ;;
-  off)
-    stop_gammastep
-    gammastep -x || true
-    ;;
-esac
-
