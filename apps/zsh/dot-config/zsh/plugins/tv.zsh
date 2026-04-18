@@ -227,8 +227,6 @@ _tv__update-channels_commands() {
 
 if [ "$funcstack[1]" = "_tv" ]; then
     _tv "$@"
-else
-    compdef _tv tv
 fi
 # credits to the junegunn/fzf project
 # https://github.com/junegunn/fzf/blob/d18c0bf6948b4707684fe77631aff26a17cbc4fa/shell/completion.zsh

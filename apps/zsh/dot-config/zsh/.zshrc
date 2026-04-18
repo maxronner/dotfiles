@@ -28,6 +28,9 @@ if [ -d "$XDG_CONFIG_HOME/zsh/plugins" ]; then
     done
 fi
 
+[ -f "$XDG_CONFIG_HOME/zsh/completion.zsh" ] && \
+    source "$XDG_CONFIG_HOME/zsh/completion.zsh"
+
 # Alias finder settings
 zstyle ':custom:plugins:alias-finder' autoload yes
 zstyle ':custom:plugins:alias-finder' cheaper yes

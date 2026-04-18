@@ -1,9 +1,5 @@
 #!/usr/bin/env zsh
 
-autoload -Uz compinit && compinit
-
-bindkey '^[[Z' reverse-menu-complete
-
 # Use menu selection with highlighted items
 zstyle ':completion:*' menu select
 
