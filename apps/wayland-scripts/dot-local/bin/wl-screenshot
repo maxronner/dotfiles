@@ -3,7 +3,7 @@
 mode="$1"
 notify() {
   if command -v notify-send >/dev/null 2>&1; then
-    notify-send -t 2000 "Screenshot $mode" "Copied to clipboard"
+    notify-send --urgency low --app-name wl-screenshot -t 2000 "Screenshot $mode" "Copied to clipboard"
   fi
 }
 
