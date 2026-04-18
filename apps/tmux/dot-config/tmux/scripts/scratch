@@ -3,7 +3,8 @@ set -euo pipefail
 
 marker="scratch"
 marker_set=0
-small=0
+size=""
+size_set=0
 vertical=0
 kill=0
 window_mode=0
@@ -25,17 +26,19 @@ usage() {
   cat <<-EOF
 Create quick and dirty scratch panes in tmux
 
-Usage: $(basename "$0") [-m MARKER] [-v] [-s] [-k] [-w] [--] [COMMAND...]
+Usage: $(basename "$0") [-m MARKER] [-v] [--size SIZE] [-k] [-w] [--] [COMMAND...]
 
 Options:
   -m, --marker MARKER    Name of the pane to find/create (default: $marker)
   -v, --vertical         Use a vertical split (top/bottom). Default is horizontal.
-  -s, --small            Use 20%/25% size pane instead of half
+  --size SIZE            Use an explicit pane size (for example: 30% or 20)
   -k, --kill             Don't pause after command exits (no '; read' appended)
   -w, --window           Use window mode instead of a pane
   -h, --help             Show this help message and exit
 
 Everything after '--' is treated as the COMMAND to run in the pane;
+command panes default to 50% only when newly created unless a size is explicit.
+
 e.g.:
 
   $(basename "$0") -m ai -v -- tgpt --chat --model gpt-4
@@ -51,9 +54,14 @@ parse_args() {
       window_scoped=0
       shift 2
       ;;
-    -s | --small)
-      small=1
-      shift
+    --size)
+      if (($# < 2)) || [[ -z ${2:-} ]] || [[ ${2:-} == -* ]]; then
+        echo "missing argument for --size" >&2
+        exit 1
+      fi
+      size=$2
+      size_set=1
+      shift 2
       ;;
     -v | --vertical)
       vertical=1
@@ -97,10 +105,9 @@ parse_args() {
 }
 
 build_split_args() {
-  if ((small)); then
-    ((vertical)) && pos_args=(-fv -l 30%) || pos_args=(-fh -l 30%)
-  else
-    ((vertical)) && pos_args=(-fv) || pos_args=(-fh)
+  ((vertical)) && pos_args=(-fv) || pos_args=(-fh)
+  if ((size_set)); then
+    pos_args+=(-l "$size")
   fi
 }
 
@@ -162,13 +169,19 @@ break_or_move_pane() {
 }
 
 create_scratch_pane() {
+  local create_args=("${pos_args[@]}")
+
   current_dir=$(tmux display -p -F '#{pane_current_path}')
+  if ((!size_set && ${#cmd[@]})); then
+    create_args+=(-l 50%)
+  fi
+
   if ((!${#cmd[@]})); then
     new_pane=$(tmux split-window -P -F '#{pane_id}' \
-      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${pos_args[@]}")
+      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${create_args[@]}")
   else
     new_pane=$(tmux split-window -P -F '#{pane_id}' \
-      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${pos_args[@]}" "${cmd[@]}")
+      -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${create_args[@]}" "${cmd[@]}")
   fi
   tmux set-option -pt "$new_pane" @scratch_name "$pane_name"
   tmux set-option -pt "$new_pane" @scratch_origin "$src_idx"
