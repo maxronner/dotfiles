@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/tmux-marker.sh
+source "$SCRIPT_DIR/lib/tmux-marker.sh"
+
 marker="scratch"
 marker_set=0
 size=""
 size_set=0
 vertical=0
 kill=0
-window_mode=0
 window_scoped=1
 
 cmd=()
@@ -26,14 +29,13 @@ usage() {
   cat <<-EOF
 Create quick and dirty scratch panes in tmux
 
-Usage: $(basename "$0") [-m MARKER] [-v] [--size SIZE] [-k] [-w] [--] [COMMAND...]
+Usage: $(basename "$0") [-m MARKER] [-v] [--size SIZE] [-k] [--] [COMMAND...]
 
 Options:
   -m, --marker MARKER    Name of the pane to find/create (default: $marker)
   -v, --vertical         Use a vertical split (top/bottom). Default is horizontal.
   --size SIZE            Use an explicit pane size (for example: 30% or 20)
   -k, --kill             Don't pause after command exits (no '; read' appended)
-  -w, --window           Use window mode instead of a pane
   -h, --help             Show this help message and exit
 
 Everything after '--' is treated as the COMMAND to run in the pane;
@@ -71,10 +73,6 @@ parse_args() {
       kill=1
       shift
       ;;
-    -w | --window)
-      window_mode=1
-      shift
-      ;;
     -h | --help)
       usage
       exit 0
@@ -98,7 +96,7 @@ parse_args() {
     pane_name="$*"
     ((marker_set)) || window_name="$1"
     cmd=("$@")
-    if ((!kill && !window_mode)); then
+    if ((!kill)); then
       cmd+=("; read")
     fi
   fi
@@ -112,15 +110,20 @@ build_split_args() {
 }
 
 find_scratch_pane() {
+  local scratch_name_format scratch_origin_format
+
+  scratch_name_format=$(tmux_marker_format scratch name)
+  scratch_origin_format=$(tmux_marker_format scratch origin)
+
   if ((window_scoped)); then
-    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{@scratch_name} #{@scratch_origin}" |
+    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} ${scratch_name_format} ${scratch_origin_format}" |
       awk -v s="$session" -v m="$pane_name" -v oi="$src_idx" '
         index($0, s ":") == 1 {
           pane = $1; name = $2; origin = $3
           if (name == m && origin == oi) { print pane " " origin; exit }
         }')
   else
-    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} #{@scratch_name}" |
+    pane_id=$(tmux list-panes -a -F "#{session_name}:#{window_index}.#{pane_index} ${scratch_name_format}" |
       awk -v s="$session" -v m="$pane_name" '
         index($0, s ":") == 1 {
           pane = $1; name = $0
@@ -133,15 +136,6 @@ find_scratch_pane() {
     origin_idx="${pane_id##* }"
     pane_id="${pane_id%% *}"
   fi
-}
-
-handle_window_mode() {
-  ((!${#cmd[@]})) && exit 1
-  session=$(tmux display -p '#S')
-  current_dir=$(tmux display -p -F '#{pane_current_path}')
-  tmux select-window -t "$session:$window_name" 2>/dev/null ||
-    tmux new-window -n "$window_name" -c "$current_dir" "${cmd[@]}"
-  exit 0
 }
 
 break_or_move_pane() {
@@ -183,17 +177,13 @@ create_scratch_pane() {
     new_pane=$(tmux split-window -P -F '#{pane_id}' \
       -t "$session:$src_idx.$last_pane_idx" -c "$current_dir" "${create_args[@]}" "${cmd[@]}")
   fi
-  tmux set-option -pt "$new_pane" @scratch_name "$pane_name"
-  tmux set-option -pt "$new_pane" @scratch_origin "$src_idx"
+  tmux_marker_set_pane "$new_pane" scratch name "$pane_name"
+  tmux_marker_set_pane "$new_pane" scratch origin "$src_idx"
   tmux select-pane -t "$new_pane" -T "$pane_name"
 }
 
 main() {
   parse_args "$@"
-
-  if ((window_mode)); then
-    handle_window_mode
-  fi
 
   exec &>/dev/null
 
