@@ -113,6 +113,16 @@ test_explicit_size_is_shared_with_move_pane_args() {
 	assert_contains "$log" "-l 41%"
 }
 
+test_unmarked_named_window_dismisses_via_pane_id_lookup() {
+	local log
+	log=$(run_with_fake_tmux unmarked-move "$SCRIPT" -m opencode)
+
+	assert_contains "$log" "display-message -p -t sess:2"
+	assert_contains "$log" "set-option -pt %42 @scratch_name __opencode__"
+	assert_contains "$log" "display-message -p -t %42"
+	assert_contains "$log" "move-pane -s %42 -t sess:1.0 -fh"
+}
+
 main() {
 	test_usage_mentions_size
 	test_missing_size_arg_exits_with_message
@@ -124,6 +134,7 @@ main() {
 	test_small_alias_is_rejected
 	test_window_alias_is_rejected
 	test_explicit_size_is_shared_with_move_pane_args
+	test_unmarked_named_window_dismisses_via_pane_id_lookup
 	printf 'scratch tests passed\n'
 }
 

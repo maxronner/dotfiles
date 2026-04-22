@@ -136,13 +136,26 @@ find_scratch_pane() {
     origin_idx="${pane_id##* }"
     pane_id="${pane_id%% *}"
   fi
+
+  if [[ -z $pane_id ]] && ((!window_scoped)); then
+    pane_id=$(tmux list-windows -t "$session" -F '#{session_name}:#{window_index} #{window_name} #{window_active}' |
+      awk -v s="$session" -v m="$window_name" '
+        index($0, s ":") == 1 {
+          window = $1; name = $2; active = $3
+          if (name == m && active == 0) { print window; exit }
+        }')
+
+    if [[ -n $pane_id ]]; then
+      pane_id=$(tmux display-message -p -t "$pane_id" '#{pane_id}')
+      tmux_marker_set_pane "$pane_id" scratch name "$pane_name"
+    fi
+  fi
 }
 
 break_or_move_pane() {
   local win_idx break_idx break_window_name last_index
 
-  win_idx=${pane_id#*:}
-  win_idx=${win_idx%%.*}
+  win_idx=$(tmux display-message -p -t "$pane_id" '#{window_index}')
 
   if ((win_idx == src_idx)); then
     ((last_pane_idx == 1)) && exit || true

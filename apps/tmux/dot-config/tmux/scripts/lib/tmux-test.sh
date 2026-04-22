@@ -34,13 +34,21 @@ log_call() {
 log_call "$@"
 
 case "${1-}" in
-display)
+display | display-message)
   if [[ ${2-} == "-p" && ${3-} == "#S" ]]; then
     printf 'sess\n'
   elif [[ ${2-} == "-p" && ${3-} == "#I" ]]; then
     printf '1\n'
   elif [[ ${2-} == "-p" && ${3-} == "-F" && ${4-} == '#{pane_current_path}' ]]; then
     printf '/tmp\n'
+  elif [[ ${2-} == "-p" && ${3-} == "-t" && ${4-} == "sess:2" && ${5-} == '#{pane_id}' ]]; then
+    printf '%%42\n'
+  elif [[ ${2-} == "-p" && ${3-} == "-t" && ${4-} == "%42" && ${5-} == '#{window_index}' ]]; then
+    printf '2\n'
+  elif [[ ${2-} == "-p" && ${3-} == "-t" && ${4-} == "sess:2.1" && ${5-} == '#{window_index}' ]]; then
+    printf '2\n'
+  elif [[ ${2-} == "-p" && ${3-} == "-t" && ${4-} == "sess:1.1" && ${5-} == '#{window_index}' ]]; then
+    printf '1\n'
   else
     printf 'unsupported display invocation\n' >&2
     exit 98
@@ -59,7 +67,14 @@ list-panes)
   fi
   ;;
 list-windows)
-  printf '0\n2\n'
+  case "${FAKE_TMUX_SCENARIO:-create}" in
+  unmarked-move)
+    printf 'sess:2 opencode 0\n'
+    ;;
+  *)
+    printf '0\n2\n'
+    ;;
+  esac
   ;;
 split-window)
   printf '%%42\n'
