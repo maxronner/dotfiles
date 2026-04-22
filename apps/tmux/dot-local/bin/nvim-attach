@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 session_name=$(tmux display-message -p '#S' 2>/dev/null)
+session_id=$(tmux display-message -p '#{session_id}' 2>/dev/null)
 
 if [ -z "$session_name" ]; then
   nvim "$@"
@@ -10,7 +11,13 @@ fi
 nvim_socket_dir="${XDG_RUNTIME_DIR:-/tmp}/nvim-sockets"
 mkdir -pm 700 "$nvim_socket_dir"
 
-nvim_listen_addr="$nvim_socket_dir/nvim-$session_name.sock"
+nvim_socket_key=${session_id#\$}
+
+if [[ -z "$nvim_socket_key" ]]; then
+  nvim_socket_key="$session_name"
+fi
+
+nvim_listen_addr="$nvim_socket_dir/nvim-$nvim_socket_key.sock"
 
 if [[ -S "$nvim_listen_addr" ]]; then
   if nvim --server "$nvim_listen_addr" --headless --remote-expr "1" >/dev/null 2>&1; then
