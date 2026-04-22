@@ -56,5 +56,5 @@ alias gwl='git worktree list'
 
 alias wtD='wt remove -D'
 alias wtd='wt remove'
-alias wts='wt switch'
-alias wtsc='wt switch --create'
+alias wts='wt switch --no-cd -x "sesh connect {{ worktree_path }}"'
+alias wtsc='wt switch --create --no-cd -x "sesh connect {{ worktree_path }}"'
