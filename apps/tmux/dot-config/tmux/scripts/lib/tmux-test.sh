@@ -34,9 +34,18 @@ log_call() {
 log_call "$@"
 
 case "${1-}" in
+display-popup | popup)
+  ;;
+has-session)
+  if [[ ${FAKE_TMUX_MISSING_SESSION-} == "${3-}" ]]; then
+    exit 1
+  fi
+  ;;
 display | display-message)
   if [[ ${2-} == "-p" && ${3-} == "#S" ]]; then
-    printf 'sess\n'
+    printf '%s\n' "${FAKE_TMUX_SESSION:-sess}"
+  elif [[ ${1-} == "display-message" && ${2-} != "-p" ]]; then
+    :
   elif [[ ${2-} == "-p" && ${3-} == "#I" ]]; then
     printf '1\n'
   elif [[ ${2-} == "-p" && ${3-} == "-F" && ${4-} == '#{pane_current_path}' ]]; then
@@ -88,7 +97,7 @@ select-window)
     ;;
   esac
   ;;
-set-option | select-pane | move-pane | break-pane | new-window)
+set-option | select-pane | move-pane | break-pane | new-window | switch-client)
   ;;
 *)
   printf 'unsupported tmux invocation: %s\n' "$*" >&2

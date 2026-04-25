@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state="${XDG_STATE_HOME:-$HOME/.local/state}/tmux-harpoon"
+mkdir -p "$(dirname "$state")"
+touch "$state"
+
+cmd="${1:-}"
+arg="${2:-}"
+
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+usage() {
+  die "usage: harpoon {jump <1-9>|add|next|prev|list|edit}"
+}
+
+tmp_state() {
+  mktemp "${state}.XXXXXX"
+}
+
+normalize_state() {
+  local state_tmp
+  state_tmp="$(tmp_state)"
+  trap 'rm -f "$state_tmp"' EXIT
+  awk '
+    NF == 1 { print $1; next }
+    $1 ~ /^[1-9]$/ && NF >= 2 { print $2; next }
+    NF >= 1 { print $1 }
+  ' "$state" >"$state_tmp"
+  mv "$state_tmp" "$state"
+  trap - EXIT
+}
+
+validate_slot() {
+  case "$1" in
+  [1-9]) ;;
+  *) die "invalid slot: $1" ;;
+  esac
+}
+
+[ -n "$cmd" ] || usage
+
+current() {
+  tmux display-message -p '#S'
+}
+
+jump() {
+  local target
+  validate_slot "$1"
+  remove_dead
+  target="$(awk -v slot="$1" 'NR == slot { print $1; exit }' "$state")"
+  [ -n "$target" ] || exit 0
+  tmux has-session -t "$target" 2>/dev/null && tmux switch-client -t "$target"
+}
+
+add() {
+  local session state_tmp
+  session="$(current)"
+  remove_dead
+
+  state_tmp="$(tmp_state)"
+  trap 'rm -f "$state_tmp"' EXIT
+  awk -v session="$session" '$1 != session' "$state" >"$state_tmp"
+  printf '%s\n' "$session" >>"$state_tmp"
+  mv "$state_tmp" "$state"
+  rm -f "$state_tmp"
+  trap - EXIT
+  tmux display-message "harpooned $session"
+}
+
+remove_dead() {
+  local session state_tmp
+  normalize_state
+  state_tmp="$(tmp_state)"
+  trap 'rm -f "$state_tmp"' EXIT
+  while read -r session; do
+    [ -n "$session" ] || continue
+    tmux has-session -t "$session" 2>/dev/null && printf '%s\n' "$session"
+  done <"$state" >"$state_tmp"
+  mv "$state_tmp" "$state"
+  trap - EXIT
+}
+
+cycle() {
+  local dir cur target
+  dir="$1"
+  cur="$(current)"
+  remove_dead
+
+  target="$(awk -v cur="$cur" -v dir="$dir" '
+    { sess[++n]=$1 }
+    $1 == cur { i=n }
+    END {
+      if (!n) exit
+      if (!i) print sess[1]
+      else if (dir == "prev") print sess[(i+n-2)%n+1]
+      else print sess[i%n+1]
+    }
+  ' "$state")"
+
+  [ -n "$target" ] || return 0
+  tmux switch-client -t "$target"
+}
+
+list() {
+  remove_dead
+  awk '1' "$state"
+}
+
+edit() {
+  tmux display-popup -w 80% -h 80% -E "$(printf '%q %q' "${EDITOR:-nvim}" "$state")"
+}
+
+case "$cmd" in
+  jump) jump "$arg" ;;
+  add) add ;;
+  next) cycle next ;;
+  prev) cycle prev ;;
+  list) list ;;
+  edit) edit ;;
+  *) usage ;;
+esac
