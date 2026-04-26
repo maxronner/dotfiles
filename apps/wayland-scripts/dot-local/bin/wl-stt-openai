@@ -43,5 +43,6 @@ command -v systemd-run >/dev/null 2>&1 || die "missing dependency: systemd-run"
 [[ -f "$cred_path" ]] || die "missing encrypted credential: ${cred_path}; run install/setup-openai-credential.sh"
 
 exec systemd-run --user --collect --quiet \
+  -p "KillMode=process" \
   -p "LoadCredentialEncrypted=${cred_name}:${cred_path}" \
   "$self_path"
