@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+notify() {
+  local title=$1
+  local message=$2
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send --urgency low --app-name "$title" -t 2000 "$message" || true
+  fi
+}
+
+die() {
+  printf 'Error: %s\n' "$*" >&2
+  exit 1
+}
+
+need_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing dependency: $1"
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: wl-stt
+
+Records microphone audio until silence, transcribes it with OpenAI, then:
+  - copies transcript to clipboard via wl-copy
+  - types it via wtype
+
+Requires: OPENAI_API_KEY in the environment.
+EOF
+}
+
+if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -ne 0 ]]; then
+  usage
+  die "unexpected arguments"
+fi
+
+need_cmd rec
+need_cmd curl
+need_cmd jq
+need_cmd wl-copy
+need_cmd wtype
+
+if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+  die "missing OPENAI_API_KEY environment variable"
+fi
+
+tmp_audio=$(mktemp --suffix=.wav)
+trap 'rm -f "$tmp_audio"' EXIT
+
+notify "wl-stt" "Recording audio (stop on silence)"
+rec -q -c 1 "$tmp_audio" silence 1 0.1 2% 1 1.0 2%
+
+notify "wl-stt" "Transcribing with OpenAI"
+transcription_json=$(curl -sS \
+  -F file="@$tmp_audio" \
+  -F model=gpt-4o-mini-transcribe \
+  -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+  https://api.openai.com/v1/audio/transcriptions)
+
+if ! transcript=$(printf '%s' "$transcription_json" | jq -r '.text // empty'); then
+  die "OpenAI response was not valid JSON"
+fi
+
+error_message=$(printf '%s' "$transcription_json" | jq -r '.error.message // empty')
+if [[ -n "$error_message" && "$error_message" != "null" ]]; then
+  die "OpenAI API error: $error_message"
+fi
+if [[ -z "$transcript" ]]; then
+  die "No transcript returned from API"
+fi
+
+printf '%s' "$transcript" | wl-copy
+wtype "$transcript"
+notify "wl-stt" "Transcription copied and typed"

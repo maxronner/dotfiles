@@ -1,3 +1,7 @@
+curl
+jq
 grim
+sox
 slurp
 wl-clipboard
+wtype

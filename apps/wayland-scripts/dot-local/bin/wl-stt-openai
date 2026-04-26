@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+  printf 'Error: %s\n' "$*" >&2
+  exit 1
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: wl-stt-openai
+
+Launches wl-stt with the OpenAI API key loaded from the encrypted
+systemd credential openai_api_key.
+
+Setup:
+  install/setup-openai-credential.sh
+EOF
+}
+
+if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -ne 0 ]]; then
+  usage
+  die "unexpected arguments"
+fi
+
+cred_name="openai_api_key"
+cred_dir="${XDG_CONFIG_HOME:-$HOME/.config}/credstore.encrypted"
+cred_path="${cred_dir}/${cred_name}"
+self_path="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/$(basename -- "${BASH_SOURCE[0]}")"
+
+if [[ -n ${CREDENTIALS_DIRECTORY:-} && -f ${CREDENTIALS_DIRECTORY}/${cred_name} ]]; then
+  api_key="$(<"${CREDENTIALS_DIRECTORY}/${cred_name}")"
+  [[ -n "$api_key" ]] || die "credential ${cred_name} was empty"
+  exec env OPENAI_API_KEY="$api_key" wl-stt
+fi
+
+command -v systemd-run >/dev/null 2>&1 || die "missing dependency: systemd-run"
+[[ -f "$cred_path" ]] || die "missing encrypted credential: ${cred_path}; run install/setup-openai-credential.sh"
+
+exec systemd-run --user --collect --quiet \
+  -p "LoadCredentialEncrypted=${cred_name}:${cred_path}" \
+  "$self_path"
