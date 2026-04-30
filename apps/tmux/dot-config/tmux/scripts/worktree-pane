@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+# shellcheck source=lib/autotiling.sh
+source "$SCRIPT_DIR/lib/autotiling.sh"
+
+pane_id=${1:?pane id is required}
+cwd=${2:?cwd is required}
+branch=${3:?branch is required}
+
+split_flag=$(tmux_autotile_split_flag "$pane_id")
+
+repo_root=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
+  tmux display-message "worktree-pane: not in a git repository"
+  exit 1
+}
+
+git -C "$repo_root" worktree prune
+
+if ! wt -C "$repo_root" switch --no-cd "$branch"; then
+  wt -C "$repo_root" switch --create --no-cd "$branch"
+fi
+
+worktree_path=$(
+  git -C "$repo_root" worktree list --porcelain | while IFS= read -r line; do
+    case "$line" in
+    worktree\ *)
+      current_path=${line#worktree }
+      ;;
+    branch\ refs/heads/*)
+      current_branch=${line#branch refs/heads/}
+      if [[ "$current_branch" == "$branch" ]]; then
+        printf '%s\n' "$current_path"
+        break
+      fi
+      ;;
+    esac
+  done
+)
+
+if [[ -z "$worktree_path" ]]; then
+  tmux display-message "worktree-pane: failed to resolve worktree path for $branch"
+  exit 1
+fi
+
+tmux split-window "$split_flag" -t "$pane_id" -c "$worktree_path"
