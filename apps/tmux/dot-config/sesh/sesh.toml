@@ -45,5 +45,9 @@ name = "git"
 startup_script = "command -v lazygit >/dev/null 2>&1 && lazygit || git status"
 
 [[window]]
+name = "agent"
+startup_script = "pi"
+
+[[window]]
 name = "opencode"
 startup_script = "opencode-serve"
