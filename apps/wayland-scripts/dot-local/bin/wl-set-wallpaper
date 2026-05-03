@@ -46,11 +46,34 @@ resolve_input() {
   return 1
 }
 
-selected="${WALLPAPER_IMAGE:-${1-}}"
+mode="commit"
+selected="${WALLPAPER_IMAGE:-}"
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: wl-set-wallpaper [--commit|--preview] [wallpaper]
+
+--commit   Persist wallpaper and run commit side effects: auto palette + reloads (default)
+--preview  Persist wallpaper for visual preview only; skip auto palette regeneration
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --commit) mode="commit" ;;
+    --preview) mode="preview" ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; selected="${1-}"; break ;;
+    -*) echo "Unknown option: $1" >&2; usage; exit 2 ;;
+    *) selected="$1" ;;
+  esac
+  shift
+done
 
 if [[ -n "$selected" ]]; then
-  if ! selected="$(resolve_input "$selected")"; then
-    echo "Wallpaper not found: $1" >&2
+  requested="$selected"
+  if ! selected="$(resolve_input "$requested")"; then
+    echo "Wallpaper not found: $requested" >&2
     exit 1
   fi
 else
@@ -63,15 +86,17 @@ if [[ -z "$selected" ]]; then
 fi
 
 mkdir -p "$(dirname "$WALLPAPER_PATH")"
+current=""
 if [[ -L "$WALLPAPER_PATH" ]]; then
-  if [[ "$(readlink "$WALLPAPER_PATH")" == "$selected" ]]; then
-    exit 0
-  fi
-  rm "$WALLPAPER_PATH"
+  current="$(readlink "$WALLPAPER_PATH")"
 fi
-ln -s "$selected" "$WALLPAPER_PATH"
 
-if command -v thememanager >/dev/null 2>&1; then
+if [[ "$current" != "$selected" ]]; then
+  rm -f "$WALLPAPER_PATH"
+  ln -s "$selected" "$WALLPAPER_PATH"
+fi
+
+if [[ "$mode" == "commit" ]] && command -v thememanager >/dev/null 2>&1; then
   thememanager auto --wallpaper "$selected" || true
 fi
 
