@@ -37,7 +37,7 @@ if [[ -S "$nvim_listen_addr" ]]; then
     while IFS=' ' read -r nvim_window_index nvim_pane_index; do
       break
     done < <(
-      tmux list-panes -t "$session_name" \
+      tmux list-panes -s -t "$session_name" \
         -F '#{window_index} #{pane_index} #{pane_current_command}' 2>/dev/null |
         awk '$3 == "nvim" {print $1, $2; exit}'
     )
