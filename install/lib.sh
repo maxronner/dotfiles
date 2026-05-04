@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Shared contract for dotfiles multi-repo architecture.
 # WM repos source this file and call these functions.
-# Do not add functions without updating ADR-001.
+# Do not add functions without updating docs/adr/ADR-001-install-contract.md.
 
 set -euo pipefail
 
