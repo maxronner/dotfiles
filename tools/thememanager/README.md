@@ -9,9 +9,8 @@ Palette tooling for the dotfiles theming system.
 - Theme source: `src/color256/themes/*.txt`
 - Adapter runner: `theme-apply-all`
 
-The source module owns palette generation and color expansion. Dotfiles-owned
-adapters stay in `local/dot-local/lib/theme`, and installed command launchers
-stay in `local/dot-local/bin`.
+This repo owns palette generation and color expansion. Dotfiles-owned adapters
+such as `theme-apply-all` live in the dotfiles repo and call the installed CLI.
 
 ## Layout
 
@@ -32,25 +31,29 @@ just ci
 Package entry points can be smoke-tested without installation:
 
 ```bash
-PYTHONPATH=tools/thememanager/src python3 -m thememanager list
-PYTHONPATH=tools/thememanager/src python3 -m color256.color256 --help
+PYTHONPATH=src python3 -m thememanager list
+PYTHONPATH=src python3 -m color256.color256 --help
 ```
 
-Package installation from this repo is handled by:
+## Install
 
 ```bash
-just install-tools
-just verify-tools
-just tool-status
+uv tool install --reinstall .
 ```
 
-## Standalone Repo Export
-
-Before this module is moved to its own repository, the export command can
-materialize the future repo shape and verify it independently:
+Without `uv`, use `pipx`:
 
 ```bash
-just export-thememanager /tmp/thememanager-export
-cd /tmp/thememanager-export
-just ci
+pipx install --force .
 ```
+
+## Release
+
+Create a release tag from a clean tree:
+
+```bash
+just release
+```
+
+The release recipe reads `pyproject.toml`, runs `just ci`, and creates the tag
+`v<version>`. Push the commit and tag from git after review.

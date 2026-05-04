@@ -27,3 +27,33 @@ build:
 ci:
     just test
     just build
+
+check-release:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    version="$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml | head -n 1)"
+    if [[ -z "$version" ]]; then
+        echo "Could not read version from pyproject.toml." >&2
+        exit 1
+    fi
+    tag="v${version}"
+    if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+        echo "Tag already exists: ${tag}" >&2
+        exit 1
+    fi
+    just ci
+    echo "Release check passed for ${tag}"
+
+release:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Working tree must be clean before release." >&2
+        git status --short >&2
+        exit 1
+    fi
+    version="$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml | head -n 1)"
+    tag="v${version}"
+    just check-release
+    git tag -s "$tag" -m "thememanager ${tag}"
+    echo "Created ${tag}"
