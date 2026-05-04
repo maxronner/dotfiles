@@ -37,8 +37,22 @@ just tool-status         # Show whether tools resolve to installed commands or r
 just doctor              # Run lint, tool tests, verification, and tool status
 just ci                  # Run non-mutating repo checks
 just export-thememanager <dest> # Export and verify the future standalone tool repo
+just vendor-thememanager # Sync standalone thememanager into the bundled bootstrap fallback
 just post-user-check     # Run checks expected after user install/stow
 just unlink [env]         # Remove managed symlinks
 just lint                 # Validate package manifests
 just test-tools           # Test local tool modules and theme adapters
 ```
+
+## Local tool source of truth
+
+`thememanager` is developed in the standalone checkout at `~/code/thememanager`.
+The copy under `tools/thememanager` is a bootstrap fallback for machines that do
+not have the standalone repo yet. After changing the standalone repo, run:
+
+```bash
+just vendor-thememanager
+```
+
+The vendor command refuses to run if the standalone repo has uncommitted changes,
+then syncs the package into `tools/thememanager` and runs the bundled tool tests.

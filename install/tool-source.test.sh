@@ -29,6 +29,7 @@ touch "${tmp_home}/code/thememanager/pyproject.toml"
 
 THEMEMANAGER_SOURCE_DIR=
 assert_eq "${tmp_home}/code/thememanager" "$(resolve_thememanager_source)" "prefers standalone checkout"
+assert_eq "${tmp_home}/code/thememanager" "$(resolve_thememanager_standalone_source)" "resolves standalone checkout"
 assert_eq "standalone" "$(describe_thememanager_source "${tmp_home}/code/thememanager")" "describes standalone checkout"
 
 rm -rf "${tmp_home}/code/thememanager"
@@ -40,6 +41,7 @@ mkdir -p "$override_dir"
 touch "${override_dir}/pyproject.toml"
 THEMEMANAGER_SOURCE_DIR="$override_dir"
 assert_eq "$override_dir" "$(resolve_thememanager_source)" "uses explicit override"
+assert_eq "$override_dir" "$(resolve_thememanager_standalone_source)" "uses explicit override for standalone source"
 assert_eq "custom" "$(describe_thememanager_source "$override_dir")" "describes custom override"
 
 printf 'tool-source tests passed\n'
