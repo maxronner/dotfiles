@@ -55,13 +55,6 @@ extra name='':
     fi
     bash "install/extras/{{name}}.sh"
 
-# Lint: check all app/system/device dirs have pkg.txt
+# Lint package manifest placement and entries
 lint:
-    @missing=0; \
-    for dir in "{{justfile_directory()}}"/apps/*/ "{{justfile_directory()}}"/system/*/ "{{justfile_directory()}}"/devices/*/; do \
-        if [ ! -f "$dir/pkg.txt" ]; then \
-            echo "MISSING pkg.txt: $dir"; \
-            missing=1; \
-        fi; \
-    done; \
-    [ $missing -eq 0 ] && echo "All packages have pkg.txt" || exit 1
+    bash install/lint-packages.sh

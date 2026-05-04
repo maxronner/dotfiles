@@ -12,7 +12,7 @@ Without a named contract, every repo would need to duplicate install behavior or
 
 ## Decision
 
-`public/install/lib.sh` is the Install Contract Module for multi-repo install behavior.
+`public/install/lib.sh` is the Install Contract Module for multi-repo stow and device behavior.
 
 The functions in that file are the public Interface for installer adapters:
 
@@ -27,8 +27,21 @@ Window-manager repos may source `install/lib.sh` and call those functions. The b
 
 Do not add, remove, or materially change those functions without updating this ADR. Private install helpers should stay inside the caller script instead of being added to `install/lib.sh` by default.
 
+`public/install/packages.sh` is the Package Manifest Module for package installation behavior. Its Interface is:
+
+- `collect_package_files`
+- `collect_packages`
+- `validate_package_manifests`
+- `ensure_yay`
+- `install_repo_packages`
+- `install_aur_packages`
+
+Installer adapters may source `install/packages.sh` when they need to parse or install from Package Manifests. Package parsing, `aur:` handling, duplicate removal, and manifest validation should stay in this module instead of being reimplemented by phase scripts, extras, or private overlays.
+
 ## Consequences
 
 The Install Contract stays small and stable. Window-manager installers get Leverage from a shared stow/device setup Interface, while Locality stays in the base repo for common install behavior.
+
+Package Manifest behavior has its own small Interface. Base install, extras, and private overlays get consistent `aur:` support and validation without copying parser logic.
 
 New install behavior starts local to the repo or script that needs it. It graduates into `install/lib.sh` only when there are at least two real adapters using the same behavior.

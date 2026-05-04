@@ -24,12 +24,22 @@ _Avoid_: refresh theme, sync colors
 The canonical `palette.json` file consumed by theme adapters. It is versioned and uses Material-style `m3*` UI tokens plus `term*` terminal slots.
 _Avoid_: theme JSON, color dump, palette schema
 
+**Package Manifest**:
+A `pkg.txt` file owned by an app, system group, device profile, or optional add-on. Each non-empty entry is either a repository package name or an `aur:`-prefixed AUR package name.
+_Avoid_: package list, dependency file
+
+**Private Overlay**:
+The private dotfiles layer that installs after the public base and can claim the same home-directory targets by unlinking public symlinks before stowing.
+_Avoid_: private repo, user config layer
+
 ## Relationships
 
 - A **Wallpaper Preview** can become a **Wallpaper Commit**.
 - A **Wallpaper Commit** may produce an **Auto Palette**.
 - An **Auto Palette** writes a **Palette Artifact**.
 - A **Palette Artifact** requires a **Palette Reload** before running applications reflect it.
+- A **Package Manifest** belongs to one packageable slice and is parsed by the installer before packages are installed.
+- The **Private Overlay** is installed after the public base and may override public app dotfiles.
 
 ## Example dialogue
 

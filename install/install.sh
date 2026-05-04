@@ -9,6 +9,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib.sh"
+source "${SCRIPT_DIR}/packages.sh"
 
 DOTFILES_ROOT="$DOTS_DIR"
 
@@ -26,24 +27,10 @@ fi
 
 resolve_profile "$PROFILE" "$DOTS_DIR" >/dev/null || exit 1
 
-# ── Package management (internal) ───────────────────────────────────────────
+# ── Package roots (internal) ────────────────────────────────────────────────
 
-readonly PACKAGE_MANAGER=(sudo pacman -Syu --needed --noconfirm)
-readonly AUR_HELPER=(yay -Syu --needed --noconfirm)
-
-ensure_yay() {
-    command -v yay &>/dev/null && return 0
-    local tmp_dir="${HOME}/yay"
-    info "yay not found. Installing..."
-    trap 'rm -rf "$tmp_dir"' EXIT
-    git clone https://aur.archlinux.org/yay.git "$tmp_dir"
-    (cd "$tmp_dir" && makepkg -si --noconfirm)
-}
-
-collect_pkg_entries() {
-    local package_type="$1"
-    local -n packages_ref="$2"
-
+collect_install_package_paths() {
+    local -n package_paths_ref="$1"
     local -a search_dirs=("${DOTS_DIR}/apps" "${DOTS_DIR}/system")
     [[ -n "$PROFILE" ]] && search_dirs+=("${DOTS_DIR}/devices/${PROFILE}")
 
@@ -59,48 +46,7 @@ collect_pkg_entries() {
         fi
     done
 
-    local -a pkg_files=("${extra_pkg_files[@]}")
-    local -a packages=()
-
-    local pkg_file line
-    while IFS= read -r pkg_file; do
-        pkg_files+=("$pkg_file")
-    done < <(find "${search_dirs[@]}" -name "pkg.txt" -print 2>/dev/null)
-
-    for pkg_file in "${pkg_files[@]}"; do
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            line="${line%%#*}"
-            line="${line#"${line%%[![:space:]]*}"}"
-            line="${line%"${line##*[![:space:]]}"}"
-            [[ -z "$line" ]] && continue
-
-            case "$package_type" in
-                repo) [[ "$line" == aur:* ]] && continue; packages+=("$line") ;;
-                aur)  [[ "$line" == aur:* ]] || continue; packages+=("${line#aur:}") ;;
-                *)    error "Unknown package type: $package_type"; return 1 ;;
-            esac
-        done < "$pkg_file"
-    done
-
-    if (( ${#packages[@]} == 0 )); then
-        packages_ref=()
-        return 0
-    fi
-    mapfile -t packages_ref < <(printf '%s\n' "${packages[@]}" | sort -u)
-}
-
-install_repo_packages() {
-    local -a pkgs=("$@")
-    (( ${#pkgs[@]} == 0 )) && return 0
-    info "Installing ${#pkgs[@]} packages..."
-    "${PACKAGE_MANAGER[@]}" "${pkgs[@]}"
-}
-
-install_aur_packages() {
-    local -a pkgs=("$@")
-    (( ${#pkgs[@]} == 0 )) && return 0
-    info "Installing ${#pkgs[@]} AUR packages..."
-    "${AUR_HELPER[@]}" "${pkgs[@]}"
+    package_paths_ref=("${extra_pkg_files[@]}" "${search_dirs[@]}")
 }
 
 # ── Stow local (internal) ──────────────────────────────────────────────────
@@ -217,14 +163,19 @@ finalize() {
 run_system() {
     info "=== System phase (dots) ==="
 
-    ensure_yay
+    local -a package_paths=()
+    collect_install_package_paths package_paths
+    validate_package_manifests "${package_paths[@]}"
 
     local -a REPO_PKGS=()
-    collect_pkg_entries repo REPO_PKGS
+    collect_packages repo REPO_PKGS "${package_paths[@]}"
     install_repo_packages "${REPO_PKGS[@]}"
 
     local -a AUR_PKGS=()
-    collect_pkg_entries aur AUR_PKGS
+    collect_packages aur AUR_PKGS "${package_paths[@]}"
+    if (( ${#AUR_PKGS[@]} > 0 )); then
+        ensure_yay
+    fi
     install_aur_packages "${AUR_PKGS[@]}"
 
     setup_system_services

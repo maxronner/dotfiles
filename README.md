@@ -18,6 +18,8 @@ This repository contains my system configuration, application settings, and inst
   - **`extras/`** - Optional add-ons (dev tools, nvim, ly)
   - **`specifics/`** - Device-profile scripts
 
+Package ownership lives in `pkg.txt` Package Manifests next to the app, system group, device profile, or optional add-on that needs the packages. Repository packages are written as plain names; AUR packages use `aur:<name>`.
+
 ## Usage
 
 This project uses [just](https://github.com/casey/just) as a task runner. Supported commands:
