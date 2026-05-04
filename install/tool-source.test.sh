@@ -26,22 +26,33 @@ trap cleanup EXIT
 
 mkdir -p "${tmp_home}/code/thememanager"
 touch "${tmp_home}/code/thememanager/pyproject.toml"
+git -C "${tmp_home}/code/thememanager" init -q
+git -C "${tmp_home}/code/thememanager" config commit.gpgsign false
+git -C "${tmp_home}/code/thememanager" config user.email "test@example.invalid"
+git -C "${tmp_home}/code/thememanager" config user.name "Test User"
+git -C "${tmp_home}/code/thememanager" add pyproject.toml
+git -C "${tmp_home}/code/thememanager" commit -qm init
+git -C "${tmp_home}/code/thememanager" tag v0.1.0
 
 THEMEMANAGER_SOURCE_DIR=
-assert_eq "${tmp_home}/code/thememanager" "$(resolve_thememanager_source)" "prefers standalone checkout"
-assert_eq "${tmp_home}/code/thememanager" "$(resolve_thememanager_standalone_source)" "resolves standalone checkout"
-assert_eq "standalone" "$(describe_thememanager_source "${tmp_home}/code/thememanager")" "describes standalone checkout"
+assert_eq "git+file://${tmp_home}/code/thememanager@v0.1.0" "$(resolve_thememanager_install_spec)" "uses tagged local release"
+assert_eq "release" "$(describe_thememanager_install_spec "git+file://${tmp_home}/code/thememanager@v0.1.0")" "describes release spec"
+
+THEMEMANAGER_INSTALL_SPEC="git+https://example.invalid/thememanager@v0.1.0"
+assert_eq "$THEMEMANAGER_INSTALL_SPEC" "$(resolve_thememanager_install_spec)" "uses explicit install spec"
+assert_eq "custom" "$(describe_thememanager_install_spec "$THEMEMANAGER_INSTALL_SPEC")" "describes custom install spec"
+unset THEMEMANAGER_INSTALL_SPEC
 
 rm -rf "${tmp_home}/code/thememanager"
-assert_eq "${DOTS_DIR}/tools/thememanager" "$(resolve_thememanager_source)" "falls back to bundled source"
-assert_eq "bundled" "$(describe_thememanager_source "${DOTS_DIR}/tools/thememanager")" "describes bundled source"
+assert_eq "${DOTS_DIR}/tools/thememanager" "$(resolve_thememanager_install_spec)" "falls back to bundled source"
+assert_eq "${DOTS_DIR}/tools/thememanager" "$(resolve_thememanager_build_source)" "builds bundled source"
+assert_eq "bundled" "$(describe_thememanager_install_spec "${DOTS_DIR}/tools/thememanager")" "describes bundled source"
 
 override_dir="${tmp_home}/custom"
 mkdir -p "$override_dir"
 touch "${override_dir}/pyproject.toml"
 THEMEMANAGER_SOURCE_DIR="$override_dir"
-assert_eq "$override_dir" "$(resolve_thememanager_source)" "uses explicit override"
-assert_eq "$override_dir" "$(resolve_thememanager_standalone_source)" "uses explicit override for standalone source"
-assert_eq "custom" "$(describe_thememanager_source "$override_dir")" "describes custom override"
+assert_eq "$override_dir" "$(resolve_thememanager_install_spec)" "uses explicit source override"
+assert_eq "source" "$(describe_thememanager_install_spec "$override_dir")" "describes source override"
 
 printf 'tool-source tests passed\n'

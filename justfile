@@ -53,14 +53,6 @@ ci:
     just test-tools
     bash install/check-tools-package.sh
 
-# Export future standalone thememanager repo and verify it
-export-thememanager dest:
-    bash install/export-thememanager.sh {{dest}}
-
-# Vendor standalone thememanager back into the bundled bootstrap fallback
-vendor-thememanager:
-    bash install/vendor-thememanager.sh
-
 # Run checks expected after user install/stow
 post-user-check:
     just verify-tools

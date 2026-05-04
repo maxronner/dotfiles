@@ -32,10 +32,10 @@ report_command() {
     fi
 
     if [[ "$command_name" == "thememanager" ]]; then
-        local source_dir
+        local install_spec
         local vendored_from="${DOTS_DIR}/tools/thememanager/VENDORED_FROM"
-        source_dir="$(resolve_thememanager_source)"
-        printf '%-16s package-source  %s %s\n' "" "$(describe_thememanager_source "$source_dir")" "$source_dir"
+        install_spec="$(resolve_thememanager_install_spec)"
+        printf '%-16s package-source  %s %s\n' "" "$(describe_thememanager_install_spec "$install_spec")" "$install_spec"
         if [[ -f "$vendored_from" ]]; then
             printf '%-16s vendored-from  %s\n' "" "$(tr '\n' ';' < "$vendored_from" | sed 's/;$//; s/;/; /g')"
         fi

@@ -36,23 +36,23 @@ just verify-tools        # Verify local tool commands are callable
 just tool-status         # Show whether tools resolve to installed commands or repo fallback
 just doctor              # Run lint, tool tests, verification, and tool status
 just ci                  # Run non-mutating repo checks
-just export-thememanager <dest> # Export and verify the future standalone tool repo
-just vendor-thememanager # Sync standalone thememanager into the bundled bootstrap fallback
 just post-user-check     # Run checks expected after user install/stow
 just unlink [env]         # Remove managed symlinks
 just lint                 # Validate package manifests
 just test-tools           # Test local tool modules and theme adapters
 ```
 
-## Local tool source of truth
+## Local Tool Packaging
 
-`thememanager` is developed in the standalone checkout at `~/code/thememanager`.
-The copy under `tools/thememanager` is a bootstrap fallback for machines that do
-not have the standalone repo yet. After changing the standalone repo, run:
+`thememanager` is released from the standalone checkout at `~/code/thememanager`.
+When that checkout and tag `v0.1.0` exist, `just install-tools` installs from
+the tagged release:
 
 ```bash
-just vendor-thememanager
+git+file:///home/max/code/thememanager@v0.1.0
 ```
 
-The vendor command refuses to run if the standalone repo has uncommitted changes,
-then syncs the package into `tools/thememanager` and runs the bundled tool tests.
+The copy under `tools/thememanager` remains a bootstrap fallback for machines
+that do not have the standalone repo yet. For local development overrides, set
+`THEMEMANAGER_SOURCE_DIR=/path/to/thememanager` before running
+`just install-tools`.

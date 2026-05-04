@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/tool-source.sh"
 build_thememanager() {
     local tool_dir
     local out_dir
-    tool_dir="$(resolve_thememanager_source)"
+    tool_dir="$(resolve_thememanager_build_source)"
     out_dir="$(mktemp -d)"
     cleanup() {
         rm -rf "$out_dir" \
