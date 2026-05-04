@@ -32,4 +32,5 @@ just user [env]           # Unprivileged: dotfiles, user services, post-deploy
 just extra <name>        # Optional add-ons (dev, nvim, ly)
 just unlink [env]         # Remove managed symlinks
 just lint                 # Validate package manifests
+just test-tools           # Test local tool modules and theme adapters
 ```

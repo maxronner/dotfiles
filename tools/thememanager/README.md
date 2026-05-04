@@ -15,7 +15,8 @@ stay in `local/dot-local/bin`.
 
 ## Layout
 
-- `src/thememanager` - palette producer CLI
+- `pyproject.toml` - package metadata and console entry points
+- `src/thememanager.py` - palette producer CLI
 - `src/color256/` - terminal palette expansion CLI and built-in themes
 - `tests/` - Python unit tests for palette artifact behavior
 - `docs/` - color256 notes and writeup assets
@@ -23,5 +24,12 @@ stay in `local/dot-local/bin`.
 ## Tests
 
 ```bash
-python3 tools/thememanager/tests/test_thememanager.py
+just test-tools
+```
+
+Package entry points can be smoke-tested without installation:
+
+```bash
+PYTHONPATH=tools/thememanager/src python3 -m thememanager list
+PYTHONPATH=tools/thememanager/src python3 -m color256.color256 --help
 ```

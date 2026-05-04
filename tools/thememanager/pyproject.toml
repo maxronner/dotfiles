@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thememanager"
+version = "0.1.0"
+description = "Palette tooling for the dotfiles theming system"
+requires-python = ">=3.10"
+
+[project.scripts]
+thememanager = "thememanager:main"
+color256 = "color256.color256:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["thememanager"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+color256 = ["themes/*.txt", "theme.nvim.lua", "theme.vim", "theme.vim9.vim"]

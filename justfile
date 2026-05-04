@@ -58,3 +58,8 @@ extra name='':
 # Lint package manifest placement and entries
 lint:
     bash install/lint-packages.sh
+
+# Test local tool modules and theme adapters
+test-tools:
+    python3 tools/thememanager/tests/test_thememanager.py
+    bash local/dot-local/lib/theme/theme-apply-all.test.sh

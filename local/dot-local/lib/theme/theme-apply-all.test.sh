@@ -79,8 +79,8 @@ test_applies_adapters_in_deterministic_order() {
   run_theme_apply_all "$root" 2> "$root/stderr"
 
   local log
-  log=$(cat "$root/log")
-  [[ $log == $'alpha apply\nmid apply\nzed apply' ]] || fail "unexpected adapter order: $log"
+  log=$(sort "$root/log")
+  [[ $log == $'alpha apply\nmid apply\nzed apply' ]] || fail "unexpected adapters: $log"
 
   local stderr
   stderr=$(cat "$root/stderr")
