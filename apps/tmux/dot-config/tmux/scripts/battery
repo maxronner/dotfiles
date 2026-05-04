@@ -18,7 +18,10 @@ if [[ -z "$bat" ]]; then
 fi
 
 cache="${XDG_RUNTIME_DIR:-/tmp}/tmux-battery"
-placeholder() { printf '%s\n' "#[fg=colour30]| ??% 󰂑"; exit 0; }
+placeholder() {
+  printf '%s\n' "#[fg=colour30]| ??% 󰂑"
+  exit 0
+}
 
 valid=1
 { read -r capacity <"$bat/capacity"; } 2>/dev/null || valid=0
@@ -29,8 +32,8 @@ valid=1
 
 if ((valid)); then
   printf '%s %s\n' "$capacity" "$status" >"$cache"
-elif [[ -r "$cache" ]] && read -r capacity status <"$cache" \
-  && [[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)); then
+elif [[ -r "$cache" ]] && read -r capacity status <"$cache" &&
+  [[ $capacity =~ ^[0-9]+$ ]] && ((capacity <= 100 && capacity >= 0)); then
   :
 else
   placeholder
@@ -68,4 +71,4 @@ else
   out+="#[fg=colour30]${capacity_fmt} #[fg=$color]$icon"
 fi
 
-printf '%s\n' "$out"
+printf '%s \n' "$out"
