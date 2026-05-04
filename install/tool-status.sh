@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib.sh"
+source "${SCRIPT_DIR}/tool-source.sh"
 
 repo_command_path() {
     local command_name="$1"
@@ -31,6 +32,10 @@ report_command() {
     fi
 
     if [[ "$command_name" == "thememanager" ]]; then
+        local source_dir
+        source_dir="$(resolve_thememanager_source)"
+        printf '%-16s package-source  %s %s\n' "" "$(describe_thememanager_source "$source_dir")" "$source_dir"
+
         version="$("$resolved" --version 2>/dev/null || true)"
         if [[ -n "$version" ]]; then
             printf '%-16s package-version %s\n' "" "$version"

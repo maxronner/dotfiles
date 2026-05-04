@@ -5,10 +5,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib.sh"
+source "${SCRIPT_DIR}/tool-source.sh"
 
 build_thememanager() {
-    local tool_dir="${DOTS_DIR}/tools/thememanager"
+    local tool_dir
     local out_dir
+    tool_dir="$(resolve_thememanager_source)"
     out_dir="$(mktemp -d)"
     cleanup() {
         rm -rf "$out_dir" \

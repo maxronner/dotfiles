@@ -104,3 +104,4 @@ test-tools:
     python3 tools/thememanager/tests/test_thememanager.py
     bash local/dot-local/lib/theme/theme-apply-all.test.sh
     bash local/dot-local/lib/tools/dispatch-packaged-tool.test.sh
+    bash install/tool-source.test.sh
