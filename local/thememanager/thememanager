@@ -295,6 +295,66 @@ def _hue_rotate_base16(base16, source_hex):
     return result
 
 
+def _base16_from_matugen_colors(colors):
+    """Map matugen colour roles into the base16 input for the Palette Artifact.
+
+    This is the pure Auto Palette derivation step. It intentionally stops before
+    color256 expansion, file writes, and Palette Reload side effects.
+    """
+
+    def pick(name, fallback="#000000"):
+        value = colors.get(name, {})
+        return value.get("default") or value.get("dark") or fallback
+
+    base16 = {
+        # Backgrounds / neutrals
+        "background": pick("background", "#101010"),
+        "foreground": pick("on_background", "#e0e0e0"),
+        "color0": pick("surface_dim", "#0d0d0d"),  # black  — darkest bg shade
+        "color7": pick("on_surface_variant", "#c0c0c0"),  # white  — near-fg light
+        "color8": pick("outline", "#767676"),  # bright black — mid grey
+        "color15": pick("on_surface", "#ffffff"),  # bright white — brightest fg
+        # Chromatic slots: matugen role provides initial L and C only.
+        # Hue is overridden by _hue_rotate_base16 so slot 1 always lands at
+        # red (0°) regardless of wallpaper.  Slots follow baseline offset order.
+        "color1": pick("error", "#ff6b6b"),  # red       → hue overridden to 0°
+        "color9": pick("on_error_container", "#ff9b9b"),  # bright red → 0°
+        "color2": pick("tertiary", "#7bd88f"),  # green     → hue overridden to 120°
+        "color10": pick("tertiary_fixed_dim", "#a0d8a0"),  # bright green → 120°
+        "color3": pick("tertiary_fixed", "#f6c177"),  # yellow   → hue overridden to 60°
+        "color11": pick("on_tertiary_container", "#ffd8a0"),  # bright yellow → 60°
+        "color4": pick("primary", "#7aa2f7"),  # blue      → hue overridden to 240°
+        "color12": pick("on_primary_container", "#7aa2f7"),  # bright blue → 240°
+        "color5": pick("secondary", "#bb9af7"),  # magenta  → hue overridden to 300°
+        "color13": pick("on_secondary_container", "#bb9af7"),  # bright magenta → 300°
+        "color6": pick("outline_variant", "#7dcfff"),  # cyan    → hue overridden to 180°
+        "color14": pick("secondary_fixed_dim", "#a0e0e0"),  # bright cyan → 180°
+    }
+
+    # Lift neutral slots so the background isn't near-black. Matugen's
+    # dark-mode surface roles often land at L≈5-8; ~15-18 reads as dark
+    # without being a black hole.
+    neutral_floors = {
+        "background": 15,
+        "color0": 12,
+        "color8": 40,
+        "color7": 70,
+        "foreground": 80,
+        "color15": 90,
+    }
+    for slot, min_L in neutral_floors.items():
+        L, C, H = _hex_to_lch(base16[slot])
+        if L < min_L:
+            base16[slot] = _lch_to_hex(min_L, C, H)
+
+    # Rotate chromatic hues so slot 1 lands at red (0°), then space the
+    # remaining 5 slots 60° apart around the wheel. This guarantees the
+    # baseline slot-to-hue contract regardless of wallpaper dominant hue,
+    # while preserving L and C from the matugen roles above.
+    source_hex = pick("source_color", "#cc0403")
+    return _hue_rotate_base16(base16, source_hex)
+
+
 class ThemeManager:
     """Manages theme application and configuration."""
 
@@ -377,6 +437,15 @@ class ThemeManager:
         return cmd
 
     def _palette_from_matugen(self, wallpaper_path):
+        colors = self._matugen_colors_from_wallpaper(wallpaper_path)
+        palette = self._palette_from_base16(
+            _base16_from_matugen_colors(colors),
+            theme_name="auto",
+        )
+        palette["wallpaper"] = str(wallpaper_path)
+        return palette
+
+    def _matugen_colors_from_wallpaper(self, wallpaper_path):
         cmd = [
             "matugen",
             "image",
@@ -391,68 +460,15 @@ class ThemeManager:
         ]
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         payload = json.loads(result.stdout)
-        colors = payload.get("colors", {})
+        return payload.get("colors", {})
 
-        def pick(name, fallback="#000000"):
-            value = colors.get(name, {})
-            return value.get("default") or value.get("dark") or fallback
-
-        base16 = {
-            # Backgrounds / neutrals
-            "background": pick("background", "#101010"),
-            "foreground": pick("on_background", "#e0e0e0"),
-            "color0": pick("surface_dim", "#0d0d0d"),  # black  — darkest bg shade
-            "color7": pick("on_surface_variant", "#c0c0c0"),  # white  — near-fg light
-            "color8": pick("outline", "#767676"),  # bright black — mid grey
-            "color15": pick("on_surface", "#ffffff"),  # bright white — brightest fg
-            # Chromatic slots: matugen role provides initial L and C only.
-            # Hue is overridden by _hue_rotate_base16 so slot 1 always lands at
-            # red (0°) regardless of wallpaper.  Slots follow baseline offset order.
-            "color1": pick("error", "#ff6b6b"),  # red       → hue overridden to 0°
-            "color9": pick("on_error_container", "#ff9b9b"),  # bright red → 0°
-            "color2": pick("tertiary", "#7bd88f"),  # green     → hue overridden to 120°
-            "color10": pick("tertiary_fixed_dim", "#a0d8a0"),  # bright green → 120°
-            "color3": pick("tertiary_fixed", "#f6c177"),  # yellow   → hue overridden to 60°
-            "color11": pick("on_tertiary_container", "#ffd8a0"),  # bright yellow → 60°
-            "color4": pick("primary", "#7aa2f7"),  # blue      → hue overridden to 240°
-            "color12": pick("on_primary_container", "#7aa2f7"),  # bright blue → 240°
-            "color5": pick("secondary", "#bb9af7"),  # magenta  → hue overridden to 300°
-            "color13": pick("on_secondary_container", "#bb9af7"),  # bright magenta → 300°
-            "color6": pick("outline_variant", "#7dcfff"),  # cyan    → hue overridden to 180°
-            "color14": pick("secondary_fixed_dim", "#a0e0e0"),  # bright cyan → 180°
-        }
-
-        # Lift neutral slots so the background isn't near-black.  Matugen's
-        # dark-mode surface roles often land at L≈5-8; ~15-18 reads as dark
-        # without being a black hole.
-        _neutral_floors = {
-            "background": 15,
-            "color0": 12,
-            "color8": 40,
-            "color7": 70,
-            "foreground": 80,
-            "color15": 90,
-        }
-        for slot, min_L in _neutral_floors.items():
-            L, C, H = _hex_to_lch(base16[slot])
-            if L < min_L:
-                base16[slot] = _lch_to_hex(min_L, C, H)
-
-        # Rotate chromatic hues so slot 1 lands at red (0°), then space the
-        # remaining 5 slots 60° apart around the wheel.  This guarantees the
-        # baseline slot-to-hue contract regardless of wallpaper dominant hue,
-        # while preserving L and C from the matugen roles above.
-        source_hex = pick("source_color", "#cc0403")
-        base16 = _hue_rotate_base16(base16, source_hex)
-
+    def _palette_from_base16(self, base16, theme_name):
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as tmp:
             tmp.write(json.dumps(base16))
             tmp_path = Path(tmp.name)
 
         try:
-            palette = self._palette_from_color256_theme(tmp_path, theme_name="auto")
-            palette["wallpaper"] = str(wallpaper_path)
-            return palette
+            return self._palette_from_color256_theme(tmp_path, theme_name=theme_name)
         finally:
             tmp_path.unlink(missing_ok=True)
 
