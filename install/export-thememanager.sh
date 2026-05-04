@@ -39,30 +39,15 @@ trap cleanup_export_artifacts EXIT
 
 info "Exported thememanager to ${DEST}"
 
-info "Running exported tests..."
-python3 "${DEST}/tests/test_thememanager.py"
+if ! command -v just &>/dev/null; then
+    error "Missing just. Cannot run exported repo CI."
+    exit 1
+fi
 
 build_out="$(mktemp -d)"
 trap 'cleanup_export_artifacts; rm -rf "$build_out"' EXIT
 
-info "Building exported package..."
-if command -v uv &>/dev/null; then
-    uv build "$DEST" --out-dir "$build_out" >/dev/null
-elif python3 -m build --version &>/dev/null; then
-    python3 -m build "$DEST" --outdir "$build_out" >/dev/null
-else
-    error "Missing uv or python build module. Cannot verify exported package build."
-    exit 1
-fi
-
-if ! compgen -G "${build_out}/thememanager-*.whl" >/dev/null; then
-    error "Exported wheel was not produced"
-    exit 1
-fi
-
-if ! compgen -G "${build_out}/thememanager-*.tar.gz" >/dev/null; then
-    error "Exported source distribution was not produced"
-    exit 1
-fi
+info "Running exported CI..."
+THEMEMANAGER_BUILD_DIR="$build_out" just -f "${DEST}/justfile" ci
 
 success "Thememanager export is buildable and tested."

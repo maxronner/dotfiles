@@ -19,7 +19,9 @@ build_thememanager() {
     }
     trap cleanup RETURN
 
-    if command -v uv &>/dev/null; then
+    if command -v just &>/dev/null && [[ -f "${tool_dir}/justfile" ]]; then
+        THEMEMANAGER_BUILD_DIR="$out_dir" just -f "${tool_dir}/justfile" build >/dev/null
+    elif command -v uv &>/dev/null; then
         uv build "$tool_dir" --out-dir "$out_dir" >/dev/null
     elif python3 -m build --version &>/dev/null; then
         python3 -m build "$tool_dir" --outdir "$out_dir" >/dev/null

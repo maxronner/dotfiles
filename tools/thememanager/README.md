@@ -24,7 +24,9 @@ stay in `local/dot-local/bin`.
 ## Tests
 
 ```bash
-just test-tools
+just test
+just build
+just ci
 ```
 
 Package entry points can be smoke-tested without installation:
@@ -49,4 +51,6 @@ materialize the future repo shape and verify it independently:
 
 ```bash
 just export-thememanager /tmp/thememanager-export
+cd /tmp/thememanager-export
+just ci
 ```
