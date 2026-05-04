@@ -30,6 +30,17 @@ install-tools:
 verify-tools:
     bash install/verify-tools.sh
 
+# Show local tool resolution status
+tool-status:
+    bash install/tool-status.sh
+
+# Run core repo health checks
+doctor:
+    just lint
+    just test-tools
+    just verify-tools
+    just tool-status
+
 # Install hyprland layer 2
 hyprland profile:
     bash "{{dots_dir}}/hyprland/install.sh" {{profile}}

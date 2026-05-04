@@ -39,4 +39,5 @@ Package installation from this repo is handled by:
 ```bash
 just install-tools
 just verify-tools
+just tool-status
 ```

@@ -17,6 +17,7 @@ Usage:
 
 import argparse
 import fcntl
+import importlib.metadata
 import json
 import logging
 import math
@@ -641,6 +642,19 @@ def main():
         action="store_true",
         help="Show what would be done without making any changes.",
     )
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Show package version and exit.",
+    )
+
+    if "--version" in argv:
+        try:
+            print(importlib.metadata.version("thememanager"))
+        except importlib.metadata.PackageNotFoundError:
+            print("source")
+        return
+
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("list", help="List all available themes.")
