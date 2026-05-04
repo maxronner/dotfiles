@@ -34,6 +34,8 @@ just install-tools       # Package-install local tools with uv or pipx
 just verify-tools        # Verify local tool commands are callable
 just tool-status         # Show whether tools resolve to installed commands or repo fallback
 just doctor              # Run lint, tool tests, verification, and tool status
+just ci                  # Run non-mutating repo checks
+just post-user-check     # Run checks expected after user install/stow
 just unlink [env]         # Remove managed symlinks
 just lint                 # Validate package manifests
 just test-tools           # Test local tool modules and theme adapters

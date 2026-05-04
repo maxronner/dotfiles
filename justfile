@@ -41,6 +41,17 @@ doctor:
     just verify-tools
     just tool-status
 
+# Run non-mutating repo checks
+ci:
+    just lint
+    just test-tools
+    bash install/check-tools-package.sh
+
+# Run checks expected after user install/stow
+post-user-check:
+    just verify-tools
+    just tool-status
+
 # Install hyprland layer 2
 hyprland profile:
     bash "{{dots_dir}}/hyprland/install.sh" {{profile}}
