@@ -4,7 +4,7 @@ import pathlib
 import unittest
 
 
-THEMEMANAGER_PATH = pathlib.Path(__file__).with_name("thememanager")
+THEMEMANAGER_PATH = pathlib.Path(__file__).parents[1] / "src" / "thememanager"
 thememanager = importlib.machinery.SourceFileLoader(
     "thememanager", str(THEMEMANAGER_PATH)
 ).load_module()

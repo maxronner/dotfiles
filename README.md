@@ -11,6 +11,7 @@ This repository contains my system configuration, application settings, and inst
 - **`devices/`** - Device-specific configurations
 - **`optional/`** - Optional configurations and tweaks
 - **`local/`** - Local machine-specific settings
+- **`tools/`** - Source modules for heavier local tools used by the dotfiles
 - **`install/`** - Installation scripts organized by privilege boundary
   - **`lib/`** - Shared utilities and step scripts
   - **`system/`** - Privileged phases (packages, system config, device setup)

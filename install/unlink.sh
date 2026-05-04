@@ -65,7 +65,13 @@ for f in "${DOTS_DIR}/local/dot-local/lib"/*; do
 done
 
 for f in "${HOME_DIR}/.local/share/themes"/*.txt; do
-    if [[ -L "$f" ]] && [[ "$(readlink -f "$f")" == "${DOTS_DIR}/local/thememanager/color256/themes/"* ]]; then
+    if [[ ! -L "$f" ]]; then
+        continue
+    fi
+    link_target="$(readlink "$f" 2>/dev/null || true)"
+    link_resolved="$(readlink -f "$f" 2>/dev/null || true)"
+    if [[ "$link_resolved" == "${DOTS_DIR}/tools/thememanager/src/color256/themes/"* ]] ||
+       [[ "$link_target" == "${DOTS_DIR}/local/thememanager/color256/themes/"* ]]; then
         rm -f "$f"
     fi
 done
