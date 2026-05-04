@@ -41,6 +41,19 @@ rsync -a --delete \
     --exclude='*.pyc' \
     "${SOURCE}/" "${DEST}/"
 
+commit="$(git -C "$SOURCE" rev-parse HEAD)"
+version="$(sed -n 's/^version = "\(.*\)"$/\1/p' "${SOURCE}/pyproject.toml" | head -n 1)"
+if [[ -z "$version" ]]; then
+    error "Could not read thememanager version from ${SOURCE}/pyproject.toml"
+    exit 1
+fi
+
+cat > "${DEST}/VENDORED_FROM" <<EOF
+repo: ${SOURCE}
+commit: ${commit}
+version: ${version}
+EOF
+
 if ! command -v just >/dev/null 2>&1; then
     error "Missing just. Cannot verify vendored thememanager."
     exit 1
