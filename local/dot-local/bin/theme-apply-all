@@ -6,6 +6,12 @@ PALETTE_FILE="${THEME_DATA_DIR}/palette.json"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 THEME_LOCK="${XDG_RUNTIME_DIR:-/tmp}/theme.${UID}.lock"
 
+# Palette Reload adapter contract:
+# - An adapter is an executable file at $XDG_CONFIG_HOME/<app>/scripts/apply-theme.
+# - With no args, the adapter applies the current Palette Artifact.
+# - With --check, the adapter validates its prerequisites and exits non-zero on failure.
+# - Adapter stdout is ignored; stderr is reserved for human-readable diagnostics.
+
 check=0
 if [[ "${1:-}" == "--check" ]]; then
   check=1
@@ -31,14 +37,24 @@ pid_app=()
 arg=""
 (( check )) && arg="--check"
 
-for script in "$CONFIG_DIR"/*/scripts/apply-theme; do
+discover_adapters() {
+  local script
+  shopt -s nullglob
+  for script in "$CONFIG_DIR"/*/scripts/apply-theme; do
+    [[ -x "$script" ]] || continue
+    printf '%s\n' "$script"
+  done | sort
+  shopt -u nullglob
+}
+
+while IFS= read -r script; do
   [[ -x "$script" ]] || continue
   app="${script#"$CONFIG_DIR"/}"
   app="${app%%/*}"
   "$script" $arg &
   pids+=($!)
   pid_app+=("$app")
-done
+done < <(discover_adapters)
 
 for i in "${!pids[@]}"; do
   if wait "${pids[$i]}"; then
