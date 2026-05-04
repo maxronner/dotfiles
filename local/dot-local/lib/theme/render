@@ -97,7 +97,17 @@ BEGIN {
     # Trim surrounding whitespace from inner
     gsub(/^[[:space:]]+|[[:space:]]+$/, "", inner)
 
-    if (inner ~ /^[A-Za-z0-9_]+$/) {
+    if (inner ~ /^nh:[A-Za-z0-9_]+$/) {
+      key = substr(inner, 4)
+      if (key in palette) {
+        value = palette[key]
+        sub(/^#/, "", value)
+        out = out value
+      } else {
+        print inner >> missing_file
+        out = out full_token
+      }
+    } else if (inner ~ /^[A-Za-z0-9_]+$/) {
       if (inner in palette) {
         out = out palette[inner]
       } else {

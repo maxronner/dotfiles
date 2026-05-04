@@ -109,6 +109,19 @@ def _lch_to_hex(L, C, H):
     return "#%02x%02x%02x" % (r, g, b)
 
 
+def _hex_to_rgb(hex_str):
+    h = hex_str.lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+def _rgb_to_hex(r, g, b):
+    return "#%02x%02x%02x" % (
+        max(0, min(255, r)),
+        max(0, min(255, g)),
+        max(0, min(255, b)),
+    )
+
+
 def _compute_wallpaper_luminance(image_path):
     """Compute perceptual luminance of an image using ImageMagick.
 
@@ -126,53 +139,103 @@ def _compute_wallpaper_luminance(image_path):
     return None
 
 
-def _build_semantic_palette(base16_hex, theme_name):
-    """Build the palette dict that thememanager writes to palette.json.
+def _blend_hex(a, b, amount):
+    """Blend two #rrggbb colours by amount of b."""
+    ar, ag, ab = _hex_to_rgb(a)
+    br, bg, bb = _hex_to_rgb(b)
+    return _rgb_to_hex(
+        round(ar + (br - ar) * amount),
+        round(ag + (bg - ag) * amount),
+        round(ab + (bb - ab) * amount),
+    )
+
+
+def _relative_luminance_hex(color):
+    r, g, b = [v / 255 for v in _hex_to_rgb(color)]
+
+    def linear(channel):
+        if channel <= 0.03928:
+            return channel / 12.92
+        return ((channel + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
+
+
+def _on_color(base):
+    if _relative_luminance_hex(base) > 0.4:
+        return _blend_hex(base, "#000000", 0.8)
+    return _blend_hex(base, "#ffffff", 0.85)
+
+
+def _container(base, bg):
+    return _blend_hex(base, bg, 0.65)
+
+
+def _on_container(base, fg):
+    return _blend_hex(base, fg, 0.3)
+
+
+def _build_palette_artifact(base16_hex, theme_name, terminal_palette_text=None):
+    """Build the v2 Palette Artifact written to palette.json.
 
     base16_hex is a dict with keys: background, foreground, color0..color15
-    (hex strings with leading #).  This mirrors what color256.py's
-    generate_semantic_json used to produce via subprocess.
+    (hex strings with leading #).
     """
     bg = base16_hex["background"]
     fg = base16_hex["foreground"]
     colors = [base16_hex[f"color{i}"] for i in range(16)]
-    accent = colors[4]
+    primary = colors[4]
+    secondary = colors[5]
+    tertiary = colors[3]
+    error = colors[1]
+    success = colors[2]
+    muted = colors[8]
 
     palette = {
-        "schema_version": "1",
-        "theme_name": theme_name,
-        "bg": bg,
-        "fg": fg,
-        "accent": accent,
-        "bg_nh": bg.lstrip("#"),
-        "fg_nh": fg.lstrip("#"),
-        "accent_nh": accent.lstrip("#"),
+        "version": 2,
+        "themeName": theme_name,
+        "m3primary": primary,
+        "m3onPrimary": _on_color(primary),
+        "m3primaryContainer": _container(primary, bg),
+        "m3onPrimaryContainer": _on_container(primary, fg),
+        "m3secondary": secondary,
+        "m3onSecondary": _on_color(secondary),
+        "m3secondaryContainer": _container(secondary, bg),
+        "m3onSecondaryContainer": _on_container(secondary, fg),
+        "m3tertiary": tertiary,
+        "m3onTertiary": _on_color(tertiary),
+        "m3tertiaryContainer": _container(tertiary, bg),
+        "m3onTertiaryContainer": _on_container(tertiary, fg),
+        "m3error": error,
+        "m3onError": _on_color(error),
+        "m3errorContainer": _container(error, bg),
+        "m3onErrorContainer": _on_container(error, fg),
+        "m3success": success,
+        "m3onSuccess": _on_color(success),
+        "m3successContainer": _container(success, bg),
+        "m3onSuccessContainer": _on_container(success, fg),
+        "m3surface": bg,
+        "m3onSurface": fg,
+        "m3onSurfaceVariant": _blend_hex(fg, muted, 0.35),
+        "m3outline": muted,
+        "m3outlineVariant": _blend_hex(muted, bg, 0.5),
+        "m3scrim": "#000000",
+        "m3shadow": "#000000",
     }
 
     for i, color in enumerate(colors):
-        palette[f"color{i}"] = color
-        palette[f"color{i}_nh"] = color.lstrip("#")
+        palette[f"term{i}"] = color
 
-    palette.update(
-        {
-            "base": colors[0],
-            "surface": colors[0],
-            "overlay": colors[8],
-            "muted": colors[8],
-            "subtle": fg,
-            "text": fg,
-            "primary": colors[4],
-            "secondary": colors[5],
-            "success": colors[2],
-            "warning": colors[3],
-            "critical": colors[1],
-            "info": colors[6],
-            "highlightlow": colors[0],
-            "highlightmed": colors[8],
-            "highlighthigh": colors[7],
-            "indicator": accent,
-        }
-    )
+    if terminal_palette_text:
+        for line in terminal_palette_text.splitlines():
+            if line.startswith("palette"):
+                parts = line.split("=")
+                if len(parts) >= 3:
+                    try:
+                        index = int(parts[1].strip())
+                    except ValueError:
+                        continue
+                    palette[f"term{index}"] = parts[2].strip()
 
     return palette
 
@@ -282,9 +345,11 @@ class ThemeManager:
                 if 0 <= idx <= 15:
                     base16_hex[f"color{idx}"] = parts[2].strip()
 
-        palette = _build_semantic_palette(base16_hex, theme_name or theme_path.stem)
-        palette["terminal_palette"] = ghostty_text
-        return palette
+        return _build_palette_artifact(
+            base16_hex,
+            theme_name or theme_path.stem,
+            terminal_palette_text=ghostty_text,
+        )
 
     @staticmethod
     def _color256_cmd():
@@ -403,7 +468,7 @@ class ThemeManager:
         """Return the name of the currently active theme."""
         if PALETTE_FILE.is_file():
             try:
-                current = json.loads(PALETTE_FILE.read_text()).get("theme_name", "none")
+                current = json.loads(PALETTE_FILE.read_text()).get("themeName", "none")
                 logger.debug(f"Current theme: {current}")
                 return current
             except (json.JSONDecodeError, OSError):

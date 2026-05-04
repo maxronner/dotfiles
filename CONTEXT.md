@@ -20,11 +20,16 @@ _Avoid_: dynamic theme, wallpaper colors
 The notification that makes running applications consume the latest generated palette artifact.
 _Avoid_: refresh theme, sync colors
 
+**Palette Artifact**:
+The canonical `palette.json` file consumed by theme adapters. It is versioned and uses Material-style `m3*` UI tokens plus `term*` terminal slots.
+_Avoid_: theme JSON, color dump, palette schema
+
 ## Relationships
 
 - A **Wallpaper Preview** can become a **Wallpaper Commit**.
 - A **Wallpaper Commit** may produce an **Auto Palette**.
-- An **Auto Palette** requires a **Palette Reload** before running applications reflect it.
+- An **Auto Palette** writes a **Palette Artifact**.
+- A **Palette Artifact** requires a **Palette Reload** before running applications reflect it.
 
 ## Example dialogue
 
