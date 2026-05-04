@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Prefer a packaged command on PATH, then fall back to repo source.
+
+set -euo pipefail
+
+if (( $# < 2 )); then
+  echo "usage: dispatch-packaged-tool <command> <fallback-command...> -- [args...]" >&2
+  exit 64
+fi
+
+command_name="$1"
+shift
+
+fallback=()
+while (( $# > 0 )); do
+  if [[ "$1" == "--" ]]; then
+    shift
+    break
+  fi
+  fallback+=("$1")
+  shift
+done
+
+if (( ${#fallback[@]} == 0 )); then
+  echo "dispatch-packaged-tool: fallback command is required" >&2
+  exit 64
+fi
+
+caller_path="$(readlink -f -- "${DISPATCH_PACKAGED_TOOL_CALLER:-${BASH_SOURCE[1]:-$0}}" 2>/dev/null || true)"
+
+IFS=: read -r -a path_entries <<< "${PATH:-}"
+for path_entry in "${path_entries[@]}"; do
+  [[ -n "$path_entry" ]] || path_entry="."
+  candidate="${path_entry}/${command_name}"
+  [[ -x "$candidate" ]] || continue
+
+  candidate_path="$(readlink -f -- "$candidate" 2>/dev/null || true)"
+  [[ -n "$candidate_path" && "$candidate_path" == "$caller_path" ]] && continue
+  [[ -n "$candidate_path" && "$candidate_path" == "$(readlink -f -- "$0" 2>/dev/null || true)" ]] && continue
+
+  if [[ "${DOTFILES_TOOL_DEBUG:-}" == "1" ]]; then
+    echo "dispatch-packaged-tool: ${command_name}: installed ${candidate}" >&2
+  fi
+  exec "$candidate" "$@"
+done
+
+if [[ "${DOTFILES_TOOL_DEBUG:-}" == "1" ]]; then
+  echo "dispatch-packaged-tool: ${command_name}: fallback ${fallback[*]}" >&2
+fi
+exec "${fallback[@]}" "$@"
