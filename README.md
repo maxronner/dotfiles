@@ -52,7 +52,7 @@ the tagged release:
 git+file:///home/max/code/thememanager@v0.1.0
 ```
 
-The copy under `tools/thememanager` remains a bootstrap fallback for machines
-that do not have the standalone repo yet. For local development overrides, set
+For local development overrides, set
 `THEMEMANAGER_SOURCE_DIR=/path/to/thememanager` before running
-`just install-tools`.
+`just install-tools`. On machines without the local release checkout, set
+`THEMEMANAGER_INSTALL_SPEC` to a reachable git tag URL.

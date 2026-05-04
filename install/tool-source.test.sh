@@ -44,9 +44,10 @@ assert_eq "custom" "$(describe_thememanager_install_spec "$THEMEMANAGER_INSTALL_
 unset THEMEMANAGER_INSTALL_SPEC
 
 rm -rf "${tmp_home}/code/thememanager"
-assert_eq "${DOTS_DIR}/tools/thememanager" "$(resolve_thememanager_install_spec)" "falls back to bundled source"
-assert_eq "${DOTS_DIR}/tools/thememanager" "$(resolve_thememanager_build_source)" "builds bundled source"
-assert_eq "bundled" "$(describe_thememanager_install_spec "${DOTS_DIR}/tools/thememanager")" "describes bundled source"
+if resolve_thememanager_install_spec >/dev/null 2>&1; then
+    printf 'FAIL: expected missing release checkout to fail\n' >&2
+    exit 1
+fi
 
 override_dir="${tmp_home}/custom"
 mkdir -p "$override_dir"

@@ -32,8 +32,8 @@ _Avoid_: package list, dependency file
 The private dotfiles layer that installs after the public base and can claim the same home-directory targets by unlinking public symlinks before stowing.
 _Avoid_: private repo, user config layer
 
-**Thememanager Module**:
-The source module under `tools/thememanager` that owns Palette Artifact generation, named terminal palettes, and wallpaper-derived Auto Palette generation.
+**Thememanager Package**:
+The external package installed from the standalone thememanager release tag. It owns Palette Artifact generation, named terminal palettes, and wallpaper-derived Auto Palette generation.
 _Avoid_: theme scripts, local theming files
 
 ## Relationships
@@ -44,7 +44,7 @@ _Avoid_: theme scripts, local theming files
 - A **Palette Artifact** requires a **Palette Reload** before running applications reflect it.
 - A **Package Manifest** belongs to one packageable slice and is parsed by the installer before packages are installed.
 - The **Private Overlay** is installed after the public base and may override public app dotfiles.
-- The **Thememanager Module** writes the **Palette Artifact** consumed by theme adapters.
+- The **Thememanager Package** writes the **Palette Artifact** consumed by theme adapters.
 
 ## Example dialogue
 

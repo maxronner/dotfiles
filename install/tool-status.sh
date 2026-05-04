@@ -33,12 +33,8 @@ report_command() {
 
     if [[ "$command_name" == "thememanager" ]]; then
         local install_spec
-        local vendored_from="${DOTS_DIR}/tools/thememanager/VENDORED_FROM"
         install_spec="$(resolve_thememanager_install_spec)"
         printf '%-16s package-source  %s %s\n' "" "$(describe_thememanager_install_spec "$install_spec")" "$install_spec"
-        if [[ -f "$vendored_from" ]]; then
-            printf '%-16s vendored-from  %s\n' "" "$(tr '\n' ';' < "$vendored_from" | sed 's/;$//; s/;/; /g')"
-        fi
 
         version="$("$resolved" --version 2>/dev/null || true)"
         if [[ -n "$version" ]]; then

@@ -62,10 +62,24 @@ test_skips_caller_to_avoid_recursion() {
   [[ "$output" == "fallback:one" ]] || fail "expected recursion skip fallback, got: $output"
 }
 
+test_reports_missing_without_fallback() {
+  local root status output
+  root="$(make_root)"
+
+  set +e
+  output="$(PATH="$root/bin:/usr/bin:/bin" "$DISPATCH" demo -- one 2>&1)"
+  status="$?"
+  set -e
+
+  [[ "$status" == "127" ]] || fail "expected 127 without installed command or fallback, got: $status"
+  [[ "$output" == *"installed command not found"* ]] || fail "expected missing command message, got: $output"
+}
+
 main() {
   test_prefers_installed_command
   test_falls_back_when_missing
   test_skips_caller_to_avoid_recursion
+  test_reports_missing_without_fallback
   printf 'dispatch-packaged-tool tests passed\n'
 }
 

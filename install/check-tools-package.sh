@@ -10,10 +10,15 @@ source "${SCRIPT_DIR}/tool-source.sh"
 build_thememanager() {
     local tool_dir
     local out_dir
+    local release_tree=""
     tool_dir="$(resolve_thememanager_build_source)"
     out_dir="$(mktemp -d)"
+    if [[ "$tool_dir" == /tmp/* ]]; then
+        release_tree="$tool_dir"
+    fi
     cleanup() {
         rm -rf "$out_dir" \
+            "$release_tree" \
             "${tool_dir}/build" \
             "${tool_dir}/src/thememanager.egg-info" \
             "${tool_dir}/src/__pycache__" \

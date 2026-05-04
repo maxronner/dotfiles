@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prefer a packaged command on PATH, then fall back to repo source.
+# Prefer a packaged command on PATH, then optionally fall back to repo source.
 
 set -euo pipefail
 
@@ -20,11 +20,6 @@ while (( $# > 0 )); do
   fallback+=("$1")
   shift
 done
-
-if (( ${#fallback[@]} == 0 )); then
-  echo "dispatch-packaged-tool: fallback command is required" >&2
-  exit 64
-fi
 
 caller_path="$(readlink -f -- "${DISPATCH_PACKAGED_TOOL_CALLER:-${BASH_SOURCE[1]:-$0}}" 2>/dev/null || true)"
 
@@ -47,4 +42,10 @@ done
 if [[ "${DOTFILES_TOOL_DEBUG:-}" == "1" ]]; then
   echo "dispatch-packaged-tool: ${command_name}: fallback ${fallback[*]}" >&2
 fi
+
+if (( ${#fallback[@]} == 0 )); then
+  echo "dispatch-packaged-tool: ${command_name}: installed command not found; run just install-tools" >&2
+  exit 127
+fi
+
 exec "${fallback[@]}" "$@"
