@@ -1,5 +1,4 @@
 astroterm
-aur:claude-code
 bluetui
 btop
 opencode
