@@ -53,6 +53,10 @@ ci:
     just test-tools
     bash install/check-tools-package.sh
 
+# Export future standalone thememanager repo and verify it
+export-thememanager dest:
+    bash install/export-thememanager.sh {{dest}}
+
 # Run checks expected after user install/stow
 post-user-check:
     just verify-tools

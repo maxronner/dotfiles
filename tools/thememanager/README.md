@@ -41,3 +41,12 @@ just install-tools
 just verify-tools
 just tool-status
 ```
+
+## Standalone Repo Export
+
+Before this module is moved to its own repository, the export command can
+materialize the future repo shape and verify it independently:
+
+```bash
+just export-thememanager /tmp/thememanager-export
+```
