@@ -30,6 +30,8 @@ just bootstrap [env]      # Full setup: system + user
 just system [env]         # Privileged: packages, system config, device setup
 just user [env]           # Unprivileged: dotfiles, user services, post-deploy
 just extra <name>        # Optional add-ons (dev, nvim, ly)
+just install-tools       # Package-install local tools with uv or pipx
+just verify-tools        # Verify local tool commands are callable
 just unlink [env]         # Remove managed symlinks
 just lint                 # Validate package manifests
 just test-tools           # Test local tool modules and theme adapters

@@ -33,3 +33,10 @@ Package entry points can be smoke-tested without installation:
 PYTHONPATH=tools/thememanager/src python3 -m thememanager list
 PYTHONPATH=tools/thememanager/src python3 -m color256.color256 --help
 ```
+
+Package installation from this repo is handled by:
+
+```bash
+just install-tools
+just verify-tools
+```

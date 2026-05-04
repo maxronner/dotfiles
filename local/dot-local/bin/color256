@@ -4,4 +4,12 @@ set -euo pipefail
 script_path="$(readlink -f -- "${BASH_SOURCE[0]}")"
 repo_root="$(cd -- "$(dirname -- "$script_path")/../../.." && pwd)"
 
+IFS=: read -r -a path_entries <<< "${PATH:-}"
+for path_entry in "${path_entries[@]}"; do
+  candidate="${path_entry}/color256"
+  [[ -x "$candidate" ]] || continue
+  [[ "$(readlink -f -- "$candidate")" == "$script_path" ]] && continue
+  exec "$candidate" "$@"
+done
+
 exec python3 "$repo_root/tools/thememanager/src/color256/color256.py" "$@"

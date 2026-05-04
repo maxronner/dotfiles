@@ -22,6 +22,14 @@ system profile:
 user profile:
     bash install/install.sh user {{profile}}
 
+# Install package-ready local tools
+install-tools:
+    bash install/install-tools.sh
+
+# Verify local tool commands
+verify-tools:
+    bash install/verify-tools.sh
+
 # Install hyprland layer 2
 hyprland profile:
     bash "{{dots_dir}}/hyprland/install.sh" {{profile}}
