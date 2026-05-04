@@ -49,5 +49,7 @@ status=0
 report_command thememanager || status=1
 report_command color256 || status=1
 report_command theme-apply-all || status=1
+report_command calc || status=1
+report_command nicecat || status=1
 
 exit "$status"

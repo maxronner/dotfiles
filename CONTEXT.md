@@ -36,6 +36,10 @@ _Avoid_: private repo, user config layer
 The external package installed from the standalone thememanager release tag. It owns Palette Artifact generation, named terminal palettes, and wallpaper-derived Auto Palette generation.
 _Avoid_: theme scripts, local theming files
 
+**Git Tool Manifest**:
+A pipe-delimited manifest that declares a command installed from a git repository, including its command name, repository URL, ref, and install command.
+_Avoid_: clone list, misc package array
+
 ## Relationships
 
 - A **Wallpaper Preview** can become a **Wallpaper Commit**.
@@ -45,6 +49,7 @@ _Avoid_: theme scripts, local theming files
 - A **Package Manifest** belongs to one packageable slice and is parsed by the installer before packages are installed.
 - The **Private Overlay** is installed after the public base and may override public app dotfiles.
 - The **Thememanager Package** writes the **Palette Artifact** consumed by theme adapters.
+- A **Git Tool Manifest** belongs to the repo layer that wants those git-installed commands.
 
 ## Example dialogue
 

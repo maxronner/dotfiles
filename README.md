@@ -55,3 +55,13 @@ For local development overrides, set
 `THEMEMANAGER_SOURCE_DIR=/path/to/thememanager` before running
 `just install-tools`. To use a different published location, set
 `THEMEMANAGER_INSTALL_SPEC` to another reachable git tag URL.
+
+Git-installed tools can be declared with a Git Tool Manifest using:
+
+```text
+name|command|repo|ref|install command
+```
+
+Git tool source checkouts live under `~/.local/src/dotfiles/git-tools` by
+default. Set `DOTS_GIT_TOOLS_DIR` to use a different source root.
+Use `-` for `command` when the repo installs data instead of a PATH command.

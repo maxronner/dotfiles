@@ -20,6 +20,7 @@ verify_command() {
 
 verify_command thememanager --help
 verify_command color256 --help
+verify_command calc '1 + 1'
 
 if ! PATH="${DOTS_TOOL_VERIFY_PATH:-$PATH}" command -v theme-apply-all &>/dev/null; then
     error "Missing command: theme-apply-all"
