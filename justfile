@@ -22,6 +22,12 @@ system profile:
 user profile:
     bash install/install.sh user {{profile}}
 
+# Install user dotfiles, package-ready tools, and post-install checks
+user-with-tools profile:
+    just user {{profile}}
+    just install-tools
+    just post-user-check
+
 # Install package-ready local tools
 install-tools:
     bash install/install-tools.sh
