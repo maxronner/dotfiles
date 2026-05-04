@@ -5,13 +5,17 @@
 bat=""
 for p in /sys/class/power_supply/*; do
   [[ -e "$p/type" ]] || continue
+  [[ -e "$p/scope" && "$(<"$p/scope")" == "Device" ]] && continue
   if [[ "$(<"$p/type")" == "Battery" ]]; then
     bat="$p"
     break
   fi
 done
 
-[[ -n "$bat" ]] || exit 0
+if [[ -z "$bat" ]]; then
+  printf ''
+  exit 0
+fi
 
 cache="${XDG_RUNTIME_DIR:-/tmp}/tmux-battery"
 placeholder() { printf '%s\n' "#[fg=colour30]| ??% 󰂑"; exit 0; }
