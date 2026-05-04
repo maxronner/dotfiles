@@ -44,15 +44,14 @@ just test-tools           # Test local tool modules and theme adapters
 
 ## Local Tool Packaging
 
-`thememanager` is released from the standalone checkout at `~/code/thememanager`.
-When that checkout and tag `v0.1.0` exist, `just install-tools` installs from
-the tagged release:
+`thememanager` is released from the standalone repo. `just install-tools`
+installs from the tagged release:
 
 ```bash
-git+file:///home/max/code/thememanager@v0.1.0
+git+ssh://git@codeberg.org/maxronner/thememanager.git@v0.1.0
 ```
 
 For local development overrides, set
 `THEMEMANAGER_SOURCE_DIR=/path/to/thememanager` before running
-`just install-tools`. On machines without the local release checkout, set
-`THEMEMANAGER_INSTALL_SPEC` to a reachable git tag URL.
+`just install-tools`. To use a different published location, set
+`THEMEMANAGER_INSTALL_SPEC` to another reachable git tag URL.

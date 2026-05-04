@@ -35,8 +35,8 @@ git -C "${tmp_home}/code/thememanager" commit -qm init
 git -C "${tmp_home}/code/thememanager" tag v0.1.0
 
 THEMEMANAGER_SOURCE_DIR=
-assert_eq "git+file://${tmp_home}/code/thememanager@v0.1.0" "$(resolve_thememanager_install_spec)" "uses tagged local release"
-assert_eq "release" "$(describe_thememanager_install_spec "git+file://${tmp_home}/code/thememanager@v0.1.0")" "describes release spec"
+assert_eq "$THEMEMANAGER_RELEASE_SPEC" "$(resolve_thememanager_install_spec)" "uses remote release spec"
+assert_eq "release" "$(describe_thememanager_install_spec "$THEMEMANAGER_RELEASE_SPEC")" "describes release spec"
 
 THEMEMANAGER_INSTALL_SPEC="git+https://example.invalid/thememanager@v0.1.0"
 assert_eq "$THEMEMANAGER_INSTALL_SPEC" "$(resolve_thememanager_install_spec)" "uses explicit install spec"
@@ -44,10 +44,7 @@ assert_eq "custom" "$(describe_thememanager_install_spec "$THEMEMANAGER_INSTALL_
 unset THEMEMANAGER_INSTALL_SPEC
 
 rm -rf "${tmp_home}/code/thememanager"
-if resolve_thememanager_install_spec >/dev/null 2>&1; then
-    printf 'FAIL: expected missing release checkout to fail\n' >&2
-    exit 1
-fi
+assert_eq "$THEMEMANAGER_RELEASE_SPEC" "$(resolve_thememanager_install_spec)" "remote release spec does not require local checkout"
 
 override_dir="${tmp_home}/custom"
 mkdir -p "$override_dir"
